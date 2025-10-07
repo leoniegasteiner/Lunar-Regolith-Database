@@ -27,7 +27,7 @@ def load_database_data():
 # Numerical data for plotting loading
 @st.cache_data
 def load_plot_data():
-    df = pd.read_csv("Dataset_Regolith_Plots.csv")
+    df = pd.read_csv("Dataset_Regolith_plots.csv")
     df.columns =  [
         "Mission", "Location", "Year","Type of mission","Test", "Test location",
         "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
