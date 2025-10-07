@@ -27,7 +27,7 @@ def load_database_data():
 # Numerical data for plotting loading
 @st.cache_data
 def load_plot_data():
-    df = pd.read_csv("Dataset_Regolith_Plots.csv")
+    df = pd.read_csv("Dataset_Regolith_plots.csv")
     df.columns =  [
         "Mission", "Location", "Year","Type of mission","Test", "Test location",
         "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
@@ -174,7 +174,6 @@ if db_choice == "Moon Mission Database":
         "Other": "#72CF6D"
     }
 
-    # Comparison with simulants data 
     compare_simulants = st.checkbox("Compare with lunar regolith simulants")
 
     filtered_plot_df = filtered_plot_df.dropna(subset=[x_axis, y_axis])
@@ -224,7 +223,13 @@ if db_choice == "Moon Mission Database":
             else:
                 st.warning(f"'{x_axis}' or '{y_axis}' not found in simulant dataset.")
 
-        st.plotly_chart(fig, use_container_width=True)
+        # Updated config dictionary
+        config = {
+            "displayModeBar": False,  # hides the toolbar
+            "scrollZoom": True
+        }
+
+        st.plotly_chart(fig, use_container_width=True, config=config)
     else:
         st.info("No data available for the selected plot.")
 
@@ -350,7 +355,11 @@ if db_choice == "Moon Mission Database":
     fig.update_xaxes(automargin=False)
     fig.update_yaxes(automargin=False)
 
-    st.plotly_chart(fig, use_container_width=True, height=800)
+    config_map = {
+    "displayModeBar": False,
+    "scrollZoom": True
+    }
+    st.plotly_chart(fig, use_container_width=True, height=800, config=config_map)
 
 
 # --------------------------- Lunar Simulants Database Section ---------------------------
@@ -423,7 +432,11 @@ elif db_choice == "Lunar Regolith Simulants Database":
             title=f"{y_axis} vs {x_axis}",
         )
         fig.update_traces(marker=dict(size=10, opacity=0.7))
-        st.plotly_chart(fig, use_container_width=True)
+
+        # Config for Plotly
+        config_simulant = {"displayModeBar": False, "scrollZoom": True}
+
+        st.plotly_chart(fig, use_container_width=True, config=config_simulant)
     else:
         st.info("No data available for the selected plot.")
 # Footer
