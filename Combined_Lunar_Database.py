@@ -29,7 +29,7 @@ def load_database_data():
 def load_plot_data():
     df = pd.read_csv("Dataset_Regolith_plots.csv")
     df.columns =  [
-        "Mission", "Location", "Year","Type of mission","Test", "Test location",
+        "Mission", "Location", "Area","Year","Type of mission","Test", "Test location",
         "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
         "Cohesion (kPa)", "Static bearing capacity (kPa)", "Original source", "DOI / URL"
     ]
