@@ -11,19 +11,19 @@ Luna 17,38.2376N 35.00163W,Mare,1970,Rover,Penetrometer,In-Situ,NA,22.5,5,33.34,
 Luna 20,3.7863N 56.6242E,Highland,1972,Lander,Sample return,On Earth,1,22.3 - 26.6,4.41 - 4.9,NA,"E. Slyuta, Physical and mechanical properties of the lunar soil, Solar System Research,2014",10.1134/S0038094614050050
 Luna 21,25.9994N 30.4076E,Mare,1973,Rover,Rover tracks,In-Situ,NA,20,0.4,27.32,"I. I. Cherkasov, V. V. Shvarev, New Soviet investigations of lunar soil and its analogs, 1977",10.1007/BF02093004
 Luna 24,12.7142N 62.2129E,Mare,1976,Lander,Sample return,On Earth,1.6-2.1,NA,NA,,"V.L. Barsukov, Preliminary data for the regolith core brought to earth by the automatic lunar station Luna 24, Lunar Science Conference, 1977",https://articles.adsabs.harvard.edu//full/1977LPSC....8.3303B/0003311.000.html
-Apollo 11,0.67416N 23.47314E,Mare,1969,Manned,Spacecraft touchdown analysis ,In-Situ,0.75 - 1.75,NA,NA,5.5 - 14.48,"Apollo 11 preliminary science report, NASA SP-214",https://www.nasa.gov/history/alsj/a11/a11psr.html
-Apollo 11,0.67416N 23.47314E,Mare,1969,Manned,Sample return,On Earth,1.77,NA,0.34 - 1.38,NA,"Apollo 11 preliminary science report, NASA SP-214",https://www.nasa.gov/history/alsj/a11/a11psr.html
-Apollo 12,3.01239S 23.42157W,Mare,1970,Manned,Spacecraft touchdown analysis ,In-Situ,1.8,NA,NA,5.52 - 7.58,"Apollo 12 preliminary science report, NASA SP-235",https://www.nasa.gov/history/alsj/a12/a12psr.html
-Apollo 12,3.01239S 23.42157W,Mare,1970,Manned,Sample return,On Earth,1.69 - 2.02,NA,NA,NA,"Apollo 12 preliminary science report, NASA SP-235",https://www.nasa.gov/history/alsj/a12/a12psr.html
-Apollo 14,3.42S 19.67W,Highland,1971,Manned,Rover tracks,In-Situ,1.87,37,NA,NA,"Apollo 14 preliminary science report, NASA SP-272",https://www.nasa.gov/history/alsj/a14/a14psr.html
-Apollo 14,3.42S 19.67W,Highland,1971,Manned,Penetrometer,In-Situ,1.5,35-37,0.35-0.7,NA,"Apollo 14 preliminary science report, NASA SP-272",https://www.nasa.gov/history/alsj/a14/a14psr.html
-Apollo 14,3.42S 19.67W,Highland,1971,Manned,Trench experiment,In-Situ,1.9*,35*,0.03 - 0.1,NA,"Apollo 14 preliminary science report, NASA SP-272",https://www.nasa.gov/history/alsj/a14/a14psr.html
-Apollo 15,26.13224N 3.63400E,Mare,1971,Manned,Penetrometer,In-Situ,1.97,49.5,1,NA,"Apollo 15 preliminary science report, NASA SP-289",https://www.nasa.gov/history/alsj/a15/a15psr.html
-Apollo 15,26.13224N 3.63400E,Mare,1971,Manned,Trench experiment,In-Situ,1.8*,51.7,0.94,NA,"Apollo 15 preliminary science report, NASA SP-289",https://www.nasa.gov/history/alsj/a15/a15psr.html
-Apollo 15,26.13224N 3.63400E,Mare,1971,Manned,Rover tracks,In-Situ,1.63 - 1.83,38.5 - 41,0 - 0.29,NA,"Apollo 15 preliminary science report, NASA SP-289",https://www.nasa.gov/history/alsj/a15/a15psr.html
-Apollo 16,8.97301S 15.49812E,Highland,1972,Manned,Penetrometer,In-Situ,1.7*,46.5,0.6,NA,"Apollo 16 preliminary science report, NASA SP-315",https://www.nasa.gov/history/alsj/a16/a16psr.html
-Apollo 16,8.97301S 15.49812E,Highland,1972,Manned,Sample return,In-Situ,1.75,46.5*,1.3,NA,"Apollo 16 preliminary science report, NASA SP-315",https://www.nasa.gov/history/alsj/a16/a16psr.html
-Apollo 17,20.1911N 30.7723E,Mare,1972,Manned,Rover tracks,In-Situ,1.6,35,0.17,NA,"Apollo 17 preliminary science report, NASA SP-330",https://www.nasa.gov/history/alsj/a17/a17psr.html
+Apollo 11,0.67416N 23.47314E,Mare,1969,Crewed,Spacecraft touchdown analysis ,In-Situ,0.75 - 1.75,NA,NA,5.5 - 14.48,"Apollo 11 preliminary science report, NASA SP-214",https://www.nasa.gov/history/alsj/a11/a11psr.html
+Apollo 11,0.67416N 23.47314E,Mare,1969,Crewed,Sample return,On Earth,1.77,NA,0.34 - 1.38,NA,"Apollo 11 preliminary science report, NASA SP-214",https://www.nasa.gov/history/alsj/a11/a11psr.html
+Apollo 12,3.01239S 23.42157W,Mare,1970,Crewed,Spacecraft touchdown analysis ,In-Situ,1.8,NA,NA,5.52 - 7.58,"Apollo 12 preliminary science report, NASA SP-235",https://www.nasa.gov/history/alsj/a12/a12psr.html
+Apollo 12,3.01239S 23.42157W,Mare,1970,Crewed,Sample return,On Earth,1.69 - 2.02,NA,NA,NA,"Apollo 12 preliminary science report, NASA SP-235",https://www.nasa.gov/history/alsj/a12/a12psr.html
+Apollo 14,3.42S 19.67W,Highland,1971,Crewed,Rover tracks,In-Situ,1.87,37,NA,NA,"Apollo 14 preliminary science report, NASA SP-272",https://www.nasa.gov/history/alsj/a14/a14psr.html
+Apollo 14,3.42S 19.67W,Highland,1971,Crewed,Penetrometer,In-Situ,1.5,35-37,0.35-0.7,NA,"Apollo 14 preliminary science report, NASA SP-272",https://www.nasa.gov/history/alsj/a14/a14psr.html
+Apollo 14,3.42S 19.67W,Highland,1971,Crewed,Trench experiment,In-Situ,1.9*,35*,0.03 - 0.1,NA,"Apollo 14 preliminary science report, NASA SP-272",https://www.nasa.gov/history/alsj/a14/a14psr.html
+Apollo 15,26.13224N 3.63400E,Mare,1971,Crewed,Penetrometer,In-Situ,1.97,49.5,1,NA,"Apollo 15 preliminary science report, NASA SP-289",https://www.nasa.gov/history/alsj/a15/a15psr.html
+Apollo 15,26.13224N 3.63400E,Mare,1971,Crewed,Trench experiment,In-Situ,1.8*,51.7,0.94,NA,"Apollo 15 preliminary science report, NASA SP-289",https://www.nasa.gov/history/alsj/a15/a15psr.html
+Apollo 15,26.13224N 3.63400E,Mare,1971,Crewed,Rover tracks,In-Situ,1.63 - 1.83,38.5 - 41,0 - 0.29,NA,"Apollo 15 preliminary science report, NASA SP-289",https://www.nasa.gov/history/alsj/a15/a15psr.html
+Apollo 16,8.97301S 15.49812E,Highland,1972,Crewed,Penetrometer,In-Situ,1.7*,46.5,0.6,NA,"Apollo 16 preliminary science report, NASA SP-315",https://www.nasa.gov/history/alsj/a16/a16psr.html
+Apollo 16,8.97301S 15.49812E,Highland,1972,Crewed,Sample return,In-Situ,1.75,46.5*,1.3,NA,"Apollo 16 preliminary science report, NASA SP-315",https://www.nasa.gov/history/alsj/a16/a16psr.html
+Apollo 17,20.1911N 30.7723E,Mare,1972,Crewed,Rover tracks,In-Situ,1.6,35,0.17,NA,"Apollo 17 preliminary science report, NASA SP-330",https://www.nasa.gov/history/alsj/a17/a17psr.html
 Chang'e 3,44.1189N 340.487E,Mare,2013,Rover,Lunar Penetration Radar,In-Situ,1.63,NA,NA,NA,"Zehua Donga, Guangyou Fang, Parameters and structure of lunar regolith in Chang E-3 landing area from lunar penetrating radar (LPR) data, 2016", 10.1016/j.icarus.2016.09.010
 Chang'e 4,45.44N 177.59E,Mare,2019,Rover,Rover tracks,In-Situ,NA,NA,1.4,NA,"Zhencheng Tang , Jianjun Liu, Physical and Mechanical Characteristics of Lunar Soil at the Chang E‐4 Landing Site, 2020",10.1029/2020GL089499
 Chang'e 5,43.06N 51.92W,Mare,2020,Rover,Sample return,On Earth,1.24,54,NA,NA,"Hui Zhang, Xian Zhang, Size, morphology, and composition of lunar samples returned by Chang E-5 mission, 2021",10.1007/s11433-021-1818-1
