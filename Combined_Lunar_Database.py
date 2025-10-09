@@ -140,7 +140,7 @@ if db_choice == "Moon Mission Database":
     st.subheader("Plot Numerical Data")
 
     x_axis = st.selectbox("X-axis (categorical)", options=[
-        "Mission", "Location", "Test", "Type of mission", 
+        "Mission", "Location", "Area", "Test", "Type of mission", 
         "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
         "Cohesion (kPa)", "Static bearing capacity (kPa)"
     ])
