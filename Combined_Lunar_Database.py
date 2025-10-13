@@ -445,8 +445,27 @@ elif db_choice == "Lunar Regolith Simulants Database":
         st.plotly_chart(fig, use_container_width=True, config=config_simulant)
     else:
         st.info("No data available for the selected plot.")
-# Footer
+
+# ------------------- Footer --------------------
+import requests
+import datetime
+
+def get_last_commit_date(repo="leoniegasteiner/lunar-regolith-database"):
+    try:
+        url = f"https://api.github.com/repos/{repo}/commits/main"
+        response = requests.get(url)
+        response.raise_for_status()
+        commit_date = response.json()["commit"]["committer"]["date"]
+        # Convert to a readable format
+        dt = datetime.datetime.fromisoformat(commit_date.replace("Z", "+00:00"))
+        return dt.strftime("%d %B %Y")
+    except Exception as e:
+        return "Unknown"
+
+last_updated = get_last_commit_date()
+
+
 st.markdown(
-    "<hr><p style='font-size:11px; color:gray; text-align:center;'>© 2025 Lunar Regolith Database <br> Contact us at gasteinerleonie@gmail.com </p>",
+    f"<hr><p style='font-size:11px; color:gray; text-align:center;'>© 2025 Lunar Regolith Database <br> Contact us at gasteinerleonie@gmail.com <br> Last updated: {last_updated}</p>",
     unsafe_allow_html=True
 )
