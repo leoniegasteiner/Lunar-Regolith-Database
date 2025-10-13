@@ -450,22 +450,26 @@ elif db_choice == "Lunar Regolith Simulants Database":
 import requests
 import datetime
 
-def get_last_commit_date(repo="leoniegasteiner/lunar-regolith-database"):
+def get_last_commit_date(repo="leoniegasteiner/Lunar-Regolith-Database", branch="main"):
     try:
-        url = f"https://api.github.com/repos/{repo}/commits/main"
-        response = requests.get(url)
-        response.raise_for_status()
-        commit_date = response.json()["commit"]["committer"]["date"]
-        # Convert to a readable format
-        dt = datetime.datetime.fromisoformat(commit_date.replace("Z", "+00:00"))
+        url = f"https://api.github.com/repos/{repo}/commits/{branch}"
+        headers = {"Accept": "application/vnd.github.v3+json"}
+        resp = requests.get(url, headers=headers, timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+        commit_iso = data["commit"]["committer"]["date"]  # e.g. "2025-10-07T07:17:06Z"
+        # Convert to datetime object (adjusting for Z)
+        dt = datetime.datetime.fromisoformat(commit_iso.replace("Z", "+00:00"))
         return dt.strftime("%d %B %Y")
     except Exception as e:
+        # Useful: show the error in the app for debugging
+        st.write("⚠️ Could not fetch last commit date:", e)
         return "Unknown"
 
 last_updated = get_last_commit_date()
-
 
 st.markdown(
     f"<hr><p style='font-size:11px; color:gray; text-align:center;'>© 2025 Lunar Regolith Database <br> Contact us at gasteinerleonie@gmail.com <br> Last updated: {last_updated}</p>",
     unsafe_allow_html=True
 )
+
