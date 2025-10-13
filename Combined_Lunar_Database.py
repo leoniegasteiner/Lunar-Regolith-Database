@@ -450,19 +450,24 @@ elif db_choice == "Lunar Regolith Simulants Database":
 import requests
 import datetime
 
+
 def get_last_commit_date(repo="leoniegasteiner/Lunar-Regolith-Database", branch="main"):
     try:
-        url = f"https://api.github.com/repos/{repo}/commits/{branch}"
+        token = st.secrets.get("GITHUB_TOKEN", None)
         headers = {"Accept": "application/vnd.github.v3+json"}
+        if token:
+            headers["Authorization"] = f"token {token}"
+
+        url = f"https://api.github.com/repos/{repo}/commits/{branch}"
         resp = requests.get(url, headers=headers, timeout=10)
         resp.raise_for_status()
+
         data = resp.json()
-        commit_iso = data["commit"]["committer"]["date"]  # e.g. "2025-10-07T07:17:06Z"
-        # Convert to datetime object (adjusting for Z)
+        commit_iso = data["commit"]["committer"]["date"]
         dt = datetime.datetime.fromisoformat(commit_iso.replace("Z", "+00:00"))
         return dt.strftime("%d %B %Y")
+
     except Exception as e:
-        # Useful: show the error in the app for debugging
         st.write("⚠️ Could not fetch last commit date:", e)
         return "Unknown"
 
