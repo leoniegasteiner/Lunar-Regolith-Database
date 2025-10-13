@@ -458,6 +458,8 @@ def get_last_commit_date(repo="leoniegasteiner/Lunar-Regolith-Database", branch=
         if token:
             headers["Authorization"] = f"token {token}"
 
+        st.write("GitHub token detected:", bool(st.secrets.get("GITHUB_TOKEN")))
+
         url = f"https://api.github.com/repos/{repo}/commits/{branch}"
         resp = requests.get(url, headers=headers, timeout=10)
         resp.raise_for_status()
