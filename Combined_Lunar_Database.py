@@ -169,13 +169,15 @@ if db_choice == "Moon Mission Database":
         "Apollo": "circle",
         "Luna": "square",
         "Surveyor": "triangle-up",
-        "Other": "diamond"
+        "Chang'e": "diamond",
+        "Chandrayaan": "cross"
     }
     color_map = {
         "Apollo": "#0b96d6",
         "Luna": "#d45087",
         "Surveyor": "#ffa600",
-        "Other": "#72CF6D"
+        "Chang'e": "#72CF6D",
+        "Chandrayaan": "#8e44ad",
     }
 
     compare_simulants = st.checkbox("Compare with lunar regolith simulants")
