@@ -20,7 +20,7 @@ def load_database_data():
     header=0,
     skip_blank_lines=False
     )
-    df.columns =  ["Mission", "Location", "Area","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Static bearing capacity (kPa)", "Original source", "DOI / URL"]
+    df.columns =  ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Static bearing capacity (kPa)", "Original source", "DOI / URL"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
     return df
 
@@ -29,7 +29,7 @@ def load_database_data():
 def load_plot_data():
     df = pd.read_csv("Dataset_Regolith_plots.csv")
     df.columns =  [
-        "Mission", "Location", "Area","Year","Type of mission","Test", "Test location",
+        "Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location",
         "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
         "Cohesion (kPa)", "Static bearing capacity (kPa)", "Original source", "DOI / URL"
     ]
@@ -94,6 +94,10 @@ if db_choice == "Moon Mission Database":
             return "Luna"
         elif "surveyor" in name:
             return "Surveyor"
+        elif "chang'e" in name:
+            return "Chang'e"
+        elif "chandrayaan" in name: 
+            return "Chandrayaan"
         else:
             return "Other"
 
@@ -105,15 +109,15 @@ if db_choice == "Moon Mission Database":
 
         mission_group_filter = st.multiselect(
             "Select Mission Group", 
-            options=["Apollo", "Luna", "Surveyor", "Other"]
+            options=["Apollo", "Luna", "Surveyor", "Chang'e", "Chandrayaan", "Other"]
         )
 
         test_filter = st.multiselect(
             "Select Test Type", 
             options=lunar_db_df["Test"].dropna().unique()
         )
-        area_filter = st.multiselect(
-            "Select Area",
+        terrain_filter = st.multiselect(
+            "Select Terrain Type",
             options=["Mare", "Highland"]
         )
 
@@ -123,8 +127,8 @@ if db_choice == "Moon Mission Database":
         filtered_db_df = filtered_db_df[filtered_db_df["Mission Group"].isin(mission_group_filter)]
     if test_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Test"].isin(test_filter)]
-    if area_filter:
-        filtered_db_df = filtered_db_df[filtered_db_df["Area"].isin(area_filter)]
+    if terrain_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Terrain"].isin(terrain_filter)]
 
 
     # Database Table Display
@@ -157,8 +161,8 @@ if db_choice == "Moon Mission Database":
         filtered_plot_df = filtered_plot_df[filtered_plot_df["Mission Group"].isin(mission_group_filter)]
     if test_filter:
         filtered_plot_df = filtered_plot_df[filtered_plot_df["Test"].isin(test_filter)]
-    if area_filter:
-        filtered_plot_df = filtered_plot_df[filtered_plot_df["Area"].isin(area_filter)]
+    if terrain_filter:
+        filtered_plot_df = filtered_plot_df[filtered_plot_df["Terrain"].isin(terrain_filter)]
 
     # Plotting markers
     marker_shapes = {
