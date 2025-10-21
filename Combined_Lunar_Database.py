@@ -53,7 +53,7 @@ def load_Simulants_data():
     skip_blank_lines=False,
     )
     df.columns =  ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Original source", "DOI / URL"]
-    #df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+    df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
     return df
 
 # Numerical data for plotting loading 
