@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-
+import plotly.graph_objects as go
 # --- Page configuration ---
 def show_mission():
     st.set_page_config(page_title="Apollo 17 Lunar Regolith Data", initial_sidebar_state="collapsed")
@@ -37,32 +37,72 @@ def show_mission():
         "Force Applied (N)": ["NA"] * 14
     })
 
-    # --- Convert depth ranges into numeric start/end points ---
-    expanded_data = []
+        # --- Sidebar Filters ---
+    methods_selected = st.multiselect("Select Testing Method(s)", data["Testing Method"].unique(), default=data["Testing Method"].unique())
+    value_to_plot = st.radio("Value to plot", ["Density (g/cm³)", "Porosity (%)", "Force Applied (N)"])
 
-    for _, row in data.iterrows():
+    filtered_data = data[data["Testing Method"].isin(methods_selected)].copy()
+
+    # --- Convert depth ranges into numeric start/end points ---
+    depth_data = []
+    for _, row in filtered_data.iterrows():
         try:
             start, end = map(float, row["Depth range (cm)"].split("-"))
-            # Add two rows for start and end depth (same density)
-            expanded_data.append({"Depth (cm)": start, "Density (g/cm³)": row["Density (g/cm³)"], "Testing Method": row["Testing Method"]})
-            expanded_data.append({"Depth (cm)": end, "Density (g/cm³)": row["Density (g/cm³)"], "Testing Method": row["Testing Method"]})
+            depth_data.append({"Start": start, "End": end, "Value": row[value_to_plot], "Method": row["Testing Method"]})
         except Exception:
             pass
 
-    expanded_df = pd.DataFrame(expanded_data).sort_values(by="Depth (cm)")
+    depth_df = pd.DataFrame(depth_data)
 
-    # --- Plot ---
-    fig = px.line(
-        expanded_df,
-        x="Depth (cm)",
-        y="Density (g/cm³)",
-        color="Testing Method",
-        title="Lunar Regolith Density Profile with Depth",
-        markers=True
+    # --- Plot vertical bars for depth ranges ---
+    fig = go.Figure()
+    color_map = {method: px.colors.qualitative.Plotly[i % 10] for i, method in enumerate(filtered_data["Testing Method"].unique())}
+    pattern_map = {
+        "Drive tube": "", 
+        "Drill stem": "/", 
+        "Penetrometer": "\\", 
+        "Footprint analysis": "x"
+    }
+
+    # offset bars horizontally to avoid full overlap
+    method_offsets = {method: i*0.15 for i, method in enumerate(filtered_data["Testing Method"].unique())}
+
+    for _, row in depth_df.iterrows():
+        fig.add_trace(go.Bar(
+            x=[row["Value"] + method_offsets[row["Method"]]],  # small horizontal offset
+            y=[row["End"] - row["Start"]],
+            base=row["Start"],
+            orientation='v',
+            width=0.025, 
+            name=row["Method"],
+            marker=dict(
+                color=color_map[row["Method"]],
+                line=dict(color='black', width=1),
+                pattern=dict(shape=pattern_map.get(row["Method"], ""), fillmode="overlay")
+            ),
+            opacity=0.6,
+            hovertext=f"Method: {row['Method']}<br>{value_to_plot}: {row['Value']}<br>Depth: {row['Start']}–{row['End']} cm",
+            hoverinfo="text",
+            showlegend=False  # legends can be added separately
+        ))
+
+    # add manual legend for methods
+    for method, color in color_map.items():
+        fig.add_trace(go.Bar(
+            x=[None], y=[None],
+            name=method,
+            marker=dict(color=color, line=dict(color='black', width=1),
+                        pattern=dict(shape=pattern_map.get(method, ""), fillmode="overlay")),
+            showlegend=True
+        ))
+
+    fig.update_layout(
+        title=f"{value_to_plot} vs Depth",
+        xaxis_title=value_to_plot,
+        yaxis_title="Depth (cm)",
+        yaxis=dict(autorange="reversed"),  # deeper = downward
+        barmode='overlay',
+        height=600
     )
-    fig.update_yaxes(autorange="reversed")  # Optional: makes it look like increasing depth goes downward
+
     st.plotly_chart(fig, use_container_width=True)
-
-    # --- Navigation back link ---
-    st.markdown("[⬅ Back to main page](/Combined_Lunar_Database)", unsafe_allow_html=True)
-

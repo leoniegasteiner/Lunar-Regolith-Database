@@ -113,5 +113,4 @@ def show_mission():
 
     st.plotly_chart(fig, use_container_width=True)
 
-    # --- Navigation back link ---
-    st.markdown("[⬅ Back to main page](/Combined_Lunar_Database)", unsafe_allow_html=True)
+
