@@ -143,22 +143,44 @@ if db_choice == "Moon Mission Database":
     # Sidebar list of missions for quick navigation
     import importlib
 
+    import os
+    import streamlit as st
+
+    MISSION_DIR = "pages"
+
+    # List available mission scripts
+    available_missions = {}
+    for filename in os.listdir(MISSION_DIR):
+        if filename.endswith(".py"):
+            mission_name = filename[:-3].replace("_", " ").title()
+            available_missions[mission_name] = os.path.join(MISSION_DIR, filename)
+
+    # Sidebar: select mission
     with st.sidebar:
         st.header("📌 Missions")
         mission_choice = st.selectbox(
-            "Select a mission",
-            options=filtered_db_df["Mission"].dropna().unique()
+            "Select a mission page",
+            options=list(available_missions.keys())
         )
 
-    st.write(f"Displaying details for: **{mission_choice}**")
+    # Display mission details only when requested
+    if mission_choice:
+        mission_file = available_missions[mission_choice]
 
-    # Convert mission name to module name
-    module_name = mission_choice.lower().replace(" ", "_").replace("'", "")
-    try:
-        mission_module = importlib.import_module(f"pages.{module_name}")
-        mission_module.show_mission()
-    except ModuleNotFoundError:
-        st.info("No separate page available for this mission. See table and plots above.")
+        try:
+            with open(mission_file, "r") as f:
+                code = f.read()
+            # Execute the show_mission() function safely
+            namespace = {}
+            exec(code, namespace)
+            if "show_mission" in namespace:
+                st.markdown(f"### Details for {mission_choice}")
+                namespace["show_mission"]()
+            else:
+                st.info("This mission script does not contain a `show_mission()` function.")
+        except Exception as e:
+            st.error(f"Could not display mission details: {e}")
+
 
 
     st.markdown(
