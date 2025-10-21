@@ -29,8 +29,8 @@ def show_mission():
     data = pd.DataFrame({
         "Testing Method": ["Penetrometer", "Penetrometer", "Core tube"],
         "Depth range (cm)": ["0-44", "0-62", "0-36"],
-        "Density (g/cm³)": ["NA", "NA", "1.75"],
-        "Force Applied (N)": ["71-134", "134-223", "NA"]
+        "Density (g/cm³)": [None, None, 1.75],
+        "Force Applied (N)": ["71-134", "134-223", None]
     })
 
         # --- Sidebar Filters ---
@@ -45,7 +45,10 @@ def show_mission():
         try:
             start, end = map(float, row["Depth range (cm)"].split("-"))
             depth_data.append({"Start": start, "End": end, "Value": row[value_to_plot], "Method": row["Testing Method"]})
-        except Exception:
+            start, end = map(float, row["Force Applied (N)"].split("-"))
+            depth_data.append({"Start": start, "End": end, "Value": row[value_to_plot], "Method": row["Testing Method"]})
+        except Exception as e:
+            print(e)
             pass
 
     depth_df = pd.DataFrame(depth_data)
