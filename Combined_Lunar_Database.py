@@ -19,8 +19,6 @@ def load_database_data():
     dtype=str,
     header=0,
     skip_blank_lines=True,   
-    error_bad_lines=False,  
-    on_bad_lines='skip'
     )
     df.columns =  ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Static bearing capacity (kPa)", "Original source", "DOI / URL"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
@@ -53,8 +51,6 @@ def load_Simulants_data():
     dtype=str,
     header=0,
     skip_blank_lines=True,   
-    error_bad_lines=False,  
-    on_bad_lines='skip'
     )
     df.columns =  ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Original source", "DOI / URL"]
     #df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
