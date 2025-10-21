@@ -81,23 +81,7 @@ db_choice = st.sidebar.radio(
 #Opening Mission pages 
 from urllib.parse import quote
 
-if db_choice == "Moon Mission Database":
 
-    # --- Check if a mission query parameter is present ---
-    query_params = st.query_params
-    mission_selected = query_params.get("mission", None)
-
-    # If a specific mission is selected, open its page
-    if mission_selected:
-        if mission_selected == "Apollo 11":
-            show_apollo_11_page()  # We'll define this below
-        elif mission_selected == "Apollo 12":
-            show_apollo_12_page()
-        elif mission_selected == "Apollo 15":
-            show_apollo_15_page()
-        else:
-            st.warning(f"No detailed page found for {mission_selected}")
-        st.stop()
 
 # --------------------------- Lunar Mission Database Section ---------------------------
 if db_choice == "Moon Mission Database":
@@ -157,8 +141,11 @@ if db_choice == "Moon Mission Database":
     df_display = filtered_db_df.copy()
 
     # Create clickable mission hyperlinks
+    from urllib.parse import quote
+
     df_display["Mission"] = df_display["Mission"].apply(
-        lambda m: f"[{m}](?mission={quote(m)})" if pd.notna(m) else "")
+        lambda m: f"[{m}](./pages/{quote(m.replace(' ', '_'))})" if pd.notna(m) else ""
+    )
 
     st.markdown(df_display.to_markdown(index=False), unsafe_allow_html=True)
 
