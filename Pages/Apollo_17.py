@@ -72,7 +72,7 @@ def show_mission():
             y=[depth_start, depth_start, depth_end, depth_end, depth_start],
             fill="toself",
             fillcolor=color_map[row["Testing Method"]],
-            line=dict(color='black'),
+            line=color_map[row["Testing Method"]],
             opacity=0.5,
             name=row["Testing Method"],
             hoverinfo='text',
@@ -87,7 +87,7 @@ def show_mission():
         fig.add_trace(go.Scatter(
             x=[None], y=[None],
             mode='markers',
-            marker=dict(size=10, color=color, line=dict(color='black'),
+            marker=dict(size=10, color=color, line=dict(color=color),
                         symbol='square'),
             name=method,
             showlegend=True
