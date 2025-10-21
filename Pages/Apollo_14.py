@@ -29,9 +29,9 @@ def show_mission():
     data = pd.DataFrame({
         "Testing Method": ["Penetrometer", "Penetrometer", "Core tube"],
         "Depth range (cm)": ["0-44", "0-62", "0-36"],
-        "Density (g/cm³)": [None, None, 1.75],
-        "Porosity (%)": [None, None, None],
-        "Force Applied (N)": ["71-134", "134-223", None]
+        "Density (g/cm³)": ["NA", "NA", 1.75],
+        "Porosity (%)": ["NA", "NA", "NA"],
+        "Force Applied (N)": ["71-134", "134-223", "NA"]
     })
 
     # --- Sidebar ---
