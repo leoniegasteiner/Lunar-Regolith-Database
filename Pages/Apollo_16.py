@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import plotly.graph_objects as go
 
 # --- Page configuration ---
 def show_mission():
@@ -17,9 +17,7 @@ def show_mission():
     These combined observations provided further insight into the mechanical behavior and strength characteristics of the lunar surface material at the Apollo 16 landing site.
     """)
 
-    # --- Data and plot ---
-    st.header("Lunar Regolith Density Variation with Depth")
-
+    # --- Data ---
     data = pd.DataFrame({
         "Testing Method": [
             "Drive tube", "Drive tube", "Drive tube", "Drive tube", "Drive tube", "Drive tube", "Drive tube",
@@ -48,37 +46,46 @@ def show_mission():
         "Force Applied (N)": ["NA"] * 26
     })
 
+    # --- Sidebar Filters ---
+    methods_selected = st.multiselect("Select Testing Method(s)", data["Testing Method"].unique(), default=data["Testing Method"].unique())
+    value_to_plot = st.radio("Value to plot", ["Density (g/cm³)", "Porosity (%)", "Force Applied (N)"])
+
+    filtered_data = data[data["Testing Method"].isin(methods_selected)].copy()
+
     # --- Convert depth ranges into numeric start/end points ---
-    expanded_data = []
-    for _, row in data.iterrows():
+    depth_data = []
+    for _, row in filtered_data.iterrows():
         try:
             start, end = map(float, row["Depth range (cm)"].split("-"))
-            expanded_data.append({
-                "Depth (cm)": start,
-                "Density (g/cm³)": row["Density (g/cm³)"],
-                "Testing Method": row["Testing Method"]
-            })
-            expanded_data.append({
-                "Depth (cm)": end,
-                "Density (g/cm³)": row["Density (g/cm³)"],
-                "Testing Method": row["Testing Method"]
-            })
+            depth_data.append({"Start": start, "End": end, "Value": row[value_to_plot], "Method": row["Testing Method"]})
         except Exception:
             pass
 
-    expanded_df = pd.DataFrame(expanded_data).sort_values(by="Depth (cm)")
+    depth_df = pd.DataFrame(depth_data)
 
-    # --- Plot ---
-    fig = px.line(
-        expanded_df,
-        x="Depth (cm)",
-        y="Density (g/cm³)",
-        color="Testing Method",
-        title="Lunar Regolith Density Profile with Depth",
-        markers=True
+    # --- Bar Plot ---
+    fig = go.Figure()
+
+    color_map = {method: px.colors.qualitative.Plotly[i % 10] for i, method in enumerate(filtered_data["Testing Method"].unique())}
+
+    for _, row in depth_df.iterrows():
+        fig.add_trace(go.Bar(
+            x=[row["Value"]],
+            y=[f"{row['Start']}–{row['End']} cm"],
+            orientation='h',
+            name=row["Method"],
+            marker=dict(color=color_map[row["Method"]], opacity=0.7),
+            hovertext=f"Method: {row['Method']}<br>{value_to_plot}: {row['Value']}<br>Depth: {row['Start']}–{row['End']} cm",
+            hoverinfo="text",
+        ))
+
+    fig.update_layout(
+        title=f"{value_to_plot} vs Depth",
+        xaxis_title=value_to_plot,
+        yaxis_title="Depth Range",
+        barmode='stack',
+        height=500
     )
-    fig.update_yaxes(autorange="reversed")  # optional: deeper = downward
+
     st.plotly_chart(fig, use_container_width=True)
 
-    # --- Navigation back link ---
-    st.markdown("[⬅ Back to main page](/Combined_Lunar_Database)", unsafe_allow_html=True)
