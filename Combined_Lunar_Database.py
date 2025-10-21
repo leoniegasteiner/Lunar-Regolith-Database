@@ -142,11 +142,14 @@ if db_choice == "Moon Mission Database":
 
     # Sidebar list of missions for quick navigation
     import importlib
-
     import os
-    import streamlit as st
 
-    MISSION_DIR = "lunar-regolith-database/pages"
+    # Get the folder where the current script is located
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    # Folder containing mission scripts
+    MISSION_DIR = os.path.join(BASE_DIR, "pages")
+
 
     # List available mission scripts
     available_missions = {}
