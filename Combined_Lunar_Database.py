@@ -248,44 +248,6 @@ if db_choice == "Moon Mission Database":
         st.info("No data available for the selected plot.")
 
 
-    # Mission Details 
-
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    MISSION_DIR = os.path.join(BASE_DIR, "Pages")
-
-    # List available mission scripts
-    available_missions = {}
-    for filename in os.listdir(MISSION_DIR):
-        if filename.endswith(".py"):
-            mission_name = filename[:-3].replace("_", " ").title()
-            available_missions[mission_name] = os.path.join(MISSION_DIR, filename)
-
-
-    # Sidebar: select a mission
-    mission_choice = st.sidebar.selectbox(
-        "Select a mission page",
-        options=filtered_db_df["Mission"].dropna().unique()
-    )
-
-    # Display mission details in a separate section
-    if mission_choice in available_missions:
-        import importlib.util
-
-        mission_file = available_missions[mission_choice]
-        spec = importlib.util.spec_from_file_location("mission_module", mission_file)
-        mission_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mission_module)
-
-        # Create an expander so details are separate from the main table
-        with st.expander(f"📄 Details for {mission_choice}", expanded=True):
-            if hasattr(mission_module, "show_mission"):
-                mission_module.show_mission()  # Function defined in each mission script
-            else:
-                st.warning("No show_mission() function found in this mission script.")
-    else:
-        st.info("No available details for this mission.")
-
-
     # Moon Map
     def parse_location(loc_str):
         if pd.isna(loc_str):
@@ -410,6 +372,45 @@ if db_choice == "Moon Mission Database":
     "scrollZoom": True
     }
     st.plotly_chart(fig, use_container_width=True, height=800, config=config_map)
+
+    
+    # Mission Details 
+    st.subheader("MIssion Details")
+
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    MISSION_DIR = os.path.join(BASE_DIR, "Pages")
+
+    # List available mission scripts
+    available_missions = {}
+    for filename in os.listdir(MISSION_DIR):
+        if filename.endswith(".py"):
+            mission_name = filename[:-3].replace("_", " ").title()
+            available_missions[mission_name] = os.path.join(MISSION_DIR, filename)
+
+
+    # Sidebar: select a mission
+    mission_choice = st.sidebar.selectbox(
+        "Select a mission to view details:",
+        options=filtered_db_df["Mission"].dropna().unique()
+    )
+
+    # Display mission details in a separate section
+    if mission_choice in available_missions:
+        import importlib.util
+
+        mission_file = available_missions[mission_choice]
+        spec = importlib.util.spec_from_file_location("mission_module", mission_file)
+        mission_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mission_module)
+
+        # Create an expander so details are separate from the main table
+        with st.expander(f"📄 Details for {mission_choice}", expanded=True):
+            if hasattr(mission_module, "show_mission"):
+                mission_module.show_mission()  # Function defined in each mission script
+            else:
+                st.warning("No show_mission() function found in this mission script.")
+    else:
+        st.info("No available details for this mission.")
 
 
 # --------------------------- Lunar Simulants Database Section ---------------------------
