@@ -79,7 +79,7 @@ def show_mission():
             y=[row["End"] - row["Start"]],
             base=row["Start"],
             orientation='v',
-            width=0.12, 
+            width=0.05, 
             name=row["Method"],
             marker=dict(
                 color=color_map[row["Method"]],
