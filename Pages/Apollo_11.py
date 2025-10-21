@@ -33,10 +33,53 @@ def show_mission():
         "Force Applied (N)": [1.82, 10.5, 54.5, None]
     })
 
-    # --- Sidebar ---
-    methods_selected = st.multiselect("Select Testing Method(s)", data["Testing Method"].unique(), default=data["Testing Method"].unique())
+    # --- Sidebar Filters ---
+    methods_selected = st.multiselect(
+        "Select Testing Method(s)", data["Testing Method"].unique(), default=data["Testing Method"].unique()
+    )
     value_to_plot = st.radio("Value to plot", ["Density (g/cm³)", "Porosity (%)", "Force Applied (N)"])
     filtered_data = data[data["Testing Method"].isin(methods_selected)].copy()
+
+    # --- Convert depth ranges and value ranges for plotting and table ---
+    processed_data = []
+    for _, row in filtered_data.iterrows():
+        # Depth
+        try:
+            depth_start, depth_end = map(float, row["Depth range (cm)"].split("-"))
+        except:
+            continue
+
+        # Value handling (supports ranges)
+        val_str = str(row[value_to_plot])
+        if val_str.upper() == "NA":
+            val_start = val_end = None
+        elif "-" in val_str:
+            try:
+                val_start, val_end = map(float, val_str.split("-"))
+            except:
+                val_start = val_end = None
+        else:
+            try:
+                val_start = val_end = float(val_str)
+            except:
+                val_start = val_end = None
+
+        processed_data.append({
+            "Testing Method": row["Testing Method"],
+            "Depth Start (cm)": depth_start,
+            "Depth End (cm)": depth_end,
+            f"{value_to_plot} Start": val_start,
+            f"{value_to_plot} End": val_end
+        })
+
+    table_df = pd.DataFrame(processed_data)
+
+    # --- Display table ---
+    st.subheader(f"{value_to_plot} vs Depth Table")
+    if not table_df.empty:
+        st.dataframe(table_df)
+    else:
+        st.info("No data available for the selected filters.")
 
     # --- Prepare bars ---
     bars = []
