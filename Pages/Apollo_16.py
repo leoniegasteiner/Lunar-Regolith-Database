@@ -41,8 +41,9 @@ def show_mission():
     methods_selected = st.multiselect("Select Testing Method(s)", data["Testing Method"].unique(), default=data["Testing Method"].unique())
     value_to_plot = st.radio("Value to plot", ["Density (g/cm³)", "Porosity (%)", "Force Applied (N)"])
     filtered_data = data[data["Testing Method"].isin(methods_selected)].copy()
+    
 
-    # --- Prepare bars ---
+    # --- Plots---
     bars = []
     color_map = {method: px.colors.qualitative.Plotly[i % 10] for i, method in enumerate(filtered_data["Testing Method"].unique())}
 
@@ -78,6 +79,15 @@ def show_mission():
             hovertext=f"Method: {row['Testing Method']}<br>{value_to_plot}: {val_start}-{val_end}<br>Depth: {depth_start}-{depth_end} cm",
             showlegend=False
         ))
+
+    table_df = pd.DataFrame(bars)
+
+    # --- Display table ---
+    st.subheader(f"{value_to_plot} vs Depth Table")
+    if not table_df.empty:
+        st.dataframe(table_df)
+    else:
+        st.info("No data available for the selected filters.")
 
     fig = go.Figure(bars)
 
