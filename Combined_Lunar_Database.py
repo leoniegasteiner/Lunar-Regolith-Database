@@ -141,17 +141,28 @@ if db_choice == "Moon Mission Database":
     st.dataframe(filtered_db_df)
 
     # Sidebar list of missions for quick navigation
+    import importlib
+    
     with st.sidebar:
         st.header("📌 Missions")
         mission_choice = st.selectbox(
-            "Select a mission page",
+            "Select a mission",
             options=filtered_db_df["Mission"].dropna().unique()
         )
+    
+    st.write(f"Displaying details for: **{mission_choice}**")
+    
+    # Convert mission name to module name
+    module_name = mission_choice.lower().replace(" ", "_").replace("'", "")
+    try:
+        mission_module = importlib.import_module(f"mission_pages.{module_name}")
+        mission_module.show_mission()
+    except ModuleNotFoundError:
+        st.info("No separate page available for this mission. See table and plots above.")
 
-    st.write(f"You selected: {mission_choice}")
 
     st.markdown(
-        "<p style='font-size:12px; color:gray;'>Note: Values are for the top 10cm of lunar soil. <br> * Indicates values estimated for the measurements.</p>",
+        "<p style='font-size:12px; color:gray;'>Note: Values are for the top 10cm of lunar soil, see missions details for more depths. <br> * Indicates values estimated for the measurements.</p>",
         unsafe_allow_html=True
     )
 
