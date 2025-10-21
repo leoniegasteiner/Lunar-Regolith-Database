@@ -45,7 +45,6 @@ def show_mission():
     # --- Prepare bars ---
     bars = []
     color_map = {method: px.colors.qualitative.Plotly[i % 10] for i, method in enumerate(filtered_data["Testing Method"].unique())}
-    pattern_map = {"Drive tube":"","Drill stem":"/","Penetrometer":"\\","Footprint analysis":"x"}
 
     for _, row in filtered_data.iterrows():
         # Depth
@@ -66,13 +65,13 @@ def show_mission():
         else:
             val_start = val_end = float(val_str)
 
-        # Create a rectangle for each bar (x = value range, y = depth range)
+        # Rectangle for each bar (x = value range, y = depth range)
         bars.append(go.Scatter(
             x=[val_start, val_end, val_end, val_start, val_start],
             y=[depth_start, depth_start, depth_end, depth_end, depth_start],
             fill="toself",
             fillcolor=color_map[row["Testing Method"]],
-            line=dict(color='black'),
+            line=dict(color=color_map[row["Testing Method"]], width=2),  # outline matches method color
             opacity=0.5,
             name=row["Testing Method"],
             hoverinfo='text',
@@ -82,13 +81,12 @@ def show_mission():
 
     fig = go.Figure(bars)
 
-    # Add manual legend for methods
+    # Manual legend for methods
     for method, color in color_map.items():
         fig.add_trace(go.Scatter(
             x=[None], y=[None],
             mode='markers',
-            marker=dict(size=10, color=color, line=dict(color='black'),
-                        symbol='square'),
+            marker=dict(size=10, color=color, line=dict(color=color, width=2)),
             name=method,
             showlegend=True
         ))
@@ -102,4 +100,3 @@ def show_mission():
     )
 
     st.plotly_chart(fig, use_container_width=True)
-    

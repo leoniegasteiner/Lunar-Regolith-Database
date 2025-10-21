@@ -42,86 +42,63 @@ def show_mission():
         ]
     })
 
-    # Sidebar filter for methods
-    methods_selected = st.multiselect("Select Testing Method(s)", data["Testing Method"].unique(),
-                                      default=data["Testing Method"].unique())
+   # --- Sidebar ---
+    methods_selected = st.multiselect("Select Testing Method(s)", data["Testing Method"].unique(), default=data["Testing Method"].unique())
+    value_to_plot = st.radio("Value to plot", ["Density (g/cm³)", "Porosity (%)", "Force Applied (N)"])
     filtered_data = data[data["Testing Method"].isin(methods_selected)].copy()
 
-    # Convert depth and value ranges to numeric
-    depth_val_data = []
+    # --- Prepare bars ---
+    bars = []
+    color_map = {method: px.colors.qualitative.Plotly[i % 10] for i, method in enumerate(filtered_data["Testing Method"].unique())}
+
     for _, row in filtered_data.iterrows():
-        # Parse depth range
+        # Depth
         try:
             depth_start, depth_end = map(float, row["Depth range (cm)"].split("-"))
         except:
             continue
 
-        # Parse value range
-        val_str = str(row["Density (g/cm³)"])
+        # Value handling
+        val_str = str(row[value_to_plot])
+        if val_str.upper() == "NA":
+            continue
         if "-" in val_str:
             try:
                 val_start, val_end = map(float, val_str.split("-"))
             except:
                 continue
         else:
-            try:
-                val_start = val_end = float(val_str)
-            except:
-                continue
+            val_start = val_end = float(val_str)
 
-        depth_val_data.append({
-            "Method": row["Testing Method"],
-            "Depth Start": depth_start,
-            "Depth End": depth_end,
-            "Value Start": val_start,
-            "Value End": val_end
-        })
-
-    depth_df = pd.DataFrame(depth_val_data)
-
-    # Plot horizontal bars using shapes for ranges
-    fig = go.Figure()
-    color_map = {method: px.colors.qualitative.Plotly[i % 10] for i, method in enumerate(filtered_data["Testing Method"].unique())}
-
-    # Small horizontal offset for overlapping bars
-    offsets = {method: i*0.02 for i, method in enumerate(filtered_data["Testing Method"].unique())}
-
-    for _, row in depth_df.iterrows():
-        offset = offsets[row["Method"]]
-        fig.add_shape(
-            type="rect",
-            x0=row["Value Start"] + offset,
-            x1=row["Value End"] + offset,
-            y0=row["Depth Start"],
-            y1=row["Depth End"],
-            line=dict(color="black"),
-            fillcolor=color_map[row["Method"]],
+        # Rectangle for each bar (x = value range, y = depth range)
+        bars.append(go.Scatter(
+            x=[val_start, val_end, val_end, val_start, val_start],
+            y=[depth_start, depth_start, depth_end, depth_end, depth_start],
+            fill="toself",
+            fillcolor=color_map[row["Testing Method"]],
+            line=dict(color=color_map[row["Testing Method"]], width=2),  # outline matches method color
             opacity=0.5,
-            layer="below"
-        )
-        # Hover info as invisible scatter for tooltips
-        fig.add_trace(go.Scatter(
-            x=[(row["Value Start"]+row["Value End"])/2 + offset],
-            y=[(row["Depth Start"]+row["Depth End"])/2],
-            text=f"Method: {row['Method']}<br>Depth: {row['Depth Start']}-{row['Depth End']} cm<br>Value: {row['Value Start']}-{row['Value End']}",
-            mode="markers",
-            marker=dict(size=0.1, color=color_map[row["Method"]]),
-            hoverinfo="text",
+            name=row["Testing Method"],
+            hoverinfo='text',
+            hovertext=f"Method: {row['Testing Method']}<br>{value_to_plot}: {val_start}-{val_end}<br>Depth: {depth_start}-{depth_end} cm",
             showlegend=False
         ))
 
-    # Add legend manually
+    fig = go.Figure(bars)
+
+    # Manual legend for methods
     for method, color in color_map.items():
         fig.add_trace(go.Scatter(
             x=[None], y=[None],
-            mode="markers",
-            marker=dict(color=color, size=10),
-            name=method
+            mode='markers',
+            marker=dict(size=10, color=color, line=dict(color=color, width=2)),
+            name=method,
+            showlegend=True
         ))
 
     fig.update_layout(
-        title="Density/Force vs Depth",
-        xaxis_title="Density (g/cm³)",
+        title=f"{value_to_plot} vs Depth",
+        xaxis_title=value_to_plot,
         yaxis_title="Depth (cm)",
         yaxis=dict(autorange="reversed"),
         height=600
