@@ -142,7 +142,7 @@ if db_choice == "Moon Mission Database":
         lambda m: f"[{m}](./pages/{quote(m.replace(' ', '_'))})" if pd.notna(m) else ""
     )
 
-    st.markdown(df_display.to_markdown(index=False), unsafe_allow_html=True)
+    st.markdown(st.dataframe(df_display), unsafe_allow_html=True)
 
     st.markdown(
         "<p style='font-size:12px; color:gray;'>Note: Values are for the top 10cm of lunar soil. <br> * Indicates values estimated for the measurements.</p>",
