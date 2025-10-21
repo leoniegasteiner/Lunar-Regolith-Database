@@ -9,6 +9,8 @@ from PIL import Image
 import re
 import base64
 from io import BytesIO
+from urllib.parse import quote
+
 st.cache_data.clear()
 
 
