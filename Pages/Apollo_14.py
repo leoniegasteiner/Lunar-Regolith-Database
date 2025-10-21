@@ -30,6 +30,7 @@ def show_mission():
         "Testing Method": ["Penetrometer", "Penetrometer", "Core tube"],
         "Depth range (cm)": ["0-44", "0-62", "0-36"],
         "Density (g/cm³)": [None, None, 1.75],
+        "Porosity (%)": ["NA"] * 3,
         "Force Applied (N)": ["71-134", "134-223", None]
     })
 
