@@ -40,14 +40,17 @@ def show_mission():
             "1.62-1.96", "1.84", "1.75", "1.79", "1.62", "2.15",
             "NA"
         ],
-        "Porosity (%)": [None, None, None, None, None, None, None, None, None, None, None, None, None],
-        "Force Applied (N)": [None, None, None, None, None, None, None, None, None, None, None, None, None]
+        "Porosity (%)": ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA"],
+        "Force Applied (N)": ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA"]
     })
 
    # --- Sidebar ---
     methods_selected = st.multiselect("Select Testing Method(s)", data["Testing Method"].unique(), default=data["Testing Method"].unique())
     value_to_plot = st.radio("Value to plot", ["Density (g/cm³)", "Porosity (%)", "Force Applied (N)"])
     filtered_data = data[data["Testing Method"].isin(methods_selected)].copy()
+
+
+
 
     # --- Prepare bars ---
     bars = []
