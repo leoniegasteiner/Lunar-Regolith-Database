@@ -64,28 +64,30 @@ def show_mission():
 
     depth_df = pd.DataFrame(depth_data)
 
-    # --- Bar Plot ---
+    # --- Plot vertical bars for depth ranges ---
     fig = go.Figure()
-
     color_map = {method: px.colors.qualitative.Plotly[i % 10] for i, method in enumerate(filtered_data["Testing Method"].unique())}
 
     for _, row in depth_df.iterrows():
         fig.add_trace(go.Bar(
             x=[row["Value"]],
-            y=[f"{row['Start']}–{row['End']} cm"],
-            orientation='h',
+            y=[row["End"] - row["Start"]],
+            base=row["Start"],
+            orientation='v',
+            width=0.8 * (row["End"] - row["Start"]),
             name=row["Method"],
-            marker=dict(color=color_map[row["Method"]], opacity=0.7),
+            marker=dict(color=color_map[row["Method"]], line=dict(color='black', width=1)),
             hovertext=f"Method: {row['Method']}<br>{value_to_plot}: {row['Value']}<br>Depth: {row['Start']}–{row['End']} cm",
-            hoverinfo="text",
+            hoverinfo="text"
         ))
 
     fig.update_layout(
         title=f"{value_to_plot} vs Depth",
         xaxis_title=value_to_plot,
-        yaxis_title="Depth Range",
-        barmode='stack',
-        height=500
+        yaxis_title="Depth (cm)",
+        yaxis=dict(autorange="reversed"),  # deeper = downward
+        barmode='overlay',
+        height=600
     )
 
     st.plotly_chart(fig, use_container_width=True)
