@@ -138,14 +138,17 @@ if db_choice == "Moon Mission Database":
     # Database Table Display
     st.subheader("Database Table")
     df_display = filtered_db_df.copy()
+    st.dataframe(filtered_db_df)
 
     # Sidebar list of missions for quick navigation
     with st.sidebar:
         st.header("📌 Missions")
-        for mission in filtered_db_df["Mission"].dropna().unique():
-            mission_page = f"./pages/{quote(mission.replace(' ', '_'))}"
-            st.markdown(f"- [{mission}]({mission_page})", unsafe_allow_html=True)
+        mission_choice = st.selectbox(
+            "Select a mission page",
+            options=filtered_db_df["Mission"].dropna().unique()
+        )
 
+    st.write(f"You selected: {mission_choice}")
 
     st.markdown(
         "<p style='font-size:12px; color:gray;'>Note: Values are for the top 10cm of lunar soil. <br> * Indicates values estimated for the measurements.</p>",
