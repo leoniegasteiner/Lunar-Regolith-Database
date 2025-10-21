@@ -1,4 +1,5 @@
 #Necessary imports
+from email.quoprimime import quote
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -120,6 +121,7 @@ if db_choice == "Moon Mission Database":
             "Select Terrain Type",
             options=["Mare", "Highland"]
         )
+        
 
 
     filtered_db_df = lunar_db_df.copy()
@@ -135,14 +137,13 @@ if db_choice == "Moon Mission Database":
     st.subheader("Database Table")
     df_display = filtered_db_df.copy()
 
-    # Create clickable mission hyperlinks
-    from urllib.parse import quote
+    # Sidebar list of missions for quick navigation
+    with st.sidebar:
+        st.header("📌 Missions")
+        for mission in filtered_db_df["Mission"].dropna().unique():
+            mission_page = f"./pages/{quote(mission.replace(' ', '_'))}"
+            st.markdown(f"- [{mission}]({mission_page})", unsafe_allow_html=True)
 
-    df_display["Mission"] = df_display["Mission"].apply(
-        lambda m: f"[{m}](./pages/{quote(m.replace(' ', '_'))})" if pd.notna(m) else ""
-    )
-
-    st.markdown(st.dataframe(df_display), unsafe_allow_html=True)
 
     st.markdown(
         "<p style='font-size:12px; color:gray;'>Note: Values are for the top 10cm of lunar soil. <br> * Indicates values estimated for the measurements.</p>",
