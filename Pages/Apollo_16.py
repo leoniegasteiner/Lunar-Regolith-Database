@@ -3,7 +3,6 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 
-# --- Page configuration ---
 def show_mission():
     st.set_page_config(page_title="Apollo 16 Lunar Regolith Data", initial_sidebar_state="collapsed")
 
@@ -13,9 +12,6 @@ def show_mission():
     st.write("""
     The Soil Mechanics Investigation during the Apollo 16 mission involved both in-situ measurements and observational analyses of the lunar surface.
     A penetrometer was used to obtain direct measurements of soil resistance, while additional data were gathered from visual observations of interactions between the soil and the rover wheels, drive tube insertions, and deep drill samples collected for return to Earth.
-
-    The stability of the soil during drilling operations was also analyzed to estimate the cohesion of the regolith, assuming a known value for the internal friction angle.
-    These combined observations provided further insight into the mechanical behavior and strength characteristics of the lunar surface material at the Apollo 16 landing site.
     """)
 
     # --- Data ---
@@ -67,18 +63,43 @@ def show_mission():
     # --- Plot vertical bars for depth ranges ---
     fig = go.Figure()
     color_map = {method: px.colors.qualitative.Plotly[i % 10] for i, method in enumerate(filtered_data["Testing Method"].unique())}
+    pattern_map = {
+        "Drive tube": "", 
+        "Drill stem": "/", 
+        "Penetrometer": "\\", 
+        "Footprint analysis": "x"
+    }
+
+    # offset bars horizontally to avoid full overlap
+    method_offsets = {method: i*0.15 for i, method in enumerate(filtered_data["Testing Method"].unique())}
 
     for _, row in depth_df.iterrows():
         fig.add_trace(go.Bar(
-            x=[row["Value"]],
+            x=[row["Value"] + method_offsets[row["Method"]]],  # small horizontal offset
             y=[row["End"] - row["Start"]],
             base=row["Start"],
             orientation='v',
-            width=0.8 * (row["End"] - row["Start"]),
+            width=0.12 * (row["End"] - row["Start"]),
             name=row["Method"],
-            marker=dict(color=color_map[row["Method"]], line=dict(color='black', width=1)),
+            marker=dict(
+                color=color_map[row["Method"]],
+                line=dict(color='black', width=1),
+                pattern=dict(shape=pattern_map.get(row["Method"], ""), fillmode="overlay")
+            ),
+            opacity=0.6,
             hovertext=f"Method: {row['Method']}<br>{value_to_plot}: {row['Value']}<br>Depth: {row['Start']}–{row['End']} cm",
-            hoverinfo="text"
+            hoverinfo="text",
+            showlegend=False  # legends can be added separately
+        ))
+
+    # add manual legend for methods
+    for method, color in color_map.items():
+        fig.add_trace(go.Bar(
+            x=[None], y=[None],
+            name=method,
+            marker=dict(color=color, line=dict(color='black', width=1),
+                        pattern=dict(shape=pattern_map.get(method, ""), fillmode="overlay")),
+            showlegend=True
         ))
 
     fig.update_layout(
@@ -92,3 +113,5 @@ def show_mission():
 
     st.plotly_chart(fig, use_container_width=True)
 
+    # --- Navigation back link ---
+    st.markdown("[⬅ Back to main page](/Combined_Lunar_Database)", unsafe_allow_html=True)
