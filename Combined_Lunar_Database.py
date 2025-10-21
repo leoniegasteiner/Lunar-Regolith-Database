@@ -148,7 +148,7 @@ if db_choice == "Moon Mission Database":
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     # Folder containing mission scripts
-    MISSION_DIR = os.path.join(BASE_DIR, "pages")
+    MISSION_DIR = os.path.join(BASE_DIR, "Pages")
 
 
     # List available mission scripts
