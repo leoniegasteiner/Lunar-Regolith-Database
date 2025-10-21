@@ -8,6 +8,8 @@ from PIL import Image
 import re
 import base64
 from io import BytesIO
+st.cache_data.clear()
+
 
 #Lunar Data Loading 
 @st.cache_data
