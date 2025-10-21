@@ -40,9 +40,8 @@ def show_mission():
             "1.62-1.96", "1.84", "1.75", "1.79", "1.62", "2.15",
             "NA"
         ],
-        "Porosity (%)": ["NA"] * 13,
-        "Force Applied (N)": ["NA"] * 13
-        
+        "Porosity (%)": [None, None, None, None, None, None, None, None, None, None, None, None, None],
+        "Force Applied (N)": [None, None, None, None, None, None, None, None, None, None, None, None, None]
     })
 
    # --- Sidebar ---
