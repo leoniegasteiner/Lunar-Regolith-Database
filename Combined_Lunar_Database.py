@@ -153,7 +153,8 @@ if db_choice == "Moon Mission Database":
 
     # List available mission scripts
     available_missions = {}
-    print(os.getcwd())
+    FOLDER =os.getcwd()
+    print(os.listdir(FOLDER))
     for filename in os.listdir(MISSION_DIR):
         if filename.endswith(".py"):
             mission_name = filename[:-3].replace("_", " ").title()
