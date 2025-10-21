@@ -78,6 +78,27 @@ db_choice = st.sidebar.radio(
     ["Moon Mission Database", "Lunar Regolith Simulants Database"]
 )
 
+#Opening Mission pages 
+from urllib.parse import quote
+
+if db_choice == "Moon Mission Database":
+
+    # --- Check if a mission query parameter is present ---
+    query_params = st.query_params
+    mission_selected = query_params.get("mission", None)
+
+    # If a specific mission is selected, open its page
+    if mission_selected:
+        if mission_selected == "Apollo 11":
+            show_apollo_11_page()  # We'll define this below
+        elif mission_selected == "Apollo 12":
+            show_apollo_12_page()
+        elif mission_selected == "Apollo 15":
+            show_apollo_15_page()
+        else:
+            st.warning(f"No detailed page found for {mission_selected}")
+        st.stop()
+
 # --------------------------- Lunar Mission Database Section ---------------------------
 if db_choice == "Moon Mission Database":
 
@@ -133,7 +154,14 @@ if db_choice == "Moon Mission Database":
 
     # Database Table Display
     st.subheader("Database Table")
-    st.dataframe(filtered_db_df)
+    df_display = filtered_db_df.copy()
+
+    # Create clickable mission hyperlinks
+    df_display["Mission"] = df_display["Mission"].apply(
+        lambda m: f"[{m}](?mission={quote(m)})" if pd.notna(m) else "")
+
+    st.markdown(df_display.to_markdown(index=False), unsafe_allow_html=True)
+
     st.markdown(
         "<p style='font-size:12px; color:gray;'>Note: Values are for the top 10cm of lunar soil. <br> * Indicates values estimated for the measurements.</p>",
         unsafe_allow_html=True
