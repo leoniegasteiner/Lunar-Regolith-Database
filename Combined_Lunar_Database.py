@@ -146,7 +146,7 @@ if db_choice == "Moon Mission Database":
     import os
     import streamlit as st
 
-    MISSION_DIR = "Lunar-Regolith-Database/pages"
+    MISSION_DIR = "/mount/src/lunar-regolith-database/pages"
 
     # List available mission scripts
     available_missions = {}
