@@ -144,47 +144,41 @@ if db_choice == "Moon Mission Database":
     import importlib
     import os
 
-    # Get the folder where the current script is located
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-    # Folder containing mission scripts
     MISSION_DIR = os.path.join(BASE_DIR, "Pages")
-
 
     # List available mission scripts
     available_missions = {}
-    FOLDER =os.getcwd()
-    print(os.listdir(FOLDER))
     for filename in os.listdir(MISSION_DIR):
         if filename.endswith(".py"):
             mission_name = filename[:-3].replace("_", " ").title()
             available_missions[mission_name] = os.path.join(MISSION_DIR, filename)
 
-    # Sidebar: select mission
-    with st.sidebar:
-        st.header("📌 Missions")
-        mission_choice = st.selectbox(
-            "Select a mission page",
-            options=list(available_missions.keys())
-        )
 
-    # Display mission details only when requested
-    if mission_choice:
+    # Sidebar: select a mission
+    mission_choice = st.sidebar.selectbox(
+        "Select a mission page",
+        options=filtered_db_df["Mission"].dropna().unique()
+    )
+
+    # Display mission details in a separate section
+    if mission_choice in available_missions:
+        import importlib.util
+
         mission_file = available_missions[mission_choice]
+        spec = importlib.util.spec_from_file_location("mission_module", mission_file)
+        mission_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mission_module)
 
-        try:
-            with open(mission_file, "r") as f:
-                code = f.read()
-            # Execute the show_mission() function safely
-            namespace = {}
-            exec(code, namespace)
-            if "show_mission" in namespace:
-                st.markdown(f"### Details for {mission_choice}")
-                namespace["show_mission"]()
+        # Create an expander so details are separate from the main table
+        with st.expander(f"📄 Details for {mission_choice}", expanded=True):
+            if hasattr(mission_module, "show_mission"):
+                mission_module.show_mission()  # Function defined in each mission script
             else:
-                st.info("This mission script does not contain a `show_mission()` function.")
-        except Exception as e:
-            st.error(f"Could not display mission details: {e}")
+                st.warning("No show_mission() function found in this mission script.")
+    else:
+        st.info("No available details for this mission.")
+
 
 
 
