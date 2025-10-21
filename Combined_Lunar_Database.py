@@ -2,7 +2,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.image as mpimg
 import plotly.express as px
 import plotly.graph_objects as go
 from PIL import Image
@@ -278,13 +277,13 @@ if db_choice == "Moon Mission Database":
         base64_str = base64.b64encode(img_bytes).decode()
         return "data:image/png;base64," + base64_str
 
-    moon_img = mpimg.imread("moon_map.jpg")
-    if moon_img.dtype != np.uint8:
-        moon_img_pil = Image.fromarray((moon_img * 255).astype(np.uint8))
-    else:
-        moon_img_pil = Image.fromarray(moon_img)
+    from PIL import Image
+    moon_img = Image.open("moon_map.jpg")
 
-    moon_img_uri = pil_to_base64_uri(moon_img_pil)
+    if moon_img.mode != 'RGB':
+        moon_img = moon_img.convert('RGB')
+
+    moon_img_uri = pil_to_base64_uri(moon_img)
 
     fig = go.Figure()
 
