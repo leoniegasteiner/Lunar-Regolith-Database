@@ -40,19 +40,23 @@ def show_mission():
     # --- Sidebar ---
     methods_selected = st.multiselect("Select Testing Method(s)", data["Testing Method"].unique(), default=data["Testing Method"].unique())
     value_to_plot = st.radio("Value to plot", ["Density (g/cm³)", "Porosity (%)", "Force Applied (N)"])
-
     filtered_data = data[data["Testing Method"].isin(methods_selected)].copy()
 
-    # --- Convert depth ranges and handle numeric/range values ---
-    depth_data = []
+    # --- Prepare data for bars ---
+    bars = []
+    color_map = {method: px.colors.qualitative.Plotly[i % 10] for i, method in enumerate(filtered_data["Testing Method"].unique())}
+    pattern_map = {"Drive tube":"","Drill stem":"/","Penetrometer":"\\","Footprint analysis":"x"}
+    method_offsets = {method:i*0.05 for i, method in enumerate(filtered_data["Testing Method"].unique())}
+
     for _, row in filtered_data.iterrows():
+        # Depth
         try:
             depth_start, depth_end = map(float, row["Depth range (cm)"].split("-"))
         except:
             continue
 
+        # Value handling
         val_str = str(row[value_to_plot])
-        # Skip if value is not numeric or a range
         if val_str.upper() == "NA":
             continue
         if "-" in val_str:
@@ -61,67 +65,38 @@ def show_mission():
             except:
                 continue
         else:
-            try:
-                val_start = val_end = float(val_str)
-            except:
-                continue
+            val_start = val_end = float(val_str)
 
-        depth_data.append({
-            "Method": row["Testing Method"],
-            "Depth Start": depth_start,
-            "Depth End": depth_end,
-            "Value Start": val_start,
-            "Value End": val_end
-        })
+        center = (val_start + val_end) / 2
+        width = (val_end - val_start) / 2 if val_end != val_start else 0.05  # minimal width for single values
 
-    depth_df = pd.DataFrame(depth_data)
-
-    if depth_df.empty:
-        st.info(f"No valid {value_to_plot} data to plot for selected methods.")
-        return
-
-    # --- Plot ---
-    fig = go.Figure()
-    color_map = {method: px.colors.qualitative.Plotly[i % 10] for i, method in enumerate(filtered_data["Testing Method"].unique())}
-    pattern_map = {
-        "Drive tube": "", 
-        "Drill stem": "/", 
-        "Penetrometer": "\\", 
-        "Footprint analysis": "x"
-    }
-
-    method_offsets = {method: i*0.05 for i, method in enumerate(filtered_data["Testing Method"].unique())}
-
-    for _, row in depth_df.iterrows():
-        offset = method_offsets[row["Method"]]
-        fig.add_shape(
-            type="rect",
-            x0=row["Value Start"] + offset,
-            x1=row["Value End"] + offset,
-            y0=row["Depth Start"],
-            y1=row["Depth End"],
-            line=dict(color="black"),
-            fillcolor=color_map[row["Method"]],
-            opacity=0.5
-        )
-        # Invisible scatter for hover
-        fig.add_trace(go.Scatter(
-            x=[(row["Value Start"] + row["Value End"])/2 + offset],
-            y=[(row["Depth Start"] + row["Depth End"])/2],
-            text=f"Method: {row['Method']}<br>{value_to_plot}: {row['Value Start']}-{row['Value End']}<br>Depth: {row['Depth Start']}–{row['Depth End']} cm",
-            mode="markers",
-            marker=dict(size=0.1, color=color_map[row["Method"]]),
+        bars.append(go.Bar(
+            x=[center + method_offsets[row["Testing Method"]]],
+            y=[depth_end - depth_start],
+            base=[depth_start],
+            width=[width],
+            orientation='v',
+            marker=dict(
+                color=color_map[row["Testing Method"]],
+                line=dict(color='black', width=1),
+                pattern=dict(shape=pattern_map.get(row["Testing Method"], ""), fillmode="overlay")
+            ),
+            opacity=0.6,
+            name=row["Testing Method"],
+            hovertext=f"Method: {row['Testing Method']}<br>{value_to_plot}: {val_start}-{val_end}<br>Depth: {depth_start}-{depth_end} cm",
             hoverinfo="text",
             showlegend=False
         ))
 
-    # Legend
+    fig = go.Figure(bars)
+
+    # --- Add manual legend ---
     for method, color in color_map.items():
-        fig.add_trace(go.Scatter(
+        fig.add_trace(go.Bar(
             x=[None], y=[None],
-            mode="markers",
-            marker=dict(color=color, size=10),
-            name=method
+            name=method,
+            marker=dict(color=color, line=dict(color='black', width=1),
+                        pattern=dict(shape=pattern_map.get(method, ""), fillmode="overlay"))
         ))
 
     fig.update_layout(
@@ -129,6 +104,7 @@ def show_mission():
         xaxis_title=value_to_plot,
         yaxis_title="Depth (cm)",
         yaxis=dict(autorange="reversed"),
+        barmode='overlay',
         height=600
     )
 
