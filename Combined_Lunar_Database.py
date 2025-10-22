@@ -424,7 +424,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
 
 
     with st.sidebar:
-            st.header("🔍 Filter Simulant Data")
+            st.header("Filter Simulant Data")
             #original filters 
             soil_group_filter = st.multiselect("Select Type of Simulant", ["Mare", "Highland"])
             test_filter = st.multiselect("Select Test Type", simulant_db_df["Test"].dropna().unique())
@@ -441,7 +441,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
             #)         )
 
             # --- Numeric Range Filters ---
-            st.markdown("### 📅 Publication Year")
+            st.markdown("### Publication Year")
             if "Date of publication" in simulant_db_df.columns and simulant_db_df["Date of publication"].notna().any():
                 year_min, year_max = int(simulant_db_df["Date of publication"].min()), int(simulant_db_df["Date of publication"].max())
                 year_range = st.slider(
@@ -453,7 +453,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
             else:
                 year_range = None
 
-            st.markdown("### 🧱 Density (g/cm³)")
+            st.markdown("### Density (g/cm³)")
             if "Bulk density (g/cm^3)" in simulant_db_df.columns:
                 dens_min, dens_max = float(simulant_db_df["Bulk density (g/cm^3)"].min()), float(simulant_db_df["Bulk density (g/cm^3)"].max())
                 density_range = st.slider(
@@ -465,7 +465,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
             else:
                 density_range = None
 
-            st.markdown("### 🧱 Cohesion (kPa)")
+            st.markdown("### Cohesion (kPa)")
             if "Cohesion (kPa)" in simulant_db_df.columns:
                 coh_min, coh_max = float(simulant_db_df["Cohesion (kPa)"].min()), float(simulant_db_df["Cohesion (kPa)"].max())
                 cohesion_range = st.slider(
@@ -477,7 +477,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
             else:
                 cohesion_range = None
 
-            st.markdown("### 🪨 Angle of Internal Friction (°)")
+            st.markdown("### Angle of Internal Friction (°)")
             if "Angle of internal friction (degree)" in simulant_db_df.columns:
                 ang_min, ang_max = float(simulant_db_df["Angle of internal friction (degree)"].min()), float(simulant_db_df["Angle of internal friction (degree)"].max())
                 angle_range = st.slider(
@@ -489,7 +489,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
             else:
                 angle_range = None
 
-            #st.markdown("### 🧱 Static Bearing Capacity (kPa)")
+            #st.markdown("### Static Bearing Capacity (kPa)")
             #if "Static bearing capacity (kPa)" in simulant_df.columns:
             #    sbc_min, sbc_max = float(simulant_df["Static bearing capacity (kPa)"].min()), float(simulant_df["Static bearing capacity (kPa)"].max())
             #    sbc_range = st.slider(
@@ -501,7 +501,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
             #else:
             #    sbc_range = None
 
-            st.markdown("### 🧰 Normal Force (N) [To be implemented]")
+            st.markdown("### Normal Force (N) [To be implemented]")
             # Placeholder for when you add this column later
             # normal_force_range = st.slider("Select Normal Force Range", min_value=0, max_value=1000, value=(0, 1000))
             normal_force_range = None
@@ -510,7 +510,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
 
             # --- Column Selection ---
             st.divider()
-            st.header("📊 Display Options")
+            st.header("Display Options")
             all_columns = simulant_db_df.columns.tolist()
             default_columns = ["Simulant", "Year", "Test", "Bulk density (g/cm^3)", "Cohesion (kPa)"]
             selected_columns = st.multiselect(
@@ -570,6 +570,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
         "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)"
     ])
 
+    
     filtered_plot_df = filtered_db_df.dropna(subset=[x_axis, y_axis])
 
     if not filtered_plot_df.empty:
