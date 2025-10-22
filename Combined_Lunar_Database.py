@@ -511,8 +511,8 @@ elif db_choice == "Lunar Regolith Simulants Database":
     # --- Column Selection ---
     st.divider()
     st.header("📊 Display Options")
-    all_columns = lunar_db_df.columns.tolist()
-    default_columns = ["Mission/Simulant", "Year", "Test", "Bulk density (g/cm^3)", "Cohesion (kPa)"]
+    all_columns = simulant_db_df.columns.tolist()
+    default_columns = ["Simulant", "Year", "Test", "Bulk density (g/cm^3)", "Cohesion (kPa)"]
     selected_columns = st.multiselect(
         "Select columns to display:",
         options=all_columns,
