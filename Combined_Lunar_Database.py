@@ -76,11 +76,24 @@ def load_Simulant_plot_data():
 simulant_db_df = load_Simulants_data()
 simulant_plot_df = load_Simulant_plot_data()
 
+#All data loading
+@st.cache_data
+def load_database_data():
+    df = pd.read_csv(
+    "Dataset_All.csv",
+    dtype=str,
+    header=0,
+    skip_blank_lines=False,
+    )
+    df.columns =  ["Mission/Simulant", "Developer", "Agency", "Moon Location/Country", "Year", "Terrain type", "Type of mission", "Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Static bearing capacity (kPa)", "Original source", "DOI / URL"]
+    df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+    return df
+
 
 # Sidebar to choose database (Lunar mission or Simulants)
 db_choice = st.sidebar.radio(
     "Select Database:",
-    ["Moon Mission Database", "Lunar Regolith Simulants Database"]
+    ["Moon Mission Database", "Lunar Regolith Simulants Database", "All Data", "Detailed Mission Pages"]
 )
 
 # --------------------------- Lunar Mission Database Section ---------------------------
@@ -126,7 +139,6 @@ if db_choice == "Moon Mission Database":
             options=["Mare", "Highland"]
         )
         
-
 
     filtered_db_df = lunar_db_df.copy()
     if mission_group_filter:
@@ -271,7 +283,7 @@ if db_choice == "Moon Mission Database":
         base64_str = base64.b64encode(img_bytes).decode()
         return "data:image/png;base64," + base64_str
 
-    from PIL import Image
+
     moon_img = Image.open("moon_map.jpg")
 
     if moon_img.mode != 'RGB':
@@ -373,45 +385,6 @@ if db_choice == "Moon Mission Database":
     }
     st.plotly_chart(fig, use_container_width=True, height=800, config=config_map)
 
-    
-    # Mission Details 
-    st.subheader("MIssion Details")
-
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    MISSION_DIR = os.path.join(BASE_DIR, "Pages")
-
-    # List available mission scripts
-    available_missions = {}
-    for filename in os.listdir(MISSION_DIR):
-        if filename.endswith(".py"):
-            mission_name = filename[:-3].replace("_", " ").title()
-            available_missions[mission_name] = os.path.join(MISSION_DIR, filename)
-
-
-    # Sidebar: select a mission
-    mission_choice = st.sidebar.selectbox(
-        "Select a mission to view details:",
-        options=filtered_db_df["Mission"].dropna().unique()
-    )
-
-    # Display mission details in a separate section
-    if mission_choice in available_missions:
-        import importlib.util
-
-        mission_file = available_missions[mission_choice]
-        spec = importlib.util.spec_from_file_location("mission_module", mission_file)
-        mission_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mission_module)
-
-        # Create an expander so details are separate from the main table
-        with st.expander(f"📄 Details for {mission_choice}", expanded=True):
-            if hasattr(mission_module, "show_mission"):
-                mission_module.show_mission()  # Function defined in each mission script
-            else:
-                st.warning("No show_mission() function found in this mission script.")
-    else:
-        st.info("No available details for this mission.")
-
 
 # --------------------------- Lunar Simulants Database Section ---------------------------
 
@@ -490,6 +463,161 @@ elif db_choice == "Lunar Regolith Simulants Database":
         st.plotly_chart(fig, use_container_width=True, config=config_simulant)
     else:
         st.info("No data available for the selected plot.")
+
+# --------------------------- All Data Section ---------------------------
+elif db_choice == "All Data":
+    st.title("Combined Lunar Regolith Database")
+
+    def categorize_mission(mission_name):
+        if pd.isna(mission_name):
+            return "Other"
+        name = mission_name.lower()
+        if "apollo" in name:
+            return "Apollo"
+        elif "luna" in name:
+            return "Luna"
+        elif "surveyor" in name:
+            return "Surveyor"
+        elif "chang'e" in name:
+            return "Chang'e"
+        elif "chandrayaan" in name: 
+            return "Chandrayaan"
+        else:
+            return "Simulant"
+
+    lunar_db_df["Mission Group"] = lunar_db_df["Mission/Simulant"].apply(categorize_mission)
+
+    # Sidebar Filters
+    with st.sidebar:
+        st.header("🔍 Filter Database")
+
+        mission_group_filter = st.multiselect(
+            "Select Mission Group", 
+            options=["Apollo", "Luna", "Surveyor", "Chang'e", "Chandrayaan", "Simulants"]
+        )
+
+        test_filter = st.multiselect(
+            "Select Test Type", 
+            options=lunar_db_df["Test"].dropna().unique()
+        )
+        terrain_filter = st.multiselect(
+            "Select Terrain Type",
+            options=["Mare", "Highland"]
+        )
+        
+
+    filtered_db_df = lunar_db_df.copy()
+    if mission_group_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Mission Group"].isin(mission_group_filter)]
+    if test_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Test"].isin(test_filter)]
+    if terrain_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Terrain"].isin(terrain_filter)]
+
+
+    # Database Table Display
+    st.subheader("Database Table")
+    df_display = filtered_db_df.copy()
+    st.dataframe(filtered_db_df)
+
+# ------------------Mission Details Section ------------------
+# --------------------------- All Data Section ---------------------------
+elif db_choice == "All Data":
+    st.title("All available Lunar Regolith and Simulant Data")
+
+    # --- Categorize missions ---
+    def categorize_mission(mission_name):
+        if pd.isna(mission_name):
+            return "Other"
+        name = mission_name.lower()
+        if "apollo" in name:
+            return "Apollo"
+        elif "luna" in name:
+            return "Luna"
+        elif "surveyor" in name:
+            return "Surveyor"
+        elif "chang'e" in name or "change" in name:
+            return "Chang'e"
+        elif "chandrayaan" in name:
+            return "Chandrayaan"
+        else:
+            return "Simulant"
+
+    lunar_db_df["Mission Group"] = lunar_db_df["Mission/Simulant"].apply(categorize_mission)
+
+    # --- Sidebar Filters ---
+    with st.sidebar:
+        st.header("🔍 Filter Database")
+
+        # Mission group filter
+        mission_group_filter = st.multiselect(
+            "Mission Group", 
+            options=sorted(lunar_db_df["Mission Group"].dropna().unique()),
+            help="Select one or more mission programs."
+        )
+
+        # Specific mission filter
+        mission_filter = st.multiselect(
+            "Mission Name",
+            options=sorted(lunar_db_df["Mission/Simulant"].dropna().unique()),
+            help="Filter by specific mission or simulant name."
+        )
+
+        # Test type filter
+        test_filter = st.multiselect(
+            "Test Type", 
+            options=sorted(lunar_db_df["Test"].dropna().unique()),
+            help="Filter by test or measurement type."
+        )
+
+        # Terrain filter
+        terrain_filter = st.multiselect(
+            "Terrain Type",
+            options=sorted(lunar_db_df["Terrain"].dropna().unique()),
+            help="Select terrain type (Mare, Highland, etc.)."
+        )
+
+        # --- Optional numeric filters ---
+        numeric_cols = [col for col in lunar_db_df.columns if lunar_db_df[col].dtype in ["float64", "int64"]]
+        if numeric_cols:
+            st.markdown("**📈 Numerical Filters**")
+            for col in numeric_cols:
+                min_val, max_val = float(lunar_db_df[col].min()), float(lunar_db_df[col].max())
+                if min_val != max_val:  # skip constants
+                    selected_range = st.slider(
+                        f"{col}",
+                        min_val, max_val, (min_val, max_val)
+                    )
+                    lunar_db_df = lunar_db_df[
+                        lunar_db_df[col].between(selected_range[0], selected_range[1])
+                    ]
+
+        # --- Text search ---
+        search_term = st.text_input("🔎 Keyword search", help="Search in all text fields.")
+
+    # --- Apply filters ---
+    filtered_db_df = lunar_db_df.copy()
+
+    if mission_group_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Mission Group"].isin(mission_group_filter)]
+    if mission_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Mission/Simulant"].isin(mission_filter)]
+    if test_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Test"].isin(test_filter)]
+    if terrain_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Terrain"].isin(terrain_filter)]
+
+    if search_term:
+        mask = filtered_db_df.apply(
+            lambda row: row.astype(str).str.contains(search_term, case=False, na=False)
+        , axis=1)
+        filtered_db_df = filtered_db_df[mask.any(axis=1)]
+
+    # --- Display filtered table ---
+    st.subheader("📊 Filtered Lunar Regolith Data")
+    st.dataframe(filtered_db_df, use_container_width=True)
+    st.caption(f"Showing {len(filtered_db_df)} entries.")
+
 
 # ------------------- Footer --------------------
 import requests

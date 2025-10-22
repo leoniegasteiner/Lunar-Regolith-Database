@@ -8,6 +8,10 @@ def show_mission():
 
     st.title("Apollo 16 Lunar Regolith Data")
 
+    st.write("""The Soil Mechanics Investigation during the Apollo 16 mission involved both in-situ measurements and observational analyses of the lunar surface. A penetrometer was used to obtain direct measurements of soil resistance, while additional data were gathered from visual observations of interactions between the soil and the rover wheels, drive tube insertions, and deep drill samples collected for return to Earth.
+
+             The stability of the soil during drilling operations was also analyzed to estimate the cohesion of the regolith, assuming a known value for the internal friction angle. These combined observations provided further insight into the mechanical behavior and strength characteristics of the lunar surface material at the Apollo 16 landing site.""")
+
     # --- Data ---
     data = pd.DataFrame({
         "Testing Method": [
