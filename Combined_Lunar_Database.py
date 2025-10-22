@@ -465,7 +465,6 @@ elif db_choice == "Lunar Regolith Simulants Database":
         st.info("No data available for the selected plot.")
 
 # --------------------------- All Data Section ---------------------------
-# --------------------------- All Data Section ---------------------------
 elif db_choice == "All Data":
     st.title("Combined Lunar Regolith Database")
 
@@ -566,14 +565,6 @@ elif db_choice == "Detailed Mission Pages":
             options=[""] + sorted(list(available_missions.keys())),  # empty default (none selected)
             format_func=lambda x: "Select a mission" if x == "" else x
         )
-
-        # --- Display table of available missions ---
-        mission_table = pd.DataFrame({
-            "Mission": available_missions.keys(),
-            "Script Path": available_missions.values()
-        })
-        st.subheader("Available Mission Data")
-        st.dataframe(mission_table[["Mission"]])
 
         # --- Load and display selected mission page ---
         if mission_choice:
