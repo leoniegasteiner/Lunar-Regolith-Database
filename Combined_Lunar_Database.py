@@ -139,6 +139,17 @@ if db_choice == "Moon Mission Database":
             options=["Mare", "Highland"]
         )
         
+    # --- Column Selection ---
+        st.divider()
+        st.header("📊 Display Options")
+
+        all_columns = lunar_db_df.columns.tolist()
+        default_columns = ["Mission/Simulant", "Year", "Test", "Bulk density (g/cm^3)", "Cohesion (kPa)"]
+        selected_columns = st.multiselect(
+            "Select columns to display:",
+            options=all_columns,
+            default=[col for col in default_columns if col in all_columns]
+        )
 
     filtered_db_df = lunar_db_df.copy()
     if mission_group_filter:
