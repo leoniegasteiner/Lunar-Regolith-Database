@@ -508,16 +508,18 @@ elif db_choice == "Lunar Regolith Simulants Database":
 
 
 
-    # --- Column Selection ---
-    st.divider()
-    st.header("📊 Display Options")
-    all_columns = simulant_db_df.columns.tolist()
-    default_columns = ["Simulant", "Year", "Test", "Bulk density (g/cm^3)", "Cohesion (kPa)"]
-    selected_columns = st.multiselect(
-        "Select columns to display:",
-        options=all_columns,
-        default=[col for col in default_columns if col in all_columns]
-    )
+            # --- Column Selection ---
+            st.divider()
+            st.header("📊 Display Options")
+            all_columns = simulant_db_df.columns.tolist()
+            default_columns = ["Simulant", "Year", "Test", "Bulk density (g/cm^3)", "Cohesion (kPa)"]
+            selected_columns = st.multiselect(
+                "Select columns to display:",
+                options=all_columns,
+                default=[col for col in default_columns if col in all_columns]
+            )
+
+
     filtered_db_df = simulant_db_df.copy()
     if soil_group_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Soil Group"].isin(soil_group_filter)]
@@ -553,7 +555,10 @@ elif db_choice == "Lunar Regolith Simulants Database":
     #    ]
     # Table display
     st.subheader("Database Table")
-    st.dataframe(filtered_db_df)
+    if selected_columns:  # avoid empty selection
+        st.dataframe(filtered_db_df[selected_columns])
+    else:
+        st.info("No columns selected. Please select at least one column to display.")
 
     # Plotting Section & Display
     st.subheader("Plot Numerical Data")
