@@ -57,7 +57,7 @@ def load_Simulants_data():
     header=0,
     skip_blank_lines=False,
     )
-    df.columns =  ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Original source", "DOI / URL"]
+    df.columns =  ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Date of publication","DOI / URL"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
     return df
 
@@ -66,7 +66,7 @@ def load_Simulants_data():
 def load_Simulant_plot_data():
     df = pd.read_csv("Dataset_Simulants_plots.csv")
     df.columns =  [
-        "Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Original source", "DOI / URL"
+        "Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Date of publication","DOI / URL"
     ]
     numeric_cols = ["Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
         "Cohesion (kPa)"]
@@ -403,7 +403,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
 
     st.title("Lunar Regolith Simulants Database")
     simulant_db_df.columns = simulant_db_df.columns.str.strip()
-    numeric_cols = ["Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)"]
+    numeric_cols = ["Year","Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Date of publication"]
     for col in numeric_cols:
         if col in simulant_db_df.columns:
             simulant_db_df[col] = pd.to_numeric(simulant_db_df[col], errors="coerce")
@@ -422,14 +422,102 @@ elif db_choice == "Lunar Regolith Simulants Database":
 
     simulant_db_df["Soil Group"] = simulant_db_df["Type of simulant"].apply(categorize_soil)
 
-    # Data filtering
-    with st.sidebar:
-        st.header("🔍 Filter Database")
-        soil_group_filter = st.multiselect("Select Type of Simulant", ["Mare", "Highland"])
-        test_filter = st.multiselect("Select Test Type", simulant_db_df["Test"].dropna().unique())
-        agency_filter = st.multiselect("Select Agency", ["NASA", "ESA", "JAXA", "KASA", "ISRO", "CNSA", "GISTDA"])
 
-    # 
+    with st.sidebar:
+            st.header("🔍 Filter Simulant Data")
+            #original filters 
+            soil_group_filter = st.multiselect("Select Type of Simulant", ["Mare", "Highland"])
+            test_filter = st.multiselect("Select Test Type", simulant_db_df["Test"].dropna().unique())
+            agency_filter = st.multiselect("Select Agency", ["NASA", "ESA", "JAXA", "KASA", "ISRO", "CNSA", "GISTDA"])
+            # --- Text / Categorical Filters ---
+            developer_filter = st.multiselect(
+                "Select Developer(s):",
+                options=sorted(simulant_db_df["Developer"].dropna().unique())
+            )
+
+            #country_filter = st.multiselect(
+            #    "Select Country:",
+            #    options=sorted(simulant_db_df["Moon Location/Country"].dropna().unique())
+            #)         )
+
+            # --- Numeric Range Filters ---
+            st.markdown("### 📅 Publication Year")
+            if "Date of publication" in simulant_db_df.columns and simulant_db_df["Date of publication"].notna().any():
+                year_min, year_max = int(simulant_db_df["Date of publication"].min()), int(simulant_db_df["Date of publication"].max())
+                year_range = st.slider(
+                    "Select Year of publication Range",
+                    min_value=year_min,
+                    max_value=year_max,
+                    value=(year_min, year_max)
+                )
+            else:
+                year_range = None
+
+            st.markdown("### 🧱 Density (g/cm³)")
+            if "Bulk density (g/cm^3)" in simulant_db_df.columns:
+                dens_min, dens_max = float(simulant_db_df["Bulk density (g/cm^3)"].min()), float(simulant_db_df["Bulk density (g/cm^3)"].max())
+                density_range = st.slider(
+                    "Select Density Range",
+                    min_value=round(dens_min, 2),
+                    max_value=round(dens_max, 2),
+                    value=(round(dens_min, 2), round(dens_max, 2))
+                )
+            else:
+                density_range = None
+
+            st.markdown("### 🧱 Cohesion (kPa)")
+            if "Cohesion (kPa)" in simulant_db_df.columns:
+                coh_min, coh_max = float(simulant_db_df["Cohesion (kPa)"].min()), float(simulant_db_df["Cohesion (kPa)"].max())
+                cohesion_range = st.slider(
+                    "Select Cohesion Range",
+                    min_value=round(coh_min, 1),
+                    max_value=round(coh_max, 1),
+                    value=(round(coh_min, 1), round(coh_max, 1))
+                )
+            else:
+                cohesion_range = None
+
+            st.markdown("### 🪨 Angle of Internal Friction (°)")
+            if "Angle of internal friction (degree)" in simulant_db_df.columns:
+                ang_min, ang_max = float(simulant_db_df["Angle of internal friction (degree)"].min()), float(simulant_db_df["Angle of internal friction (degree)"].max())
+                angle_range = st.slider(
+                    "Select Angle Range",
+                    min_value=round(ang_min, 1),
+                    max_value=round(ang_max, 1),
+                    value=(round(ang_min, 1), round(ang_max, 1))
+                )
+            else:
+                angle_range = None
+
+            #st.markdown("### 🧱 Static Bearing Capacity (kPa)")
+            #if "Static bearing capacity (kPa)" in simulant_df.columns:
+            #    sbc_min, sbc_max = float(simulant_df["Static bearing capacity (kPa)"].min()), float(simulant_df["Static bearing capacity (kPa)"].max())
+            #    sbc_range = st.slider(
+            #        "Select Static Bearing Capacity Range",
+            #        min_value=round(sbc_min, 1),
+            #        max_value=round(sbc_max, 1),
+            #        value=(round(sbc_min, 1), round(sbc_max, 1))
+            #    )
+            #else:
+            #    sbc_range = None
+
+            st.markdown("### 🧰 Normal Force (N) [To be implemented]")
+            # Placeholder for when you add this column later
+            # normal_force_range = st.slider("Select Normal Force Range", min_value=0, max_value=1000, value=(0, 1000))
+            normal_force_range = None
+
+
+
+    # --- Column Selection ---
+    st.divider()
+    st.header("📊 Display Options")
+    all_columns = lunar_db_df.columns.tolist()
+    default_columns = ["Mission/Simulant", "Year", "Test", "Bulk density (g/cm^3)", "Cohesion (kPa)"]
+    selected_columns = st.multiselect(
+        "Select columns to display:",
+        options=all_columns,
+        default=[col for col in default_columns if col in all_columns]
+    )
     filtered_db_df = simulant_db_df.copy()
     if soil_group_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Soil Group"].isin(soil_group_filter)]
@@ -437,7 +525,32 @@ elif db_choice == "Lunar Regolith Simulants Database":
         filtered_db_df = filtered_db_df[filtered_db_df["Test"].isin(test_filter)]
     if agency_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Agency"].isin(agency_filter)]
-
+    if developer_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Developer"].isin(developer_filter)]
+    if year_range:
+        filtered_db_df = filtered_db_df[
+            (filtered_db_df["Date of publication"] >= year_range[0]) & (filtered_db_df["Date of publication"] <= year_range[1])
+        ]
+    if density_range:
+        filtered_db_df = filtered_db_df[
+            (filtered_db_df["Bulk density (g/cm^3)"] >= density_range[0]) &
+            (filtered_db_df["Bulk density (g/cm^3)"] <= density_range[1])
+        ]
+    if cohesion_range:
+        filtered_db_df = filtered_db_df[
+            (filtered_db_df["Cohesion (kPa)"] >= cohesion_range[0]) &
+            (filtered_db_df["Cohesion (kPa)"] <= cohesion_range[1])
+        ]
+    if angle_range:
+        filtered_db_df = filtered_db_df[
+            (filtered_db_df["Angle of internal friction (degree)"] >= angle_range[0]) &
+            (filtered_db_df["Angle of internal friction (degree)"] <= angle_range[1])
+        ]
+    #if sbc_range:
+    #    filtered_db_df = filtered_db_df[
+    #        (filtered_db_df["Static bearing capacity (kPa)"] >= sbc_range[0]) &
+    #        (filtered_db_df["Static bearing capacity (kPa)"] <= sbc_range[1])
+    #    ]
     # Table display
     st.subheader("Database Table")
     st.dataframe(filtered_db_df)
@@ -474,6 +587,8 @@ elif db_choice == "Lunar Regolith Simulants Database":
         st.plotly_chart(fig, use_container_width=True, config=config_simulant)
     else:
         st.info("No data available for the selected plot.")
+
+
 
 # --------------------------- All Data Section ---------------------------
 elif db_choice == "All Data":
