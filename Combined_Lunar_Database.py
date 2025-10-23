@@ -171,8 +171,8 @@ if db_choice == "Moon Mission Database":
 
         # --- Numeric Range Filters ---
         st.markdown("### Publication Year")
-        if "Year of publication" in lunar_db_df.columns and lunar_db_df["Year of publication"].notna().any():
-            year_min, year_max = int(lunar_db_df["Year of publication"].min()), int(lunar_db_df["Year of publication"].max())
+        if "Date of publication" in lunar_db_df.columns and lunar_db_df["Date of publication"].notna().any():
+            year_min, year_max = int(lunar_db_df["Date of publication"].min()), int(lunar_db_df["Date of publication"].max())
             year_range = st.slider(
                 "Select Year of publication Range",
                 min_value=year_min,
@@ -181,6 +181,8 @@ if db_choice == "Moon Mission Database":
             )
         else:
             year_range = None
+
+
         st.markdown("### Density (g/cm³)")
         if "Bulk density (g/cm^3)_min" in lunar_db_df.columns:
             dens_min = float(lunar_db_df["Bulk density (g/cm^3)_min"].min(skipna=True))
@@ -268,7 +270,7 @@ if db_choice == "Moon Mission Database":
             (filtered_db_df["Bulk density (g/cm^3)_max"] >= density_range[0]) &
             (filtered_db_df["Bulk density (g/cm^3)_min"] <= density_range[1])
         ]
-        
+
     if angle_range:
         filtered_db_df = filtered_db_df[
             (filtered_db_df["Angle of internal friction (degree)_max"] >= angle_range[0]) &
