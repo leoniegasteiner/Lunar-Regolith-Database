@@ -252,7 +252,7 @@ if db_choice == "Moon Mission Database":
     if test_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Test"].isin(test_filter)]
     if mission_group_filter:
-        filtered_db_df = filtered_db_df[filtered_db_df["Mission"].isin(mission_group_filter)]
+        filtered_db_df = filtered_db_df[filtered_db_df["Mission Group"].isin(mission_group_filter)]
     if mission_type_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Type of mission"].isin(mission_type_filter)]
     if year_range:
