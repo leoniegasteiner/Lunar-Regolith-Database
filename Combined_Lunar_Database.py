@@ -140,8 +140,8 @@ if db_choice == "Moon Mission Database":
 
         # --- Numeric Range Filters ---
         st.markdown("### Publication Year")
-        if "Year of publication" in lunar_db_df.columns and lunar_db_df["Year of publication"].notna().any():
-            year_min, year_max = int(lunar_db_df["Year of publication"].min()), int(lunar_db_df["Year of publication"].max())
+        if "Year of publication" in lunar_plot_df.columns and lunar_plot_df["Year of publication"].notna().any():
+            year_min, year_max = int(lunar_plot_df["Year of publication"].min()), int(lunar_plot_df["Year of publication"].max())
             year_range = st.slider(
                 "Select Year of publication Range",
                 min_value=year_min,
@@ -151,8 +151,8 @@ if db_choice == "Moon Mission Database":
         else:
             year_range = None
         st.markdown("### Density (g/cm³)")
-        if "Bulk density (g/cm^3)" in lunar_db_df.columns:
-            dens_min, dens_max = float(lunar_db_df["Bulk density (g/cm^3)"].min()), float(lunar_db_df["Bulk density (g/cm^3)"].max())
+        if "Bulk density (g/cm^3)" in lunar_plot_df.columns:
+            dens_min, dens_max = float(lunar_plot_df["Bulk density (g/cm^3)"].min()), float(lunar_plot_df["Bulk density (g/cm^3)"].max())
             density_range = st.slider(
                 "Select Density Range",
                 min_value=round(dens_min, 2),
@@ -162,8 +162,8 @@ if db_choice == "Moon Mission Database":
         else:
             density_range = None
         st.markdown("### Cohesion (kPa)")
-        if "Cohesion (kPa)" in lunar_db_df.columns:
-            coh_min, coh_max = float(lunar_db_df["Cohesion (kPa)"].min()), float(lunar_db_df["Cohesion (kPa)"].max())
+        if "Cohesion (kPa)" in lunar_plot_df.columns:
+            coh_min, coh_max = float(lunar_plot_df["Cohesion (kPa)"].min()), float(lunar_plot_df["Cohesion (kPa)"].max())
             cohesion_range = st.slider(
                 "Select Cohesion Range",
                 min_value=round(coh_min, 1),
@@ -173,8 +173,8 @@ if db_choice == "Moon Mission Database":
         else:
             cohesion_range = None
         st.markdown("### Angle of Internal Friction (°)")
-        if "Angle of internal friction (degree)" in lunar_db_df.columns:
-            ang_min, ang_max = float(lunar_db_df["Angle of internal friction (degree)"].min()), float(lunar_db_df["Angle of internal friction (degree)"].max())
+        if "Angle of internal friction (degree)" in lunar_plot_df.columns:
+            ang_min, ang_max = float(lunar_plot_df["Angle of internal friction (degree)"].min()), float(lunar_plot_df["Angle of internal friction (degree)"].max())
             angle_range = st.slider(
                 "Select Angle Range",
                 min_value=round(ang_min, 1),
@@ -184,8 +184,8 @@ if db_choice == "Moon Mission Database":
         else:
             angle_range = None
         st.markdown("### Static Bearing Capacity (kPa)")
-        if "Static bearing capacity (kPa)" in lunar_db_df.columns:
-            sbc_min, sbc_max = float(lunar_db_df["Static bearing capacity (kPa)"].min()), float(lunar_db_df["Static bearing capacity (kPa)"].max())
+        if "Static bearing capacity (kPa)" in lunar_plot_df.columns:
+            sbc_min, sbc_max = float(lunar_plot_df["Static bearing capacity (kPa)"].min()), float(lunar_plot_df["Static bearing capacity (kPa)"].max())
             sbc_range = st.slider(
                "Select Static Bearing Capacity Range",
                min_value=round(sbc_min, 1),
@@ -207,38 +207,39 @@ if db_choice == "Moon Mission Database":
         )
 
 
-    filtered_db_df = simulant_db_df.copy()
+    filtered_db_df = lunar_db_df.copy()
+    filtered_plot_df = lunar_plot_df.copy()
     if soil_group_filter:
-        filtered_db_df = filtered_db_df[filtered_db_df["Soil Group"].isin(soil_group_filter)]
+        filtered_db_df = filtered_db_df[filtered_db_df["Terrain"].isin(soil_group_filter)]
     if test_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Test"].isin(test_filter)]
     if mission_group_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Mission"].isin(mission_group_filter)]
     if mission_type_filter:
-        filtered_db_df = filtered_db_df[filtered_db_df["Mission Type"].isin(mission_type_filter)]
+        filtered_db_df = filtered_db_df[filtered_db_df["Type of mission"].isin(mission_type_filter)]
     if year_range:
-        filtered_db_df = filtered_db_df[
-            (filtered_db_df["Year of publication"] >= year_range[0]) & (filtered_db_df["Year of publication"] <= year_range[1])
+        filtered_plot_df = filtered_plot_df[
+            (filtered_plot_df["Year of publication"] >= year_range[0]) & (filtered_plot_df["Year of publication"] <= year_range[1])
         ]
     if density_range:
-        filtered_db_df = filtered_db_df[
-            (filtered_db_df["Bulk density (g/cm^3)"] >= density_range[0]) &
-            (filtered_db_df["Bulk density (g/cm^3)"] <= density_range[1])
+        filtered_plot_df = filtered_plot_df[
+            (filtered_plot_df["Bulk density (g/cm^3)"] >= density_range[0]) &
+            (filtered_plot_df["Bulk density (g/cm^3)"] <= density_range[1])
         ]
     if cohesion_range:
-        filtered_db_df = filtered_db_df[
-            (filtered_db_df["Cohesion (kPa)"] >= cohesion_range[0]) &
-            (filtered_db_df["Cohesion (kPa)"] <= cohesion_range[1])
+        filtered_plot_df = filtered_plot_df[
+            (filtered_plot_df["Cohesion (kPa)"] >= cohesion_range[0]) &
+            (filtered_plot_df["Cohesion (kPa)"] <= cohesion_range[1])
         ]
     if angle_range:
-        filtered_db_df = filtered_db_df[
-            (filtered_db_df["Angle of internal friction (degree)"] >= angle_range[0]) &
-            (filtered_db_df["Angle of internal friction (degree)"] <= angle_range[1])
+        filtered_plot_df = filtered_plot_df[
+            (filtered_plot_df["Angle of internal friction (degree)"] >= angle_range[0]) &
+            (filtered_plot_df["Angle of internal friction (degree)"] <= angle_range[1])
         ]
     if sbc_range:
-        filtered_db_df = filtered_db_df[
-            (filtered_db_df["Static bearing capacity (kPa)"] >= sbc_range[0]) &
-            (filtered_db_df["Static bearing capacity (kPa)"] <= sbc_range[1])
+        filtered_plot_df = filtered_plot_df[
+            (filtered_plot_df["Static bearing capacity (kPa)"] >= sbc_range[0]) &
+            (filtered_plot_df["Static bearing capacity (kPa)"] <= sbc_range[1])
         ]
     ## Table display
     st.subheader("Database Table")
