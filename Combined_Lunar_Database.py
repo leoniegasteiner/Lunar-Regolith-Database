@@ -838,7 +838,7 @@ elif db_choice == "All Data":
 
             terrain_filter = st.multiselect(
                 "Select Terrain Type",
-                options=sorted(all_db_df["Terrain"].dropna().unique())
+                options=sorted(all_db_df["Terrain type"].dropna().unique())
             )
 
             year_filter = st.slider(
