@@ -569,6 +569,34 @@ elif db_choice == "Lunar Regolith Simulants Database":
             return "Highland"
         else:
             return "Other"
+        
+    def extract_range(value):
+        if pd.isna(value):
+            return (np.nan, np.nan)
+        if isinstance(value, (int, float)):
+            return (float(value), float(value))
+        match = re.findall(r"[-+]?\d*\.?\d+", str(value))
+        if len(match) == 0:
+            return (np.nan, np.nan)
+        elif len(match) == 1:
+            val = float(match[0])
+            return (val, val)
+        else:
+            return (float(match[0]), float(match[-1]))  # take first and last
+
+    # --- Columns that may contain ranges ---
+    range_columns = [
+        "Bulk density (g/cm^3)",
+        "Angle of internal friction (degree)",
+        "Cohesion (kPa)",
+    ]
+
+    # --- Apply extraction and create numeric columns ---
+    for col in range_columns:
+        if col in simulant_db_df.columns:
+            simulant_db_df[[f"{col}_min", f"{col}_max"]] = simulant_db_df[col].apply(
+                lambda x: pd.Series(extract_range(x))
+            )
 
     simulant_db_df["Soil Group"] = simulant_db_df["Type of simulant"].apply(categorize_soil)
 
