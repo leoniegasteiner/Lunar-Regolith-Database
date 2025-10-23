@@ -121,23 +121,34 @@ if db_choice == "Moon Mission Database":
             return "Other"
         
     def extract_range(value):
+        """Extracts min and max numeric values from strings"""
         if pd.isna(value):
-            return (None, None)
+            return (np.nan, np.nan)
         if isinstance(value, (int, float)):
-            return (value, value)
+            return (float(value), float(value))
         match = re.findall(r"[-+]?\d*\.?\d+", str(value))
-        if len(match) == 1:
+        if len(match) == 0:
+            return (np.nan, np.nan)
+        elif len(match) == 1:
             val = float(match[0])
             return (val, val)
-        elif len(match) >= 2:
-            return (float(match[0]), float(match[1]))
         else:
-            return (None, None)
+            return (float(match[0]), float(match[-1]))  # take first and last
 
-    # Apply to all range-like columns
-    for col in ["Cohesion (kPa)", "Angle of internal friction (degree)", "Bulk density (g/cm^3)", "Static bearing capacity (kPa)"]:
+    # --- Columns that may contain ranges ---
+    range_columns = [
+        "Bulk density (g/cm^3)",
+        "Angle of internal friction (degree)",
+        "Cohesion (kPa)",
+        "Static bearing capacity (kPa)",
+    ]
+
+    # --- Apply extraction and create numeric columns ---
+    for col in range_columns:
         if col in lunar_db_df.columns:
-            lunar_db_df[[f"{col}_min", f"{col}_max"]] = lunar_db_df[col].apply(lambda x: pd.Series(extract_range(x)))
+            lunar_db_df[[f"{col}_min", f"{col}_max"]] = lunar_db_df[col].apply(
+                lambda x: pd.Series(extract_range(x))
+            )
 
     lunar_db_df["Mission Group"] = lunar_db_df["Mission"].apply(categorize_mission)
 
@@ -171,8 +182,9 @@ if db_choice == "Moon Mission Database":
         else:
             year_range = None
         st.markdown("### Density (g/cm³)")
-        if "Bulk density (g/cm^3)" in lunar_db_df.columns:
-            dens_min, dens_max = float(lunar_db_df["Bulk density (g/cm^3)"].min()), float(lunar_db_df["Bulk density (g/cm^3)"].max())
+        if "Bulk density (g/cm^3)_min" in lunar_db_df.columns:
+            dens_min = float(lunar_db_df["Bulk density (g/cm^3)_min"].min(skipna=True))
+            dens_max = float(lunar_db_df["Bulk density (g/cm^3)_max"].max(skipna=True))
             density_range = st.slider(
                 "Select Density Range",
                 min_value=round(dens_min, 2),
@@ -181,9 +193,11 @@ if db_choice == "Moon Mission Database":
             )
         else:
             density_range = None
+
         st.markdown("### Cohesion (kPa)")
-        if "Cohesion (kPa)" in lunar_db_df.columns:
-            coh_min, coh_max = float(lunar_db_df["Cohesion (kPa)"].min()), float(lunar_db_df["Cohesion (kPa)"].max())
+        if "Cohesion (kPa)_min" in lunar_db_df.columns:
+            coh_min = float(lunar_db_df["Cohesion (kPa)_min"].min(skipna=True))
+            coh_max = float(lunar_db_df["Cohesion (kPa)_max"].max(skipna=True))
             cohesion_range = st.slider(
                 "Select Cohesion Range",
                 min_value=round(coh_min, 1),
@@ -193,8 +207,9 @@ if db_choice == "Moon Mission Database":
         else:
             cohesion_range = None
         st.markdown("### Angle of Internal Friction (°)")
-        if "Angle of internal friction (degree)" in lunar_db_df.columns:
-            ang_min, ang_max = float(lunar_db_df["Angle of internal friction (degree)"].min()), float(lunar_db_df["Angle of internal friction (degree)"].max())
+        if "Angle of internal friction (degree)_min" in lunar_db_df.columns:
+            ang_min = float(lunar_db_df["Angle of internal friction (degree)_min"].min(skipna=True))
+            ang_max = float(lunar_db_df["Angle of internal friction (degree)_max"].max(skipna=True))
             angle_range = st.slider(
                 "Select Angle Range",
                 min_value=round(ang_min, 1),
@@ -204,8 +219,9 @@ if db_choice == "Moon Mission Database":
         else:
             angle_range = None
         st.markdown("### Static Bearing Capacity (kPa)")
-        if "Static bearing capacity (kPa)" in lunar_db_df.columns:
-            sbc_min, sbc_max = float(lunar_db_df["Static bearing capacity (kPa)"].min()), float(lunar_db_df["Static bearing capacity (kPa)"].max())
+        if "Static bearing capacity (kPa)_min" in lunar_db_df.columns:
+            sbc_min = float(lunar_db_df["Static bearing capacity (kPa)_min"].min(skipna=True))
+            sbc_max = float(lunar_db_df["Static bearing capacity (kPa)_max"].max(skipna=True))
             sbc_range = st.slider(
                "Select Static Bearing Capacity Range",
                min_value=round(sbc_min, 1),
@@ -252,6 +268,7 @@ if db_choice == "Moon Mission Database":
             (filtered_db_df["Bulk density (g/cm^3)_max"] >= density_range[0]) &
             (filtered_db_df["Bulk density (g/cm^3)_min"] <= density_range[1])
         ]
+        
     if angle_range:
         filtered_db_df = filtered_db_df[
             (filtered_db_df["Angle of internal friction (degree)_max"] >= angle_range[0]) &
