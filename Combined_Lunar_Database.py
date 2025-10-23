@@ -842,7 +842,6 @@ elif db_choice == "All Data":
         "Angle of internal friction (degree)",
         "Cohesion (kPa)",
         "Static bearing capacity (kPa)",
-        "Year of publication"
     ]
 
     for col in range_columns:
@@ -922,12 +921,20 @@ elif db_choice == "All Data":
             default=[col for col in default_columns if col in all_columns]
         )
 
-    # --- Show full table before filtering ---
-    st.subheader("Full Combined Database")
-    st.dataframe(all_db_df)
-
     # --- Apply Filters ---
-    filtered_db_df = all_db_df.copy()  # ✅ fixed (was lunar_db_df)
+    filtered_db_df = all_db_df.copy()  
+    numeric_cols = [
+        "Year of publication",
+        "Bulk density (g/cm^3)",
+        "Angle of internal friction (degree)",
+        "Cohesion (kPa)",
+        "Static bearing capacity (kPa)",
+        "Year"
+    ]
+
+    for col in numeric_cols:
+        if col in filtered_db_df.columns:
+            filtered_db_df[col] = pd.to_numeric(filtered_db_df[col], errors="coerce")
 
     if soil_group_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Terrain type"].isin(soil_group_filter)]
