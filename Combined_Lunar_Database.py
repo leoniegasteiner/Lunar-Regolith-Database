@@ -247,6 +247,18 @@ if db_choice == "Moon Mission Database":
 
     # --- Apply Filters ---
     filtered_db_df = lunar_db_df.copy()
+    numeric_cols = [
+    "Year of publication",
+    "Bulk density (g/cm^3)",
+    "Angle of internal friction (degree)",
+    "Cohesion (kPa)",
+    "Static bearing capacity (kPa)",
+    "Year"
+    ]
+
+    for col in numeric_cols:
+        if col in filtered_db_df.columns:
+            filtered_db_df[col] = pd.to_numeric(filtered_db_df[col], errors="coerce")
 
     # Terrain type filter
     if soil_group_filter:
