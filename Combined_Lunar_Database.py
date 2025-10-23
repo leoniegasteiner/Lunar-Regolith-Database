@@ -25,7 +25,7 @@ def load_database_data():
     header=0,
     skip_blank_lines=False,
     )
-    df.columns =  ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Static bearing capacity (kPa)", "Original source", "DOI / URL"]
+    df.columns =  ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Static bearing capacity (kPa)", "Source","Year of publication", "DOI / URL"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
     return df
 
@@ -36,7 +36,7 @@ def load_plot_data():
     df.columns =  [
         "Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location",
         "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
-        "Cohesion (kPa)", "Static bearing capacity (kPa)", "Original source", "DOI / URL"
+        "Cohesion (kPa)", "Static bearing capacity (kPa)", "Source","Year of publication", "DOI / URL"
     ]
     numeric_cols = ["Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
         "Cohesion (kPa)", "Static bearing capacity (kPa)"]
@@ -123,47 +123,129 @@ if db_choice == "Moon Mission Database":
 
     # Sidebar Filters
     with st.sidebar:
-        st.header("🔍 Filter Database")
+        st.header("Filter Regolith Data")
+        #original filters 
+        soil_group_filter = st.multiselect("Select Terrain type", ["Mare", "Highland"])
+        test_filter = st.multiselect("Select Test Type", lunar_db_df["Test"].dropna().unique())
+        # --- Text / Categorical Filters ---
+        mission_type_filter = st.multiselect(
+            "Select type of mission:",
+            options=sorted(lunar_db_df["Type of mission"].dropna().unique())
+        )
 
         mission_group_filter = st.multiselect(
             "Select Mission Group", 
             options=["Apollo", "Luna", "Surveyor", "Chang'e", "Chandrayaan", "Other"]
         )
 
-        test_filter = st.multiselect(
-            "Select Test Type", 
-            options=lunar_db_df["Test"].dropna().unique()
-        )
-        terrain_filter = st.multiselect(
-            "Select Terrain Type",
-            options=["Mare", "Highland"]
-        )
-        
-    # --- Column Selection ---
-        st.divider()
-        st.header("📊 Display Options")
+        # --- Numeric Range Filters ---
+        st.markdown("### Publication Year")
+        if "Year of publication" in lunar_db_df.columns and lunar_db_df["Year of publication"].notna().any():
+            year_min, year_max = int(lunar_db_df["Year of publication"].min()), int(lunar_db_df["Year of publication"].max())
+            year_range = st.slider(
+                "Select Year of publication Range",
+                min_value=year_min,
+                max_value=year_max,
+                value=(year_min, year_max)
+            )
+        else:
+            year_range = None
+        st.markdown("### Density (g/cm³)")
+        if "Bulk density (g/cm^3)" in lunar_db_df.columns:
+            dens_min, dens_max = float(lunar_db_df["Bulk density (g/cm^3)"].min()), float(lunar_db_df["Bulk density (g/cm^3)"].max())
+            density_range = st.slider(
+                "Select Density Range",
+                min_value=round(dens_min, 2),
+                max_value=round(dens_max, 2),
+                value=(round(dens_min, 2), round(dens_max, 2))
+            )
+        else:
+            density_range = None
+        st.markdown("### Cohesion (kPa)")
+        if "Cohesion (kPa)" in lunar_db_df.columns:
+            coh_min, coh_max = float(lunar_db_df["Cohesion (kPa)"].min()), float(lunar_db_df["Cohesion (kPa)"].max())
+            cohesion_range = st.slider(
+                "Select Cohesion Range",
+                min_value=round(coh_min, 1),
+                max_value=round(coh_max, 1),
+                value=(round(coh_min, 1), round(coh_max, 1))
+            )
+        else:
+            cohesion_range = None
+        st.markdown("### Angle of Internal Friction (°)")
+        if "Angle of internal friction (degree)" in lunar_db_df.columns:
+            ang_min, ang_max = float(lunar_db_df["Angle of internal friction (degree)"].min()), float(lunar_db_df["Angle of internal friction (degree)"].max())
+            angle_range = st.slider(
+                "Select Angle Range",
+                min_value=round(ang_min, 1),
+                max_value=round(ang_max, 1),
+                value=(round(ang_min, 1), round(ang_max, 1))
+            )
+        else:
+            angle_range = None
+        st.markdown("### Static Bearing Capacity (kPa)")
+        if "Static bearing capacity (kPa)" in lunar_db_df.columns:
+            sbc_min, sbc_max = float(lunar_db_df["Static bearing capacity (kPa)"].min()), float(lunar_db_df["Static bearing capacity (kPa)"].max())
+            sbc_range = st.slider(
+               "Select Static Bearing Capacity Range",
+               min_value=round(sbc_min, 1),
+               max_value=round(sbc_max, 1),
+               value=(round(sbc_min, 1), round(sbc_max, 1))
+           )
+        else:
+            sbc_range = None
 
+        # --- Column Selection ---
+        st.divider()
+        st.header("Display Options")
         all_columns = lunar_db_df.columns.tolist()
-        default_columns = ["Mission/Simulant", "Year", "Test", "Bulk density (g/cm^3)", "Cohesion (kPa)"]
+        default_columns = ["Mission", "Year", "Test", "Bulk density (g/cm^3)", "Cohesion (kPa)"]
         selected_columns = st.multiselect(
             "Select columns to display:",
             options=all_columns,
             default=[col for col in default_columns if col in all_columns]
         )
 
-    filtered_db_df = lunar_db_df.copy()
-    if mission_group_filter:
-        filtered_db_df = filtered_db_df[filtered_db_df["Mission Group"].isin(mission_group_filter)]
+
+    filtered_db_df = simulant_db_df.copy()
+    if soil_group_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Soil Group"].isin(soil_group_filter)]
     if test_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Test"].isin(test_filter)]
-    if terrain_filter:
-        filtered_db_df = filtered_db_df[filtered_db_df["Terrain"].isin(terrain_filter)]
-
-
-    # Database Table Display
+    if mission_group_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Mission"].isin(mission_group_filter)]
+    if mission_type_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Mission Type"].isin(mission_type_filter)]
+    if year_range:
+        filtered_db_df = filtered_db_df[
+            (filtered_db_df["Year of publication"] >= year_range[0]) & (filtered_db_df["Year of publication"] <= year_range[1])
+        ]
+    if density_range:
+        filtered_db_df = filtered_db_df[
+            (filtered_db_df["Bulk density (g/cm^3)"] >= density_range[0]) &
+            (filtered_db_df["Bulk density (g/cm^3)"] <= density_range[1])
+        ]
+    if cohesion_range:
+        filtered_db_df = filtered_db_df[
+            (filtered_db_df["Cohesion (kPa)"] >= cohesion_range[0]) &
+            (filtered_db_df["Cohesion (kPa)"] <= cohesion_range[1])
+        ]
+    if angle_range:
+        filtered_db_df = filtered_db_df[
+            (filtered_db_df["Angle of internal friction (degree)"] >= angle_range[0]) &
+            (filtered_db_df["Angle of internal friction (degree)"] <= angle_range[1])
+        ]
+    if sbc_range:
+        filtered_db_df = filtered_db_df[
+            (filtered_db_df["Static bearing capacity (kPa)"] >= sbc_range[0]) &
+            (filtered_db_df["Static bearing capacity (kPa)"] <= sbc_range[1])
+        ]
+    ## Table display
     st.subheader("Database Table")
-    df_display = filtered_db_df.copy()
-    st.dataframe(filtered_db_df)
+    if selected_columns:  # avoid empty selection
+        st.dataframe(filtered_db_df[selected_columns])
+    else:
+        st.info("No columns selected. Please select at least one column to display.")
 
     st.markdown(
         "<p style='font-size:12px; color:gray;'>Note: Values are for the top 10cm of lunar soil, see missions details for more depths. <br> * Indicates values estimated for the measurements.</p>",
@@ -192,8 +274,8 @@ if db_choice == "Moon Mission Database":
         filtered_plot_df = filtered_plot_df[filtered_plot_df["Mission Group"].isin(mission_group_filter)]
     if test_filter:
         filtered_plot_df = filtered_plot_df[filtered_plot_df["Test"].isin(test_filter)]
-    if terrain_filter:
-        filtered_plot_df = filtered_plot_df[filtered_plot_df["Terrain"].isin(terrain_filter)]
+    if soil_group_filter:
+        filtered_plot_df = filtered_plot_df[filtered_plot_df["Terrain"].isin(soil_group_filter)]
 
     # Plotting markers
     marker_shapes = {
