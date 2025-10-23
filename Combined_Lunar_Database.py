@@ -283,10 +283,6 @@ if db_choice == "Moon Mission Database":
             (filtered_db_df["Static bearing capacity (kPa)_max"] >= sbc_range[0]) &
             (filtered_db_df["Static bearing capacity (kPa)_min"] <= sbc_range[1])
         ]
-        
-    filtered_db_df = lunar_db_df.copy()
-    st.dataframe(filtered_db_df)
-
 
     ## Table display
     st.subheader("Database Table")
