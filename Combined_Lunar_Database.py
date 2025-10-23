@@ -967,8 +967,7 @@ elif db_choice == "All Data":
     # Year of publication filter (only if slider active)
     if year_range:
         filtered_db_df = filtered_db_df[
-            (filtered_db_df["Year of publication"] >= year_range[0]) &
-            (filtered_db_df["Year of publication"] <= year_range[1])
+            (filtered_db_df["Year of publication"] >= year_range[0]) & (filtered_db_df["Year of publication"] <= year_range[1])
         ]
 
     # --- Numeric filters (keep NaN rows visible) ---
