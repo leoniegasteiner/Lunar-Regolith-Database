@@ -257,8 +257,10 @@ if db_choice == "Moon Mission Database":
         filtered_db_df = filtered_db_df[filtered_db_df["Type of mission"].isin(mission_type_filter)]
     if year_range:
         filtered_db_df = filtered_db_df[
-            (filtered_db_df["Year of publication"] >= year_range[0]) & (filtered_db_df["Year of publication"] <= year_range[1])
+            (filtered_db_df["Year of publication"] >= year_range[0]) &
+            (filtered_db_df["Year of publication"] <= year_range[1])
         ]
+
     if cohesion_range:
         filtered_db_df = filtered_db_df[
             (filtered_db_df["Cohesion (kPa)_max"] >= cohesion_range[0]) &
@@ -281,6 +283,10 @@ if db_choice == "Moon Mission Database":
             (filtered_db_df["Static bearing capacity (kPa)_max"] >= sbc_range[0]) &
             (filtered_db_df["Static bearing capacity (kPa)_min"] <= sbc_range[1])
         ]
+        
+    filtered_db_df = lunar_db_df.copy()
+    st.dataframe(filtered_db_df)
+
 
     ## Table display
     st.subheader("Database Table")
