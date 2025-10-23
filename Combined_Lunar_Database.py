@@ -90,7 +90,7 @@ def load_database_data():
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
     return df
 
-
+all_db_df = load_database_data()
 # Sidebar to choose database (Lunar mission or Simulants)
 db_choice = st.sidebar.radio(
     "Select Database:",
@@ -237,7 +237,7 @@ if db_choice == "Moon Mission Database":
         st.divider()
         st.header("Display Options")
         all_columns = lunar_db_df.columns.tolist()
-        default_columns = ["Mission", "Year", "Test", "Bulk density (g/cm^3)", "Cohesion (kPa)"]
+        default_columns = ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Static bearing capacity (kPa)", "Source","Year of publication", "DOI / URL"]
         selected_columns = st.multiselect(
             "Select columns to display:",
             options=all_columns,
@@ -690,7 +690,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
             st.divider()
             st.header("Display Options")
             all_columns = simulant_db_df.columns.tolist()
-            default_columns = ["Simulant", "Year", "Test", "Bulk density (g/cm^3)", "Cohesion (kPa)"]
+            default_columns = ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Date of publication","DOI / URL"]
             selected_columns = st.multiselect(
                 "Select columns to display:",
                 options=all_columns,
@@ -797,10 +797,10 @@ elif db_choice == "All Data":
 
     # --- Detect correct mission column ---
     mission_col_candidates = ["Mission/Simulant", "Mission", "Mission Name"]
-    mission_col = next((col for col in mission_col_candidates if col in lunar_db_df.columns), None)
+    mission_col = next((col for col in mission_col_candidates if col in all_db_df.columns), None)
 
     if mission_col is None:
-        st.error("❌ Could not find a mission column. Expected one of: 'Mission/Simulant', 'Mission', or 'Mission Name'.")
+        st.error(" Could not find a mission column. Expected one of: 'Mission/Simulant', 'Mission', or 'Mission Name'.")
     else:
         # --- Categorize missions ---
         def categorize_mission(mission_name):
@@ -820,36 +820,36 @@ elif db_choice == "All Data":
             else:
                 return "Simulant"
 
-        lunar_db_df["Mission Group"] = lunar_db_df[mission_col].apply(categorize_mission)
+        all_db_df["Mission Group"] = all_db_df[mission_col].apply(categorize_mission)
 
         # --- Sidebar filters ---
         with st.sidebar:
-            st.header("🔍 Filter Database")
+            st.header("Filter Database")
 
             mission_group_filter = st.multiselect(
                 "Select Mission Group", 
-                options=sorted(lunar_db_df["Mission Group"].dropna().unique())
+                options=sorted(all_db_df["Mission Group"].dropna().unique())
             )
 
             test_filter = st.multiselect(
                 "Select Test Type", 
-                options=sorted(lunar_db_df["Test"].dropna().unique())
+                options=sorted(all_db_df["Test"].dropna().unique())
             )
 
             terrain_filter = st.multiselect(
                 "Select Terrain Type",
-                options=sorted(lunar_db_df["Terrain type"].dropna().unique())
+                options=sorted(all_db_df["Terrain"].dropna().unique())
             )
 
             year_filter = st.slider(
                 "Select Year Range",
-                int(lunar_db_df["Year"].min()),
-                int(lunar_db_df["Year"].max()),
-                (int(lunar_db_df["Year"].min()), int(lunar_db_df["Year"].max()))
+                int(all_db_df["Year"].min()),
+                int(all_db_df["Year"].max()),
+                (int(all_db_df["Year"].min()), int(all_db_df["Year"].max()))
             )
 
         # --- Apply filters ---
-        filtered_db_df = lunar_db_df.copy()
+        filtered_db_df = all_db_df.copy()
 
         if mission_group_filter:
             filtered_db_df = filtered_db_df[filtered_db_df["Mission Group"].isin(mission_group_filter)]
@@ -864,7 +864,7 @@ elif db_choice == "All Data":
             ]
 
         # --- Display table ---
-        st.subheader("📊 Filtered Lunar Regolith Data")
+        st.subheader(" Filtered Lunar Regolith Data")
         st.dataframe(filtered_db_df, use_container_width=True)
 
 
