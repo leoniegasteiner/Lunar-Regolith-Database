@@ -245,56 +245,80 @@ if db_choice == "Moon Mission Database":
         )
 
 
+    # --- Apply Filters ---
     filtered_db_df = lunar_db_df.copy()
-    filtered_plot_df = lunar_plot_df.copy()
+    
+    # Terrain type filter
     if soil_group_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Terrain"].isin(soil_group_filter)]
+    
+    # Test type filter
     if test_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Test"].isin(test_filter)]
+    
+    # Mission group filter (use Mission Group, not Mission)
     if mission_group_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Mission Group"].isin(mission_group_filter)]
+    
+    # Mission type filter
     if mission_type_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Type of mission"].isin(mission_type_filter)]
+    
+    # Year of publication filter (only if slider active)
     if year_range:
         filtered_db_df = filtered_db_df[
             (filtered_db_df["Year of publication"] >= year_range[0]) &
             (filtered_db_df["Year of publication"] <= year_range[1])
         ]
-
-    if cohesion_range:
-        filtered_db_df = filtered_db_df[
-            (filtered_db_df["Cohesion (kPa)_max"] >= cohesion_range[0]) &
-            (filtered_db_df["Cohesion (kPa)_min"] <= cohesion_range[1])
+    
+    # --- Numeric filters (keep NaN rows visible) ---
+    def filter_numeric_range(df, col_min, col_max, min_val, max_val):
+        """Filter keeping NaNs visible."""
+        return df[
+            ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
+            ((df[col_min].le(max_val)) | (df[col_min].isna()))
         ]
-
+    
     if density_range:
-        filtered_db_df = filtered_db_df[
-            (filtered_db_df["Bulk density (g/cm^3)_max"] >= density_range[0]) &
-            (filtered_db_df["Bulk density (g/cm^3)_min"] <= density_range[1])
-        ]
-
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "Bulk density (g/cm^3)_min", "Bulk density (g/cm^3)_max",
+            density_range[0], density_range[1]
+        )
+    
+    if cohesion_range:
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "Cohesion (kPa)_min", "Cohesion (kPa)_max",
+            cohesion_range[0], cohesion_range[1]
+        )
+    
     if angle_range:
-        filtered_db_df = filtered_db_df[
-            (filtered_db_df["Angle of internal friction (degree)_max"] >= angle_range[0]) &
-            (filtered_db_df["Angle of internal friction (degree)_min"] <= angle_range[1])
-        ]
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "Angle of internal friction (degree)_min", "Angle of internal friction (degree)_max",
+            angle_range[0], angle_range[1]
+        )
+    
     if sbc_range:
-        filtered_db_df = filtered_db_df[
-            (filtered_db_df["Static bearing capacity (kPa)_max"] >= sbc_range[0]) &
-            (filtered_db_df["Static bearing capacity (kPa)_min"] <= sbc_range[1])
-        ]
-
-    ## Table display
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "Static bearing capacity (kPa)_min", "Static bearing capacity (kPa)_max",
+            sbc_range[0], sbc_range[1]
+        )
+    
+    # --- Display filtered table ---
     st.subheader("Database Table")
-    if selected_columns:  # avoid empty selection
+    if selected_columns:
         st.dataframe(filtered_db_df[selected_columns])
     else:
         st.info("No columns selected. Please select at least one column to display.")
-
+    
     st.markdown(
-        "<p style='font-size:12px; color:gray;'>Note: Values are for the top 10cm of lunar soil, see missions details for more depths. <br> * Indicates values estimated for the measurements.</p>",
+        "<p style='font-size:12px; color:gray;'>Note: Values are for the top 10 cm of lunar soil, see missions details for more depths.<br>* Indicates values estimated for the measurements.</p>",
         unsafe_allow_html=True
     )
+
 
 
     # Plotting Section & Display
