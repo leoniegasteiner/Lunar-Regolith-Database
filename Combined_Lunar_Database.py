@@ -58,7 +58,7 @@ def load_Simulants_data():
     header=0,
     skip_blank_lines=False,
     )
-    df.columns =  ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Date of publication","DOI / URL"]
+    df.columns =  ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Year of publication","DOI / URL"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
     return df
 
@@ -67,7 +67,7 @@ def load_Simulants_data():
 def load_Simulant_plot_data():
     df = pd.read_csv("Dataset_Simulants_plots.csv")
     df.columns =  [
-        "Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Date of publication","DOI / URL"
+        "Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Year of publication","DOI / URL"
     ]
     numeric_cols = ["Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
         "Cohesion (kPa)"]
@@ -171,8 +171,8 @@ if db_choice == "Moon Mission Database":
 
         # --- Numeric Range Filters ---
         st.markdown("### Publication Year")
-        if "Date of publication" in lunar_db_df.columns and lunar_db_df["Date of publication"].notna().any():
-            year_min, year_max = int(lunar_db_df["Date of publication"].min()), int(lunar_db_df["Date of publication"].max())
+        if "Year of publication" in lunar_db_df.columns and lunar_db_df["Year of publication"].notna().any():
+            year_min, year_max = int(lunar_db_df["Year of publication"].min()), int(lunar_db_df["Year of publication"].max())
             year_range = st.slider(
                 "Select Year of publication Range",
                 min_value=year_min,
@@ -553,7 +553,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
 
     st.title("Lunar Regolith Simulants Database")
     simulant_db_df.columns = simulant_db_df.columns.str.strip()
-    numeric_cols = ["Year","Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Date of publication"]
+    numeric_cols = ["Year","Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Year of publication"]
     for col in numeric_cols:
         if col in simulant_db_df.columns:
             simulant_db_df[col] = pd.to_numeric(simulant_db_df[col], errors="coerce")
@@ -620,8 +620,8 @@ elif db_choice == "Lunar Regolith Simulants Database":
 
             # --- Numeric Range Filters ---
             st.markdown("### Publication Year")
-            if "Date of publication" in simulant_db_df.columns and simulant_db_df["Date of publication"].notna().any():
-                year_min, year_max = int(simulant_db_df["Date of publication"].min()), int(simulant_db_df["Date of publication"].max())
+            if "Year of publication" in simulant_db_df.columns and simulant_db_df["Year of publication"].notna().any():
+                year_min, year_max = int(simulant_db_df["Year of publication"].min()), int(simulant_db_df["Year of publication"].max())
                 year_range = st.slider(
                     "Select Year of publication Range",
                     min_value=year_min,
@@ -690,7 +690,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
             st.divider()
             st.header("Display Options")
             all_columns = simulant_db_df.columns.tolist()
-            default_columns = ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Date of publication","DOI / URL"]
+            default_columns = ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Year of publication","DOI / URL"]
             selected_columns = st.multiselect(
                 "Select columns to display:",
                 options=all_columns,
@@ -709,7 +709,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
         filtered_db_df = filtered_db_df[filtered_db_df["Developer"].isin(developer_filter)]
     if year_range:
         filtered_db_df = filtered_db_df[
-            (filtered_db_df["Date of publication"] >= year_range[0]) & (filtered_db_df["Date of publication"] <= year_range[1])
+            (filtered_db_df["Year of publication"] >= year_range[0]) & (filtered_db_df["Year of publication"] <= year_range[1])
         ]
 
         # --- Numeric filters (keep NaN rows visible) ---

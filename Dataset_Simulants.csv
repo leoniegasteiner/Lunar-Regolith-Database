@@ -1,4 +1,4 @@
-Developer,Agency,Simulant,Year,Test,Type of simulant,Bulk density (g/cm^3),Angle of internal friction (degree),Cohesion (kPa),Source,Date of publication,DOI / URL
+Developer,Agency,Simulant,Year,Test,Type of simulant,Bulk density (g/cm^3),Angle of internal friction (degree),Cohesion (kPa),Source,Year of publication,DOI / URL
 ISRO,ISRO,LSS-ISAC-1,2020,Triaxial compression test,Highland,1.52,36.34,0.343,"S. Anbazhagan, I. Venugopal, A lunar soil simulant (LSS-ISAC-1) for the lunar exploration programme of the Indian Space Research Organisation, 2021",2021,10.1016/j.icarus.2021.114511
 China University of Geosciences,CNSA,CUG-1A,2010,NA,Highland,1.45,21,5,"X.X. He, L. Xiao, LUNAR REGOLITH SIMULANT CUG-1A, 2010",2010,https://ui.adsabs.harvard.edu/abs/2010LPI....41.1183H
 Chinese Academy of Sciences,CNSA,CAS-1,2005,NA,Mare,NA,33.3,1,"Yongchun Zheng, Shijie Wang, CAS-1 lunar soil simulant, 2009",2009,10.1016/j.asr.2008.07.006
