@@ -800,7 +800,7 @@ elif db_choice == "All Data":
     mission_col = next((col for col in mission_col_candidates if col in all_db_df.columns), None)
 
     if mission_col is None:
-        st.error(" Could not find a mission column. Expected one of: 'Mission/Simulant', 'Mission', or 'Mission Name'.")
+        st.error("Could not find a mission column. Expected one of: 'Mission/Simulant', 'Mission', or 'Mission Name'.")
     else:
         # --- Categorize missions ---
         def categorize_mission(mission_name):
@@ -821,9 +821,9 @@ elif db_choice == "All Data":
                 return "Simulant"
 
         all_db_df["Mission Group"] = all_db_df[mission_col].apply(categorize_mission)
-        
+
+    # --- Extract numeric ranges ---
     def extract_range(value):
-        """Extracts min and max numeric values from strings"""
         if pd.isna(value):
             return (np.nan, np.nan)
         if isinstance(value, (int, float)):
@@ -835,9 +835,8 @@ elif db_choice == "All Data":
             val = float(match[0])
             return (val, val)
         else:
-            return (float(match[0]), float(match[-1]))  # take first and last
+            return (float(match[0]), float(match[-1]))
 
-    # --- Columns that may contain ranges ---
     range_columns = [
         "Bulk density (g/cm^3)",
         "Angle of internal friction (degree)",
@@ -845,27 +844,24 @@ elif db_choice == "All Data":
         "Static bearing capacity (kPa)",
     ]
 
-    # --- Apply extraction and create numeric columns ---
     for col in range_columns:
         if col in all_db_df.columns:
-            all_db_df[[f"{col}_min", f"{col}_max"]] = all_db_df[col].apply(
-                lambda x: pd.Series(extract_range(x))
-            )
+            all_db_df[[f"{col}_min", f"{col}_max"]] = all_db_df[col].apply(lambda x: pd.Series(extract_range(x)))
 
-    # Sidebar Filters
+    # --- Sidebar Filters ---
     with st.sidebar:
         st.header("Filter Regolith Data")
-        #original filters 
+
         soil_group_filter = st.multiselect("Select Terrain type", ["Mare", "Highland"])
         test_filter = st.multiselect("Select Test Type", all_db_df["Test"].dropna().unique())
-        # --- Text / Categorical Filters ---
+
         mission_type_filter = st.multiselect(
             "Select type of mission:",
             options=sorted(all_db_df["Type of mission"].dropna().unique())
         )
 
         mission_group_filter = st.multiselect(
-            "Select Mission Group", 
+            "Select Mission Group",
             options=["Apollo", "Luna", "Surveyor", "Chang'e", "Chandrayaan", "Simulant"]
         )
 
@@ -873,26 +869,15 @@ elif db_choice == "All Data":
         st.markdown("### Publication Year")
         if "Year of publication" in all_db_df.columns and all_db_df["Year of publication"].notna().any():
             year_min, year_max = int(all_db_df["Year of publication"].min()), int(all_db_df["Year of publication"].max())
-            year_range = st.slider(
-                "Select Year of publication Range",
-                min_value=year_min,
-                max_value=year_max,
-                value=(year_min, year_max)
-            )
+            year_range = st.slider("Select Year of publication Range", min_value=year_min, max_value=year_max, value=(year_min, year_max))
         else:
             year_range = None
-
 
         st.markdown("### Density (g/cm³)")
         if "Bulk density (g/cm^3)_min" in all_db_df.columns:
             dens_min = float(all_db_df["Bulk density (g/cm^3)_min"].min(skipna=True))
             dens_max = float(all_db_df["Bulk density (g/cm^3)_max"].max(skipna=True))
-            density_range = st.slider(
-                "Select Density Range",
-                min_value=round(dens_min, 2),
-                max_value=round(dens_max, 2),
-                value=(round(dens_min, 2), round(dens_max, 2))
-            )
+            density_range = st.slider("Select Density Range", min_value=round(dens_min, 2), max_value=round(dens_max, 2), value=(round(dens_min, 2), round(dens_max, 2)))
         else:
             density_range = None
 
@@ -900,36 +885,23 @@ elif db_choice == "All Data":
         if "Cohesion (kPa)_min" in all_db_df.columns:
             coh_min = float(all_db_df["Cohesion (kPa)_min"].min(skipna=True))
             coh_max = float(all_db_df["Cohesion (kPa)_max"].max(skipna=True))
-            cohesion_range = st.slider(
-                "Select Cohesion Range",
-                min_value=round(coh_min, 1),
-                max_value=round(coh_max, 1),
-                value=(round(coh_min, 1), round(coh_max, 1))
-            )
+            cohesion_range = st.slider("Select Cohesion Range", min_value=round(coh_min, 1), max_value=round(coh_max, 1), value=(round(coh_min, 1), round(coh_max, 1)))
         else:
             cohesion_range = None
+
         st.markdown("### Angle of Internal Friction (°)")
         if "Angle of internal friction (degree)_min" in all_db_df.columns:
             ang_min = float(all_db_df["Angle of internal friction (degree)_min"].min(skipna=True))
             ang_max = float(all_db_df["Angle of internal friction (degree)_max"].max(skipna=True))
-            angle_range = st.slider(
-                "Select Angle Range",
-                min_value=round(ang_min, 1),
-                max_value=round(ang_max, 1),
-                value=(round(ang_min, 1), round(ang_max, 1))
-            )
+            angle_range = st.slider("Select Angle Range", min_value=round(ang_min, 1), max_value=round(ang_max, 1), value=(round(ang_min, 1), round(ang_max, 1)))
         else:
             angle_range = None
+
         st.markdown("### Static Bearing Capacity (kPa)")
         if "Static bearing capacity (kPa)_min" in all_db_df.columns:
             sbc_min = float(all_db_df["Static bearing capacity (kPa)_min"].min(skipna=True))
             sbc_max = float(all_db_df["Static bearing capacity (kPa)_max"].max(skipna=True))
-            sbc_range = st.slider(
-               "Select Static Bearing Capacity Range",
-               min_value=round(sbc_min, 1),
-               max_value=round(sbc_max, 1),
-               value=(round(sbc_min, 1), round(sbc_max, 1))
-           )
+            sbc_range = st.slider("Select Static Bearing Capacity Range", min_value=round(sbc_min, 1), max_value=round(sbc_max, 1), value=(round(sbc_min, 1), round(sbc_max, 1)))
         else:
             sbc_range = None
 
@@ -937,88 +909,64 @@ elif db_choice == "All Data":
         st.divider()
         st.header("Display Options")
         all_columns = all_db_df.columns.tolist()
-        default_columns = ["Mission/Simulant", "Developer", "Agency", "Moon Location/Country", "Year", "Terrain type", "Type of mission", "Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Static bearing capacity (kPa)", "Source","Year of publication", "DOI / URL"]
+        default_columns = [
+            "Mission/Simulant", "Developer", "Agency", "Moon Location/Country", "Year", "Terrain type", 
+            "Type of mission", "Test", "Test location", "Bulk density (g/cm^3)", 
+            "Angle of internal friction (degree)", "Cohesion (kPa)", "Static bearing capacity (kPa)",
+            "Source", "Year of publication", "DOI / URL"
+        ]
         selected_columns = st.multiselect(
             "Select columns to display:",
             options=all_columns,
             default=[col for col in default_columns if col in all_columns]
         )
 
+    # --- Show full table before filtering ---
+    st.subheader("Full Combined Database")
+    st.dataframe(all_db_df)
 
     # --- Apply Filters ---
-    filtered_db_df = lunar_db_df.copy()
+    filtered_db_df = all_db_df.copy()  # ✅ fixed (was lunar_db_df)
 
-    # Terrain type filter
     if soil_group_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Terrain type"].isin(soil_group_filter)]
-
-    # Test type filter
     if test_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Test"].isin(test_filter)]
-
-    # Mission group filter (use Mission Group, not Mission)
     if mission_group_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Mission Group"].isin(mission_group_filter)]
-
-    # Mission type filter
     if mission_type_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Type of mission"].isin(mission_type_filter)]
-
-    # Year of publication filter (only if slider active)
     if year_range:
         filtered_db_df = filtered_db_df[
             (filtered_db_df["Year of publication"] >= year_range[0]) & (filtered_db_df["Year of publication"] <= year_range[1])
         ]
 
-    # --- Numeric filters (keep NaN rows visible) ---
     def filter_numeric_range(df, col_min, col_max, min_val, max_val):
-        """Filter keeping NaNs visible."""
         return df[
             ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
             ((df[col_min].le(max_val)) | (df[col_min].isna()))
         ]
 
     if density_range:
-        filtered_db_df = filter_numeric_range(
-            filtered_db_df,
-            "Bulk density (g/cm^3)_min", "Bulk density (g/cm^3)_max",
-            density_range[0], density_range[1]
-        )
-
+        filtered_db_df = filter_numeric_range(filtered_db_df, "Bulk density (g/cm^3)_min", "Bulk density (g/cm^3)_max", *density_range)
     if cohesion_range:
-        filtered_db_df = filter_numeric_range(
-            filtered_db_df,
-            "Cohesion (kPa)_min", "Cohesion (kPa)_max",
-            cohesion_range[0], cohesion_range[1]
-        )
-
+        filtered_db_df = filter_numeric_range(filtered_db_df, "Cohesion (kPa)_min", "Cohesion (kPa)_max", *cohesion_range)
     if angle_range:
-        filtered_db_df = filter_numeric_range(
-            filtered_db_df,
-            "Angle of internal friction (degree)_min", "Angle of internal friction (degree)_max",
-            angle_range[0], angle_range[1]
-        )
-
+        filtered_db_df = filter_numeric_range(filtered_db_df, "Angle of internal friction (degree)_min", "Angle of internal friction (degree)_max", *angle_range)
     if sbc_range:
-        filtered_db_df = filter_numeric_range(
-            filtered_db_df,
-            "Static bearing capacity (kPa)_min", "Static bearing capacity (kPa)_max",
-            sbc_range[0], sbc_range[1]
-        )
+        filtered_db_df = filter_numeric_range(filtered_db_df, "Static bearing capacity (kPa)_min", "Static bearing capacity (kPa)_max", *sbc_range)
 
     # --- Display filtered table ---
-    st.subheader("Database Table")
+    st.subheader("Filtered Database Table")
     if selected_columns:
         st.dataframe(filtered_db_df[selected_columns])
     else:
         st.info("No columns selected. Please select at least one column to display.")
 
     st.markdown(
-        "<p style='font-size:12px; color:gray;'>Note: Values are for the top 10 cm of lunar soil, see missions details for more depths.<br>* Indicates values estimated for the measurements.</p>",
+        "<p style='font-size:12px; color:gray;'>Note: Values are for the top 10 cm of lunar soil, see mission details for more depths.<br>* Indicates values estimated for the measurements.</p>",
         unsafe_allow_html=True
     )
-
-
 
 
 # ------------------Mission Details Section ------------------
