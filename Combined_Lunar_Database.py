@@ -842,6 +842,7 @@ elif db_choice == "All Data":
         "Angle of internal friction (degree)",
         "Cohesion (kPa)",
         "Static bearing capacity (kPa)",
+        "Year of publication"
     ]
 
     for col in range_columns:
