@@ -595,6 +595,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
             return (val, val)
         else:
             return (float(match[0]), float(match[-1]))  # take first and last
+        
 
     # --- Columns that may contain ranges ---
     range_columns = [
@@ -609,6 +610,9 @@ elif db_choice == "Lunar Regolith Simulants Database":
             simulant_db_df[[f"{col}_min", f"{col}_max"]] = simulant_db_df[col].apply(
                 lambda x: pd.Series(extract_range(x))
             )
+            simulant_db_df[f"{col}_avg"] = simulant_db_df[
+                [f"{col}_min", f"{col}_max"]
+            ].mean(axis=1)
 
     simulant_db_df["Soil Group"] = simulant_db_df["Type of simulant"].apply(categorize_soil)
 
