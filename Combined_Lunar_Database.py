@@ -149,6 +149,9 @@ if db_choice == "Moon Mission Database":
             lunar_db_df[[f"{col}_min", f"{col}_max"]] = lunar_db_df[col].apply(
                 lambda x: pd.Series(extract_range(x))
             )
+            lunar_db_df[f"{col}_avg"] = lunar_db_df[
+                [f"{col}_min", f"{col}_max"]
+            ].mean(axis=1)
 
     lunar_db_df["Mission Group"] = lunar_db_df["Mission"].apply(categorize_mission)
 
@@ -237,7 +240,7 @@ if db_choice == "Moon Mission Database":
         st.divider()
         st.header("Display Options")
         all_columns = lunar_db_df.columns.tolist()
-        default_columns = ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Static bearing capacity (kPa)", "Source","Year of publication", "DOI / URL"]
+        default_columns = ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Bulk density (g/cm^3)_min", "Bulk density (g/cm^3)_max", "Bulk density (g/cm^3)_avg", "Angle of internal friction (degree)", "Angle of internal friction (degree)_min", "Angle of internal friction (degree)_max", "Angle of internal friction (degree)_avg", "Cohesion (kPa)", "Cohesion (kPa)_min", "Cohesion (kPa)_max", "Cohesion (kPa)_avg", "Static bearing capacity (kPa)", "Static bearing capacity (kPa)_min", "Static bearing capacity (kPa)_max", "Static bearing capacity (kPa)_avg", "Source","Year of publication", "DOI / URL"]
         selected_columns = st.multiselect(
             "Select columns to display:",
             options=all_columns,
@@ -706,7 +709,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
             st.divider()
             st.header("Display Options")
             all_columns = simulant_db_df.columns.tolist()
-            default_columns = ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Year of publication","DOI / URL"]
+            default_columns = ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Bulk density (g/cm^3)_min", "Bulk density (g/cm^3)_max", "Bulk density (g/cm^3)_avg", "Angle of internal friction (degree)", "Angle of internal friction (degree)_min", "Angle of internal friction (degree)_max", "Angle of internal friction (degree)_avg", "Cohesion (kPa)", "Cohesion (kPa)_min", "Cohesion (kPa)_max", "Cohesion (kPa)_avg", "Source","Year of publication","DOI / URL"]
             selected_columns = st.multiselect(
                 "Select columns to display:",
                 options=all_columns,
