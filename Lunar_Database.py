@@ -1,0 +1,2719 @@
+#Necessary imports
+from email.quoprimime import quote
+from altair import value
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
+from PIL import Image
+import re
+import base64
+from io import BytesIO
+from urllib.parse import quote
+import importlib
+import os
+import io
+import importlib.util
+from pathlib import Path
+# ---- Make the database pretty ---------
+
+#span accross the window
+
+st.set_page_config(
+    page_title="Lunar Regolith Database",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+ROMAN_NUMERAL_WORDS = {
+    "i", "ii", "iii", "iv", "v",
+    "vi", "vii", "viii", "ix", "x",
+    "xi", "xii", "xiii", "xiv", "xv",
+    "xvi", "xvii", "xviii", "xix", "xx",
+}
+
+def pretty_mission_name(raw_name: str) -> str:
+    """
+    Turn a filename-like mission id (e.g. 'surveyor_iii')
+    into a nice label (e.g. 'Surveyor III').
+    """
+    clean = raw_name.replace("_", " ").replace("-", " ").strip()
+    words = clean.split()
+
+    fixed_words = []
+    for w in words:
+        lw = w.lower()
+        if lw in ROMAN_NUMERAL_WORDS:
+            fixed_words.append(lw.upper())      
+        else:
+            fixed_words.append(w.capitalize())   
+    return " ".join(fixed_words)
+
+
+
+# --------------- DATA LOADING SECTION ---------------
+st.cache_data.clear()
+#Lunar Data Loading 
+@st.cache_data
+def load_database_data():
+    df = pd.read_csv(
+    "Dataset_Regolith.csv",
+    sep=";",
+    dtype=str,
+    header=0,
+    skip_blank_lines=False,
+    )
+    df.columns =  ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Porosity (%)", "Force applied (N)", "Source","Year of publication", "DOI / URL","Comments"]
+    df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+    return df
+
+lunar_db_df = load_database_data()
+
+
+#Simulants Data Loading
+@st.cache_data
+def load_Simulants_data():
+    df = pd.read_csv(
+    "Dataset_Simulants.csv",
+    dtype=str,
+    header=0,
+    skip_blank_lines=False,
+    )
+    df.columns =  ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Year of publication","DOI / URL"]
+    df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+    return df
+
+simulant_db_df = load_Simulants_data()
+
+
+#All data loading
+@st.cache_data
+def load_all_data():
+    df = pd.read_csv(
+    "Dataset_All.csv",
+    sep=";",
+    dtype=str,
+    header=0,
+    skip_blank_lines=False,
+    )
+    df.columns =  ["Mission / Simulant", "Developer", "Agency", "Moon Location", "Terrain", "Year", "Type of mission", "Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)",  "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Porosity (%)", "Force applied (N)", "Source","Year of publication", "DOI / URL", "Comments"]
+    df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+    return df
+
+all_db_df = load_all_data()
+
+@st.cache_data
+def load_general_data():
+    df = pd.read_csv(
+        "Dataset_General.csv",
+    sep=",",
+    dtype=str,
+    header=0,
+    skip_blank_lines=False,
+    )
+    df.columns = ["Environment", "Depth range (cm)", "Average Bulk Density (g/cm^3)", "Average Angle of Internal Friction (degree)", "Average Cohesion (kPa)", "Average porosity (%)", "Average void ratio", "Relative density (%)", "Source", "Year of publication", "DOI / URL", "comments"]
+    df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+    return df
+
+general_db_df = load_general_data() 
+
+# Sidebar to choose database (Lunar mission or Simulants)
+db_choice = st.sidebar.radio(
+    "Select Database:",
+    ["Lunar Regolith Database", "Lunar Regolith Simulants Database", "Combined Data", "Detailed Mission Pages"]
+)
+
+#visual 
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
+
+# --------------------------- Lunar Mission Database Section ---------------------------
+if db_choice == "Lunar Regolith Database":
+
+    st.title("Lunar Regolith Database")
+
+    # Mission categorization function
+    def categorize_mission(mission_name):
+        if pd.isna(mission_name):
+            return "Other"
+        name = mission_name.lower()
+        if "apollo" in name:
+            return "Apollo"
+        elif "orbiter" in name:
+            return "LRO"
+        elif "luna" in name:
+            return "Luna"
+        elif "surveyor" in name:
+            return "Surveyor"
+        elif "chang'e" in name:
+            return "Chang'e"
+        elif "chandrayaan" in name: 
+            return "Chandrayaan"
+        else:
+            return "Other"
+        
+    def extract_range(value):
+        if pd.isna(value):
+            return (np.nan, np.nan)
+        
+        if isinstance(value, (int, float)):
+            return (float(value), float(value))
+
+        match = re.findall(r"[-+]?\d*\.?\d+", str(value))
+
+        if len(match) == 0:
+            return (np.nan, np.nan)
+
+        try:
+            numbers = [float(n) for n in match]
+        except ValueError:
+            return (np.nan, np.nan)
+
+        if len(numbers) == 1:
+            val = numbers[0]
+            return (val, val)
+        else:
+            return (min(numbers), max(numbers))
+
+    # --- Columns that may contain ranges ---
+    range_columns = [
+        "Bulk density (g/cm^3)",
+        "Angle of internal friction (degree)",
+        "Cohesion (kPa)",
+        "Bearing capacity (kPa)", 
+        "Normal stress range (kPa)", 
+        "Void ratio", 
+        "Density of grains (g/cm^3)", 
+        "Compressibility Coefficient", 
+        "Depth (cm)", 
+        "Porosity (%)", 
+        "Force applied (N)"
+    ]
+
+    # --- Numeric columns ---
+    for col in range_columns:
+        if col in lunar_db_df.columns:
+            lunar_db_df[[f"min_{col}", f"max_{col}"]] = lunar_db_df[col].apply(
+                lambda x: pd.Series(extract_range(x))
+            )
+            lunar_db_df[f"avg_{col}"] = lunar_db_df[
+                [f"min_{col}", f"max_{col}"]
+            ].mean(axis=1)
+
+    lunar_db_df["Mission Group"] = lunar_db_df["Mission"].apply(categorize_mission)
+
+    # Sidebar Filters
+    def clear_all_filters():
+        st.session_state["soil_group_filter"] = []
+        st.session_state["test_filter"] = []
+        st.session_state["mission_type_filter"] = []
+        st.session_state["mission_group_filter"] = []
+        st.session_state["test_location_filter"] = []
+        st.session_state["year_range"] = (year_min, year_max)
+        st.session_state["density_range"] = (round(dens_min, 2), round(dens_max, 2))
+        st.session_state["cohesion_range"] = (round(coh_min, 1), round(coh_max, 1))
+        st.session_state["angle_range"] = (round(ang_min, 1), round(ang_max, 1))
+        st.session_state["sbc_range"] = (round(sbc_min, 1), round(sbc_max, 1))
+        st.session_state["ns_range"] = (round(nf_min, 1), round(nf_max, 1))
+        st.session_state["vr_range"] = (round(vr_min, 2), round(vr_max, 2))
+        st.session_state["dg_range"] = (round(dg_min, 2), round(dg_max, 2))
+        st.session_state["cc_range"] = (round(cc_min, 4), round(cc_max, 4))
+        st.session_state["depth_range"] = (round(depth_min, 1), round(depth_max, 1))
+        st.session_state["por_range"] = (round(por_min, 1), round(por_max, 1))
+        st.session_state["fa_range"] = (round(fa_min, 1), round(fa_max, 1))
+        st.session_state["selected_columns"] = [
+            col for col in default_columns if col in lunar_db_df.columns
+        ]
+
+
+
+    with st.sidebar:
+        st.header("Filter Regolith Data")
+        with st.expander("Categorical Filters", expanded=False):
+            st.markdown("### Terrain Type")
+            soil_group_filter = st.multiselect("Select Terrain type", lunar_db_df["Terrain"].dropna().unique(), key="soil_group_filter")
+            st.markdown("### Test Type")
+            test_filter = st.multiselect("Select Test Type", lunar_db_df["Test"].dropna().unique(), key="test_filter")
+            # --- Categorical Filters ---
+            st.markdown("### Type of Mission")
+            mission_type_filter = st.multiselect(
+                "Select type of mission:",
+                options=sorted(lunar_db_df["Type of mission"].dropna().unique()),
+                key="mission_type_filter"
+            )
+
+            st.markdown("### Mission Group")
+            mission_group_filter = st.multiselect(
+                "Select Mission Group", 
+                options=["Apollo", "Luna", "Surveyor", "Chang'e", "Chandrayaan", "Lunar Reconnaissance Orbiter", "Other"],
+                key="mission_group_filter"
+            )
+
+            st.markdown("### Test Location")
+            test_location_filter = st.multiselect(
+                "Select Test Location", 
+                options=["In-Situ", "On Earth", "Remote", "Other"],
+                key="test_location_filter"
+            )
+
+        # --- Numeric Range Filters ---
+        with st.expander("Numeric Range Filters", expanded=False):
+            year_range = None
+            year_min = None 
+            year_max = None
+            st.markdown("### Publication Year")
+            if "Year of publication" in lunar_db_df.columns:
+                numeric_years = pd.to_numeric(lunar_db_df["Year of publication"], errors="coerce")
+                year_min = int(numeric_years.min(skipna=True))
+                year_max = int(numeric_years.max(skipna=True))
+
+                if "year_range" not in st.session_state:
+                    st.session_state["year_range"] = (year_min, year_max)
+
+                year_range = st.slider(
+                    "Select Year of publication Range",
+                    min_value=year_min,
+                    max_value=year_max,
+                    key="year_range"
+                )
+            else:
+                year_range = None
+
+
+            st.markdown("### Density (g/cm³)")
+            if "min_Bulk density (g/cm^3)" in lunar_db_df.columns:
+                dens_min = float(lunar_db_df["min_Bulk density (g/cm^3)"].min(skipna=True))
+                dens_max = float(lunar_db_df["max_Bulk density (g/cm^3)"].max(skipna=True))
+
+                if "density_range" not in st.session_state:
+                    st.session_state["density_range"] = (round(dens_min, 2), round(dens_max, 2))    
+
+                density_range = st.slider(
+                    "Select Density Range",
+                    min_value=round(dens_min, 2),
+                    max_value=round(dens_max, 2),
+                    value=(round(dens_min, 2), round(dens_max, 2)),
+                    key="density_range"
+                )
+            else:
+                density_range = None
+
+            st.markdown("### Cohesion (kPa)")
+            if "min_Cohesion (kPa)" in lunar_db_df.columns:
+                coh_min = float(lunar_db_df["min_Cohesion (kPa)"].min(skipna=True))
+                coh_max = float(lunar_db_df["max_Cohesion (kPa)"].max(skipna=True))
+
+                if "cohesion_range" not in st.session_state:
+                    st.session_state["cohesion_range"] = (round(coh_min, 1), round(coh_max, 1))
+
+                cohesion_range = st.slider(
+                    "Select Cohesion Range",
+                    min_value=round(coh_min, 1),
+                    max_value=round(coh_max, 1),
+                    value=(round(coh_min, 1), round(coh_max, 1)),
+                    key="cohesion_range"
+                )
+            else:
+                cohesion_range = None
+
+            st.markdown("### Angle of Internal Friction (°)")
+            if "min_Angle of internal friction (degree)" in lunar_db_df.columns:
+                ang_min = float(lunar_db_df["min_Angle of internal friction (degree)"].min(skipna=True))
+                ang_max = float(lunar_db_df["max_Angle of internal friction (degree)"].max(skipna=True))
+
+                if "angle_range" not in st.session_state:
+                    st.session_state["angle_range"] = (round(ang_min, 1), round(ang_max, 1))
+
+                angle_range = st.slider(
+                    "Select Angle Range",
+                    min_value=round(ang_min, 1),
+                    max_value=round(ang_max, 1),
+                    value=(round(ang_min, 1), round(ang_max, 1)),
+                    key="angle_range"
+                )
+            else:
+                angle_range = None
+
+            st.markdown("### Bearing Capacity (kPa)")
+            if "min_Bearing capacity (kPa)" in lunar_db_df.columns:
+                sbc_min = float(lunar_db_df["min_Bearing capacity (kPa)"].min(skipna=True))
+                sbc_max = float(lunar_db_df["max_Bearing capacity (kPa)"].max(skipna=True))
+
+                if "sbc_range" not in st.session_state:
+                    st.session_state["sbc_range"] = (round(sbc_min, 1), round(sbc_max, 1))
+
+                sbc_range = st.slider(
+                   "Select Bearing Capacity Range",
+                   min_value=round(sbc_min, 1),
+                   max_value=round(sbc_max, 1),
+                   value=(round(sbc_min, 1), round(sbc_max, 1)),
+                   key="sbc_range"
+               )
+            else:
+                sbc_range = None
+
+            st.markdown("### Normal Stress (kPa)")
+            if "min_Normal stress range (kPa)" in lunar_db_df.columns:
+                nf_min = float(lunar_db_df["min_Normal stress range (kPa)"].min(skipna=True))
+                nf_max = float(lunar_db_df["max_Normal stress range (kPa)"].max(skipna=True))
+
+                if "ns_range" not in st.session_state:
+                    st.session_state["ns_range"] = (round(nf_min, 1), round(nf_max, 1))
+
+                nf_range = st.slider(
+                   "Select Normal Stress Range",
+                   min_value=round(nf_min, 1),
+                   max_value=round(nf_max, 1),
+                   value=(round(nf_min, 1), round(nf_max, 1)),
+                   key="ns_range"
+               )
+            else:
+                nf_range = None
+
+            st.markdown("### Void Ratio")
+            if "min_Void ratio" in lunar_db_df.columns:
+                vr_min = float(lunar_db_df["min_Void ratio"].min(skipna=True))
+                vr_max = float(lunar_db_df["max_Void ratio"].max(skipna=True))
+
+                if "vr_range" not in st.session_state:
+                    st.session_state["vr_range"] = (round(vr_min, 2), round(vr_max, 2))
+
+                vr_range = st.slider(
+                   "Select Void Ratio Range",
+                   min_value=round(vr_min, 2),
+                   max_value=round(vr_max, 2),
+                   value=(round(vr_min, 2), round(vr_max, 2)),
+                   key="vr_range"
+               )
+            else:
+                vr_range = None
+
+            st.markdown("### Density of Grains (g/cm³)")
+            if "min_Density of grains (g/cm^3)" in lunar_db_df.columns:
+                dg_min = float(lunar_db_df["min_Density of grains (g/cm^3)"].min(skipna=True))
+                dg_max = float(lunar_db_df["max_Density of grains (g/cm^3)"].max(skipna=True))
+
+                if "dg_range" not in st.session_state:
+                    st.session_state["dg_range"] = (round(dg_min, 2), round(dg_max, 2))
+
+                dg_range = st.slider(
+                   "Select Density of Grains Range",
+                   min_value=round(dg_min, 2),
+                   max_value=round(dg_max, 2),
+                   value=(round(dg_min, 2), round(dg_max, 2)),
+                   key="dg_range"
+               )
+            else:
+                dg_range = None
+
+            st.markdown("### Compressibility Coefficient")
+            if "min_Compressibility Coefficient" in lunar_db_df.columns:
+                cc_min = float(lunar_db_df["min_Compressibility Coefficient"].min(skipna=True))
+                cc_max = float(lunar_db_df["max_Compressibility Coefficient"].max(skipna=True))
+
+                if "cc_range" not in st.session_state:
+                    st.session_state["cc_range"] = (round(cc_min, 4), round(cc_max, 4))
+
+                cc_range = st.slider(
+                   "Select Compressibility Coefficient Range",
+                   min_value=round(cc_min, 4),
+                   max_value=round(cc_max, 4),
+                   value=(round(cc_min, 4), round(cc_max, 4)),
+                   key="cc_range"
+               )
+            else:
+                cc_range = None
+
+            st.markdown("### Depth (cm)")
+            if "min_Depth (cm)" in lunar_db_df.columns:
+                depth_min = float(lunar_db_df["min_Depth (cm)"].min(skipna=True))
+                depth_max = float(lunar_db_df["max_Depth (cm)"].max(skipna=True))
+
+                if "depth_range" not in st.session_state:
+                    st.session_state["depth_range"] = (round(depth_min, 1), round(depth_max, 1))
+
+                depth_range = st.slider(
+                   "Select Depth Range",
+                   min_value=round(depth_min, 1),
+                   max_value=round(depth_max, 1),
+                   value=(round(depth_min, 1), round(depth_max, 1)),
+                   key="depth_range"
+               )
+            else:
+                depth_range = None  
+
+            st.markdown("### Porosity (%)")
+            if "min_Porosity (%)" in lunar_db_df.columns:
+                por_min = float(lunar_db_df["min_Porosity (%)"].min(skipna=True))
+                por_max = float(lunar_db_df["max_Porosity (%)"].max(skipna=True))
+
+                if "por_range" not in st.session_state:
+                    st.session_state["por_range"] = (round(por_min, 1), round(por_max, 1))
+
+                por_range = st.slider(
+                   "Select Porosity Range",
+                   min_value=round(por_min, 1),
+                   max_value=round(por_max, 1),
+                   value=(round(por_min, 1), round(por_max, 1)),
+                   key="por_range"
+               )
+            else:
+                por_range = None
+
+            st.markdown("### Force applied (N)")
+            if "min_Force applied (N)" in lunar_db_df.columns:
+                fa_min = float(lunar_db_df["min_Force applied (N)"].min(skipna=True))
+                fa_max = float(lunar_db_df["max_Force applied (N)"].max(skipna=True))
+
+                if "fa_range" not in st.session_state:
+                    st.session_state["fa_range"] = (round(fa_min, 1), round(fa_max, 1))
+
+                fa_range = st.slider(
+                   "Select Force applied Range",
+                   min_value=round(fa_min, 1),
+                   max_value=round(fa_max, 1),
+                   value=(round(fa_min, 1), round(fa_max, 1)),
+                   key="fa_range"
+               )
+            else:
+                fa_range = None
+
+        # --- Column Selection ---
+        with st.expander("Select Table Columns", expanded=False):
+            st.divider()
+            st.header("Display Options")
+            all_columns = lunar_db_df.columns.tolist()
+            default_columns = [
+        "Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", 
+        "Bulk density (g/cm^3)",
+        "Angle of internal friction (degree)", 
+        "Cohesion (kPa)", 
+        "Bearing capacity (kPa)", "Depth (cm)", 
+        "Source","Year of publication", "DOI / URL", "Comments"]        
+
+            def select_all_columns():
+                st.session_state["selected_columns"] = all_columns
+
+            def clear_columns():
+                st.session_state["selected_columns"] = default_columns
+
+            col_select_all, col_clear_selection = st.columns([1, 1])
+
+            with col_select_all:
+                st.button(
+                    "Select All Parameters", 
+                    on_click=select_all_columns, 
+                    use_container_width=True
+                )
+
+            with col_clear_selection:
+                 st.button(
+                    "Clear Selection", 
+                    on_click=clear_columns, 
+                    use_container_width=True
+                )
+
+            selected_columns = st.multiselect(
+                "Select columns to display:",
+                options=all_columns,
+                default=[col for col in default_columns if col in all_columns],
+                key="selected_columns"
+            )
+
+        st.button("Clear all filters", use_container_width=True, on_click=clear_all_filters)
+         # --- Clear Filters Button ---
+        #st.button("Clear all filters", use_container_width=True, on_click=clear_all_filters)
+
+
+
+    # --- Apply Filters ---
+    filtered_db_df = lunar_db_df.copy()
+    numeric_cols = [
+    "Year of publication",
+    "Bulk density (g/cm^3)",
+    "Angle of internal friction (degree)",
+    "Cohesion (kPa)",
+    "Bearing capacity (kPa)",
+    "Normal stress range (kPa)",
+    "Void ratio",
+    "Density of grains (g/cm^3)",
+    "Compressibility Coefficient",
+    "Depth (cm)",
+    "Porosity (%)",
+    "Force applied (N)",
+    "Year"
+    ]
+
+    for col in numeric_cols:
+        if col in filtered_db_df.columns:
+            filtered_db_df[col] = pd.to_numeric(filtered_db_df[col], errors="coerce")
+
+    # Terrain type filter
+    if soil_group_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Terrain"].isin(soil_group_filter)]
+
+    # Test type filter
+    if test_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Test"].isin(test_filter)]
+
+    # Mission group filter (use Mission Group, not Mission)
+    if mission_group_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Mission Group"].isin(mission_group_filter)]
+
+    # Mission type filter
+    if mission_type_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Type of mission"].isin(mission_type_filter)]
+
+    # Test location filter
+    if test_location_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Test location"].isin(test_location_filter)]
+
+    # Year of publication filter (only if slider active)
+    if year_range and isinstance(year_range, tuple) and (year_range != (year_min, year_max)):
+        filtered_db_df = filtered_db_df[
+            (filtered_db_df["Year of publication"] >= year_range[0]) &
+            (filtered_db_df["Year of publication"] <= year_range[1])
+        ]
+
+
+    # --- Numeric filters ---
+    def filter_numeric_range(df, col_min, col_max, min_val, max_val):
+        return df[
+            ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
+            ((df[col_min].le(max_val)) | (df[col_min].isna()))
+        ]
+
+    if density_range and (density_range != (round(dens_min, 2), round(dens_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Bulk density (g/cm^3)", "max_Bulk density (g/cm^3)",
+            density_range[0], density_range[1]
+        )
+
+
+    if cohesion_range and (cohesion_range != (round(coh_min, 2), round(coh_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Cohesion (kPa)", "max_Cohesion (kPa)",
+            cohesion_range[0], cohesion_range[1]
+        )
+
+    if angle_range and (angle_range != (round(ang_min, 2), round(ang_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Angle of internal friction (degree)", "max_Angle of internal friction (degree)",
+            angle_range[0], angle_range[1]
+        )
+
+    if sbc_range and (sbc_range != (round(sbc_min, 2), round(sbc_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Bearing capacity (kPa)", "max_Bearing capacity (kPa)",
+            sbc_range[0], sbc_range[1]
+        )
+
+    if nf_range and (nf_range != (round(nf_min, 2), round(nf_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Normal stress range (kPa)", "max_Normal stress range (kPa)",
+            nf_range[0], nf_range[1]
+        )
+
+    if vr_range and (vr_range != (round(vr_min, 2), round(vr_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Void ratio", "max_Void ratio",
+            vr_range[0], vr_range[1]
+        )
+    
+    if dg_range and (dg_range != (round(dg_min, 2), round(dg_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Density of grains (g/cm^3)", "max_Density of grains (g/cm^3)",
+            dg_range[0], dg_range[1]
+        )
+
+    if cc_range and (cc_range != (round(cc_min, 4), round(cc_max, 4))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Compressibility Coefficient", "max_Compressibility Coefficient",
+            cc_range[0], cc_range[1]
+        )
+    
+    if depth_range and (depth_range != (round(depth_min, 2), round(depth_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Depth (cm)", "max_Depth (cm)",
+            depth_range[0], depth_range[1]
+        )
+
+    if por_range and (por_range != (round(por_min, 2), round(por_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Porosity (%)", "max_Porosity (%)",
+            por_range[0], por_range[1]
+        )
+
+    if fa_range and (fa_range != (round(fa_min, 2), round(fa_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Force applied (N)", "max_Force applied (N)",
+            fa_range[0], fa_range[1]
+        )
+    
+
+
+    # --- Prepare display dataframe with ranges as original strings ---
+    display_df = filtered_db_df.copy()
+
+    # List of numeric columns where you want to display original ranges
+    numeric_range_cols = [
+        "Bulk density (g/cm^3)",
+        "Angle of internal friction (degree)",
+        "Cohesion (kPa)",
+        "Bearing capacity (kPa)",
+        "Normal stress range (kPa)",
+        "Void ratio",
+        "Density of grains (g/cm^3)",
+        "Compressibility Coefficient",
+        "Depth (cm)",
+        "Porosity (%)",
+        "Force applied (N)"
+    ]
+
+    for col in numeric_range_cols:
+        # Keep _min, _max, _avg numeric, only replace the original column for display
+        if col in display_df.columns:
+            display_df[col] = lunar_db_df.loc[display_df.index, col]
+
+    # --- Display filtered table ---
+    st.subheader("Database Table")
+    if selected_columns:
+        st.dataframe(display_df[selected_columns])
+    else:
+        st.info("No columns selected. Please select at least one column to display.")
+
+    st.markdown(
+        "<p style='font-size:12px; color:gray;'>Note: * Indicates values estimated for the measurements, ** indicates values derived from estimations. </p>",
+        unsafe_allow_html=True
+    )
+
+
+
+    # --- Plotting Section & Display ---
+    st.subheader("Plot Numerical Data")
+
+    # Select axes
+    x_axis = st.selectbox("X-axis (categorical & numeric)", options=[
+        "Mission", "Location", "Terrain", "Test", "Type of mission", 
+        "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
+        "Cohesion (kPa)", "Bearing capacity (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Porosity (%)", "Force applied (N)", "Year of publication"
+    ])
+    y_axis = st.selectbox("Y-axis (numeric)", options=[
+        "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
+        "Cohesion (kPa)", "Bearing capacity (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Porosity (%)", "Force applied (N)", "Year of publication"
+    ])
+    plot_mode = st.radio("Select value type to plot", ["Range", "Average", "Minimum", "Maximum"], horizontal=True)
+
+    legend_column = st.selectbox("Select Legend", options=[
+    "Mission Group", 
+    "Terrain", 
+    "Type of mission", 
+    "Test location",
+    "Test"
+    ], index=0)
+
+    lunar_db_df["Mission Group"] = lunar_db_df["Mission"].apply(categorize_mission)
+    
+
+    # --- Precompute numeric columns for range values ---
+    range_columns = [
+        "Bulk density (g/cm^3)",
+        "Angle of internal friction (degree)",
+        "Cohesion (kPa)",
+        "Bearing capacity (kPa)", 
+        "Normal stress range (kPa)",
+        "Void ratio",
+        "Density of grains (g/cm^3)",
+        "Compressibility Coefficient",
+        "Depth (cm)",
+        "Porosity (%)",
+        "Force applied (N)"
+    ]            
+
+    # Apply to lunar dataset once
+    for col in range_columns:
+        if col in lunar_db_df.columns:
+            lunar_db_df[[f"min_{col}", f"max_{col}"]] = lunar_db_df[col].apply(
+                lambda x: pd.Series(extract_range(x))
+            )
+            lunar_db_df[[f"min_{col}", f"max_{col}"]] = lunar_db_df[
+                [f"min_{col}", f"max_{col}"]
+            ].apply(pd.to_numeric, errors="coerce")
+            lunar_db_df[f"avg_{col}"] = lunar_db_df[[f"min_{col}", f"max_{col}"]].mean(axis=1)
+
+    # --- Apply filters ---
+    filtered_plot_df = lunar_db_df.copy()
+    filtered_plot_df["Year of publication"] = pd.to_numeric(filtered_plot_df["Year of publication"], errors="coerce")
+
+    if mission_group_filter:
+        filtered_plot_df = filtered_plot_df[filtered_plot_df["Mission Group"].isin(mission_group_filter)]
+    if test_filter:
+        filtered_plot_df = filtered_plot_df[filtered_plot_df["Test"].isin(test_filter)]
+    if soil_group_filter:
+        filtered_plot_df = filtered_plot_df[filtered_plot_df["Terrain"].isin(soil_group_filter)]
+    if mission_type_filter:
+        filtered_plot_df = filtered_plot_df[filtered_plot_df["Type of mission"].isin(mission_type_filter)]
+    if test_location_filter:
+        filtered_plot_df = filtered_plot_df[filtered_plot_df["Test location"].isin(test_location_filter)]
+
+    # --- Numeric filters (keep NaN rows visible) ---
+    def filter_numeric_range(df, col_min, col_max, min_val, max_val):
+        return df[
+            ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
+            ((df[col_min].le(max_val)) | (df[col_min].isna()))
+        ]
+    
+    if year_range and isinstance(year_range, tuple) and (year_range != (year_min, year_max)):
+        filtered_plot_df = filtered_plot_df[
+            (filtered_plot_df["Year of publication"] >= year_range[0]) &
+            (filtered_plot_df["Year of publication"] <= year_range[1])
+        ]
+
+
+    if density_range and (density_range != (round(dens_min, 2), round(dens_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Bulk density (g/cm^3)", "max_Bulk density (g/cm^3)",
+            density_range[0], density_range[1]
+        )
+
+    if cohesion_range and (cohesion_range != (round(coh_min, 2), round(coh_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Cohesion (kPa)", "max_Cohesion (kPa)",
+            cohesion_range[0], cohesion_range[1]
+        )
+
+    if angle_range and (angle_range != (round(ang_min, 2), round(ang_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Angle of internal friction (degree)", "max_Angle of internal friction (degree)",
+            angle_range[0], angle_range[1]
+        )
+
+    if sbc_range and (sbc_range != (round(sbc_min, 2), round(sbc_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Bearing capacity (kPa)", "max_Bearing capacity (kPa)",
+            sbc_range[0], sbc_range[1]
+        )
+
+    if nf_range and (nf_range != (round(nf_min, 2), round(nf_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Normal stress range (kPa)", "max_Normal stress range (kPa)",
+            nf_range[0], nf_range[1]
+        )
+
+    if vr_range and (vr_range != (round(vr_min, 2), round(vr_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Void ratio", "max_Void ratio",
+            vr_range[0], vr_range[1]
+        )   
+
+    if dg_range and (dg_range != (round(dg_min, 2), round(dg_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Density of grains (g/cm^3)", "max_Density of grains (g/cm^3)",
+            dg_range[0], dg_range[1]
+        )
+
+    if cc_range and (cc_range != (round(cc_min, 4), round(cc_max, 4))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Compressibility Coefficient", "max_Compressibility Coefficient",
+            cc_range[0], cc_range[1]
+        )
+
+    if depth_range and (depth_range != (round(depth_min, 2), round(depth_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Depth (cm)", "max_Depth (cm)",
+            depth_range[0], depth_range[1]
+        )
+
+    if por_range and (por_range != (round(por_min, 2), round(por_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Porosity (%)", "max_Porosity (%)",
+            por_range[0], por_range[1]
+        )
+
+    if fa_range and (fa_range != (round(fa_min, 2), round(fa_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Force applied (N)", "max_Force applied (N)",
+            fa_range[0], fa_range[1]
+        )
+
+
+    # Define colors and markers
+
+    def get_plot_maps(column):
+    # Base colors/shapes for mission group
+        mission_color_map = {
+            "Apollo": "#0b96d6", "Luna": "#d45087", "Surveyor": "#ffa600", 
+            "Chang'e": "#72CF6D", "Chandrayaan": "#8d3ab0", "Other": "gray"
+        }
+        mission_marker_shapes = {
+            "Apollo": "circle", "Luna": "square", "Surveyor": "triangle-up",
+            "Chang'e": "diamond", "Chandrayaan": "cross", "Other": "x"
+        }
+
+        if column == "Mission Group":
+            return mission_color_map, mission_marker_shapes
+
+        if column == "Terrain":
+            return {"Mare": "#1f77b4", "Highland": "#ff7f0e", "Other": "#2ca02c"}, {"Mare": "circle", "Highland": "square", "Other": "cross"}
+        if column == "Type of mission":
+            return {"Lander": "#1f77b4", "Rover": "#ff7f0e", "Crewed": "#2ca02c", "Other": "#9467bd"}, {"Lander": "circle", "Rover": "square", "Crewed": "diamond", "Other": "x"}
+        if column == "Test location":
+            return {"In-Situ": "#1f77b4", "On Earth": "#ff7f0e", "Other": "#2ca02c"}, {"In-Situ": "circle", "On Earth": "square", "Other": "diamond"}
+        if column == "Test":
+            unique_tests = filtered_plot_df["Test"].dropna().unique()
+            default_colors = px.colors.qualitative.Plotly
+            color_map = {}
+            marker_shapes = {}
+            for i, test in enumerate(unique_tests):
+                color_map[test] = default_colors[i % len(default_colors)]
+                marker_shapes[test] = "circle"  # Default shape
+            return color_map, marker_shapes
+        return mission_color_map, mission_marker_shapes
+
+    color_map, marker_shapes = get_plot_maps(legend_column)
+
+    # --- Determine Y columns ---
+    y_min_col = f"min_{y_axis}"
+    y_max_col = f"max_{y_axis}"
+    y_col_map = {
+        "Average": f"avg_{y_axis}",
+        "Minimum": y_min_col,
+        "Maximum": y_max_col,
+        "Range": y_axis
+    }
+    y_col_name = y_col_map[plot_mode]
+
+    # Check if x-axis is numeric (one of the measurement columns)
+    x_axis_is_numeric = x_axis in range_columns
+
+    # Remove rows with missing Y data
+    if plot_mode == "Range":
+        filtered_plot_df = filtered_plot_df.dropna(subset=[y_min_col, y_max_col])
+        if x_axis_is_numeric:
+            # Also need x-axis range columns
+            x_min_col = f"min_{x_axis}"
+            x_max_col = f"max_{x_axis}"
+            filtered_plot_df = filtered_plot_df.dropna(subset=[x_min_col, x_max_col])
+    else:
+        filtered_plot_df = filtered_plot_df.dropna(subset=[y_col_name])
+
+
+    #Compare with simulant button
+    required_x_col = x_axis
+    required_y_col = y_axis
+
+    if required_x_col in simulant_db_df.columns and required_y_col in simulant_db_df.columns:
+        compare_simulants = st.checkbox("Compare with lunar regolith simulants")
+    else:
+        # Set a default value to False if the checkbox doesn't appear
+        compare_simulants = False
+
+
+     # --- RANGE MODE PLOTTING ---
+    if plot_mode == "Range":
+        fig = go.Figure()
+
+        # For categorical x-axis, create position mapping
+        if not x_axis_is_numeric:
+            x_categories = filtered_plot_df[x_axis].dropna().unique()
+            x_positions = {val: idx for idx, val in enumerate(x_categories)}
+
+        legend_groups = set()
+
+        if color_map is None:
+            color_map = {}
+            unique_groups = filtered_plot_df[legend_column].dropna().unique()
+            default_colors = px.colors.qualitative.Plotly
+            for i, group in enumerate(unique_groups):
+                color_map[group] = default_colors[i % len(default_colors)]
+
+        for _, row in filtered_plot_df.iterrows():
+            group = row[legend_column]
+            color = color_map.get(group, "gray")
+
+            # --- Handle X-axis positioning ---
+            if x_axis_is_numeric:
+                # X-axis is numeric: use actual range values
+                x_min_col = f"min_{x_axis}"
+                x_max_col = f"max_{x_axis}"
+                x_min = row[x_min_col]
+                x_max = row[x_max_col]
+
+                if pd.isna(x_min) or pd.isna(x_max):
+                    continue
+                
+                x_display = f"{x_min:.2f}–{x_max:.2f}"
+            else:
+                # X-axis is categorical: use position with small width
+                x_val = row[x_axis]
+                if pd.isna(x_val) or x_val not in x_positions:
+                    continue
+                
+                x_pos = x_positions[x_val]
+                x_min = x_pos - 0.35
+                x_max = x_pos + 0.35
+                x_display = str(x_val)
+
+            # --- Handle Y-axis range ---
+            y_min = row[y_min_col]
+            y_max = row[y_max_col]
+
+            if pd.isna(y_min) or pd.isna(y_max):
+                continue
+            
+            # Rectangle coordinates
+            x_coords = [x_min, x_max, x_max, x_min, x_min]
+            y_coords = [y_min, y_min, y_max, y_max, y_min]
+
+            # --- Draw filled rectangle ---
+            show_legend = group not in legend_groups
+            legend_groups.add(group)
+
+            fig.add_trace(go.Scatter(
+                x=x_coords,
+                y=y_coords,
+                fill="toself",
+                fillcolor=color,
+                line=dict(color=color, width=2),
+                opacity=0.5,
+                name=group,
+                legendgroup=group,
+                showlegend=show_legend,
+                hoverinfo="text",
+                hovertext=(
+                    f"Mission: {row['Mission']}<br>"
+                    f"{x_axis}: {x_display}<br>"
+                    f"{y_axis}: {y_min:.2f}–{y_max:.2f}<br>"
+                    f"Group: {group}"
+                )
+            ))
+
+        # --- Update layout based on x-axis type ---
+        if x_axis_is_numeric:
+            fig.update_layout(
+                xaxis=dict(
+                    title=x_axis,
+                    type="linear",
+                    tickformat=".2f"
+                )
+            )
+        else:
+            fig.update_layout(
+                xaxis=dict(
+                    title=x_axis,
+                    tickmode="array",
+                    tickvals=list(range(len(x_categories))),
+                    ticktext=list(x_categories)
+                )
+            )
+
+        fig.update_layout(
+            title=f"{y_axis} Range vs {x_axis} Range",
+            yaxis=dict(title=y_axis, tickformat=".2f"),
+            height=600,
+            width=800,
+            hovermode="closest",
+            legend_title_text=legend_column,
+        )
+
+
+    # --- SCATTER PLOT MODES (Average, Min, Max) ---
+    else:
+        if x_axis in range_columns:
+            x_col_map = {
+                "Average": f"avg_{x_axis}",
+                "Minimum": f"min_{x_axis}",
+                "Maximum": f"max_{x_axis}",
+            }
+            x_col_name = x_col_map.get(plot_mode, x_axis) 
+        else:
+            x_col_name = x_axis
+
+        fig = px.scatter(
+            filtered_plot_df,
+            x=x_col_name,
+            y=y_col_name,
+            color=legend_column,
+            symbol=legend_column,
+            color_discrete_map=color_map,
+            symbol_map=marker_shapes,
+            hover_data={"Mission": True, x_col_name: ":.2f", y_col_name: ":.2f", legend_column: True},
+            title=f"{plot_mode} {y_axis} vs {plot_mode} {x_axis}" if x_axis in range_columns else f"{plot_mode} {y_axis} vs {x_axis}",
+        )
+        fig.update_traces(marker=dict(size=10, opacity=0.7))
+        if x_axis in range_columns or x_axis == "Year of publication":
+            fig.update_xaxes(type='linear', tickformat=".2f")
+
+        fig.update_layout(
+            xaxis_title=f"{plot_mode} {x_axis}" if x_axis in range_columns else x_axis,
+            yaxis_title=f"{plot_mode}{y_axis}",
+            hoverlabel=dict(bgcolor="white", font_size=12, font_color="black"),
+            title=dict(x=0, xanchor='left', font=dict(size=20)),
+            legend_title_text=legend_column,
+            width=800,
+            height=500,
+        )
+
+    # --- Add simulant data if selected ---
+    if compare_simulants:
+        simulant_plot_df = simulant_db_df.copy()
+        for col in range_columns:
+            if col in simulant_plot_df.columns:
+                simulant_plot_df[[f"min_{col}", f"max_{col}"]] = simulant_plot_df[col].apply(
+                    lambda x: pd.Series(extract_range(x))
+                )
+                simulant_plot_df[[f"min_{col}", f"max_{col}"]] = simulant_plot_df[
+                    [f"min_{col}", f"max_{col}"]
+                ].apply(pd.to_numeric, errors="coerce")
+                simulant_plot_df[f"avg_{col}"] = simulant_plot_df[[f"min_{col}", f"max_{col}"]].mean(axis=1)
+        
+        if plot_mode == "Range":
+            y_min_col_sim = y_min_col
+            y_max_col_sim = y_max_col
+
+            if y_min_col_sim in simulant_plot_df.columns and y_max_col_sim in simulant_plot_df.columns:
+                sim_filtered = simulant_plot_df.dropna(subset=[y_min_col_sim, y_max_col_sim])
+                
+                if x_axis in sim_filtered.columns:
+                    x_min_col_sim = f"min_{x_axis}"
+                    x_max_col_sim = f"max_{x_axis}"
+
+                    if x_axis_is_numeric and x_min_col_sim in sim_filtered.columns and x_max_col_sim in sim_filtered.columns:
+                        sim_filtered = sim_filtered.dropna(subset=[x_min_col_sim, x_max_col_sim])
+
+                    simulant_legend_added = False
+                    
+                    for _, row in sim_filtered.iterrows():
+                        # --- Handle X positioning ---
+                        if x_axis_is_numeric:
+                            x_min = row[x_min_col_sim]
+                            x_max = row[x_max_col_sim]
+                            if pd.isna(x_min) or pd.isna(x_max):
+                                continue
+                            x_display = f"{x_min:.2f}–{x_max:.2f}"
+                        else:
+                            x_val = row[x_axis]
+                            if 'x_positions' not in locals(): continue
+                            if pd.isna(x_val) or x_val not in x_positions:
+                                continue
+                            x_pos = x_positions[x_val]
+                            x_min = x_pos - 0.35
+                            x_max = x_pos + 0.35
+                            x_display = str(x_val)
+                        
+                        # --- Handle Y range ---
+                        y_min = row[y_min_col_sim]
+                        y_max = row[y_max_col_sim]
+                        if pd.isna(y_min) or pd.isna(y_max):
+                            continue
+                        
+                        x_coords = [x_min, x_max, x_max, x_min, x_min]
+                        y_coords = [y_min, y_min, y_max, y_max, y_min]
+                        
+                        fig.add_trace(go.Scatter(
+                            x=x_coords,
+                            y=y_coords,
+                            fill="toself",
+                            fillcolor="#ff00ff",
+                            line=dict(color="#ff00ff", width=2),
+                            opacity=0.3,
+                            name="Lunar Simulants",
+                            legendgroup="simulants",
+                            showlegend=not simulant_legend_added,
+                            hoverinfo="text",
+                            hovertext=(
+                                f"Simulant: {row['Simulant']}<br>"
+                                f"{x_axis}: {x_display}<br>"
+                                f"{y_axis}: {y_min:.2f}–{y_max:.2f}"
+                            )
+                        ))
+                        simulant_legend_added = True
+        
+        else:
+            # Scatter mode - add simulant points
+            if x_axis in simulant_plot_df.columns and y_col_name in simulant_plot_df.columns:
+                sim_scatter = simulant_plot_df.dropna(subset=[x_axis, y_col_name])
+                
+                hover_texts = [
+                    f"Simulant: {row['Simulant']}<br>{x_axis}: {row[x_axis]}<br>{y_axis}: {row[y_col_name]:.2f}"
+                    for _, row in sim_scatter.iterrows()
+                ]
+                
+                fig.add_scatter(
+                    x=sim_scatter[x_axis],
+                    y=sim_scatter[y_col_name],
+                    mode="markers",
+                    name="Lunar Simulants",
+                    marker=dict(symbol="diamond", size=10, color="#ff00ff", line=dict(width=1, color="black")),
+                    hovertext=hover_texts,
+                    hoverinfo="text"
+                )
+            else:
+                st.warning(f"Required columns not found in simulant dataset for comparison.")
+   
+    # --- Display plot ---
+    config = {"displayModeBar": False, "scrollZoom": True}
+    st.plotly_chart(fig, width='stretch', config=config)
+
+
+# ------------------ Moon Map --------------
+
+    def parse_location(loc_str):
+        if pd.isna(loc_str):
+            return None, None
+        # Match something like: 3.01239S 23.42157W
+        match = re.match(r"([0-9.+-]+)([NS])\s+([0-9.+-]+)([EW])", loc_str.strip())
+        if not match:
+            return None, None
+        lat_val, lat_dir, lon_val, lon_dir = match.groups()
+        lat = float(lat_val) * (1 if lat_dir.upper() == "N" else -1)
+        lon = float(lon_val) * (1 if lon_dir.upper() == "E" else -1)
+        return lat, lon
+
+    if "Latitude" not in lunar_db_df.columns:
+        lunar_db_df["Latitude"], lunar_db_df["Longitude"] = zip(*lunar_db_df["Location"].apply(parse_location))
+    
+    map_df = filtered_db_df.copy()
+    
+    if "Latitude" not in map_df.columns or "Longitude" not in map_df.columns:
+        map_df["Latitude"], map_df["Longitude"] = zip(*map_df["Location"].apply(parse_location))
+
+    map_df = map_df.dropna(subset=["Latitude", "Longitude"])
+    
+    map_legend_column = locals().get('legend_column', "Mission Group") 
+    
+    try:
+        color_map, marker_shapes = get_plot_maps(map_legend_column)
+    except NameError:
+        # Fallback to hardcoded mission group maps if get_plot_maps isn't available in scope
+        map_legend_column = "Mission Group"
+        color_map = {
+             "Apollo": "#0b96d6", "Luna": "#d45087", "Surveyor": "#ffa600", 
+             "Chang'e": "#72CF6D", "Chandrayaan": "#8d3ab0", "Other": "gray"
+        }
+        marker_shapes = {
+            "Apollo": "circle", "Luna": "square", "Surveyor": "triangle-up",
+            "Chang'e": "diamond", "Chandrayaan": "cross", "Other": "x"
+        }
+
+    if color_map is None:
+        color_map = {}
+        unique_groups = map_df[map_legend_column].dropna().unique()
+        default_colors = px.colors.qualitative.Plotly
+        for i, group in enumerate(unique_groups):
+            color_map[group] = default_colors[i % len(default_colors)]
+
+    # Load Moon map image
+    def pil_to_base64_uri(pil_img):
+        buffered = BytesIO()
+        pil_img.save(buffered, format="PNG")
+        img_bytes = buffered.getvalue()
+        base64_str = base64.b64encode(img_bytes).decode()
+        return "data:image/png;base64," + base64_str
+
+    moon_img = Image.open("moon_map.jpg")
+
+    if moon_img.mode != 'RGB':
+        moon_img = moon_img.convert('RGB')
+
+    moon_img_uri = pil_to_base64_uri(moon_img)
+
+    fig = go.Figure()
+
+
+    for group in map_df[map_legend_column].unique():
+        df_group = map_df[map_df[map_legend_column] == group]
+        
+        # Determine color and symbol dynamically
+        color = color_map.get(group, "black")
+        symbol = marker_shapes.get(group, "circle") 
+
+        hover_text = df_group.apply(
+            lambda row: (
+                f"Mission: {row['Mission']}<br>"
+                f"Terrain: {row['Terrain']}<br>"
+                f"Longitude: {row['Longitude']}°<br>"
+                f"Latitude: {row['Latitude']}°"
+            ), 
+            axis=1
+        )
+        fig.add_trace(go.Scatter(
+            x=df_group["Longitude"],
+            y=df_group["Latitude"],
+            mode="markers",
+            marker=dict(
+                size=10,
+                # 4. Use dynamic color and symbol
+                color=color,
+                symbol=symbol,
+                opacity=0.8,
+                line=dict(width=0)
+            ),
+            text=hover_text,
+            hoverinfo="text",
+            name=group  
+        ))
+
+    fig.add_layout_image(
+        dict(
+            source=moon_img_uri,
+            xref="x",
+            yref="y",
+            x=-180,
+            y=90,
+            sizex=360,
+            sizey=180,
+            sizing="stretch",
+            opacity=1,
+            layer="below"
+        )
+    )
+
+    fig.update_layout(
+        title=dict(
+            text=f"Mission Location Representation on the Moon (Filtered by {map_legend_column})", 
+            x=0,
+            xanchor='left',
+            y=0.9,
+            yanchor='top',
+            font=dict(size=20)
+        ),
+        xaxis=dict(
+            title="Longitude (°)",
+            range=[-180, 180],
+            constrain='domain',
+            scaleratio=1,
+            scaleanchor="y",
+            fixedrange=True,
+            showgrid=False,
+            zeroline=False,
+        ),
+        yaxis=dict(
+            title=dict(
+                text="Latitude (°)",
+                standoff=20 
+            ),
+            range=[-90, 90],
+            constrain='domain',
+            fixedrange=True,
+            showgrid=False,
+            zeroline=False,
+        ),
+        margin=dict(l=80, r=20, t=20, b=40), 
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        showlegend=True,
+        legend=dict(
+            # 5. Use dynamic legend title
+            title=map_legend_column,
+            y=0.8, 
+            yanchor="top", 
+            x=1,  
+            xanchor="left",
+        ),
+        hoverlabel=dict(bgcolor="white", font_size=12, font_color="black"),
+        width=800,
+        height=600
+    )
+
+    fig.update_xaxes(automargin=False)
+    fig.update_yaxes(automargin=False)
+
+    config_map = {
+    "displayModeBar": False,
+    "scrollZoom": True
+    }
+    st.plotly_chart(fig, width='stretch', height=800, config=config_map)
+
+
+
+## --------------------------- Lunar Simulants Database Section ---------------------------
+#
+elif db_choice == "Lunar Regolith Simulants Database":
+
+    st.title("Lunar Regolith Simulants Database")
+    simulant_db_df.columns = simulant_db_df.columns.str.strip()
+    numeric_cols = ["Year", "Year of publication"]
+    for col in numeric_cols:
+        if col in simulant_db_df.columns:
+            simulant_db_df[col] = pd.to_numeric(simulant_db_df[col], errors="coerce")
+
+    # Soil categorization function
+    def categorize_soil(soil_name):
+        if pd.isna(soil_name):
+            return "Other"
+        name = soil_name.lower()
+        if "mare" in name:
+            return "Mare"
+        elif "highland" in name:
+            return "Highland"
+        else:
+            return "Other"
+        
+    def extract_range(value):
+        if pd.isna(value):
+            return (np.nan, np.nan)
+        
+        if isinstance(value, (int, float)):
+            return (float(value), float(value))
+
+        match = re.findall(r"[-+]?\d*\.?\d+", str(value))
+
+        if len(match) == 0:
+            return (np.nan, np.nan)
+
+        try:
+            numbers = [float(n) for n in match]
+        except ValueError:
+            return (np.nan, np.nan)
+
+        if len(numbers) == 1:
+            val = numbers[0]
+            return (val, val)
+        else:
+            return (min(numbers), max(numbers))
+        
+
+    # --- Columns that may contain ranges ---
+    range_columns = [
+        "Bulk density (g/cm^3)",
+        "Angle of internal friction (degree)",
+        "Cohesion (kPa)",
+    ]
+
+    # --- Apply extraction and create numeric columns ---
+    for col in range_columns:
+        if col in simulant_db_df.columns:
+            simulant_db_df[[f"min_{col}", f"max_{col}"]] = simulant_db_df[col].apply(
+                lambda x: pd.Series(extract_range(x))
+            )
+            simulant_db_df[f"min_{col}"] = pd.to_numeric(simulant_db_df[f"min_{col}"], errors="coerce")
+            simulant_db_df[f"max_{col}"] = pd.to_numeric(simulant_db_df[f"max_{col}"], errors="coerce")
+            simulant_db_df[f"avg_{col}"] = simulant_db_df[
+                [f"min_{col}", f"max_{col}"]
+            ].mean(axis=1)
+
+    simulant_db_df["Soil Group"] = simulant_db_df["Type of simulant"].apply(categorize_soil)
+
+        # Sidebar Filters
+    def clear_all_filters():
+        st.session_state["soil_group_filter"] = []
+        st.session_state["test_filter"] = []
+        st.session_state["agency_filter"] = []
+        st.session_state["developer_filter"] = []
+        st.session_state["year_range"] = (year_min, year_max)
+        st.session_state["density_range"] = (round(dens_min, 2), round(dens_max, 2))
+        st.session_state["cohesion_range"] = (round(coh_min, 1), round(coh_max, 1))
+        st.session_state["angle_range"] = (round(ang_min, 1), round(ang_max, 1))
+        st.session_state["selected_columns"] = [
+            col for col in default_columns if col in lunar_db_df.columns
+        ]
+
+
+    with st.sidebar:
+            st.header("Filter Simulant Data")
+            #original filters 
+            with st.expander("Categorical Filters", expanded=False):
+                st.markdown("### Type of Simulant")
+                soil_group_filter = st.multiselect("Select Type of Simulant", ["Mare", "Highland", "Other"], key="soil_group_filter")
+                st.markdown("### Test Type")
+                test_filter = st.multiselect("Select Test Type", simulant_db_df["Test"].dropna().unique(), key="test_filter")
+                st.markdown("### Agency")
+                agency_filter = st.multiselect("Select Agency", ["NASA", "ESA", "JAXA", "KASA", "ISRO", "CNSA", "GISTDA"], key="agency_filter")
+                st.markdown("### Developer")
+                developer_filter = st.multiselect(
+                    "Select Developer(s):",
+                    options=sorted(simulant_db_df["Developer"].dropna().unique()), key="developer_filter")
+
+                #country_filter = st.multiselect(
+                #    "Select Country:",
+                #    options=sorted(simulant_db_df["Moon Location/Country"].dropna().unique())
+                #)         )
+
+            # --- Numeric Range Filters ---
+            with st.expander("Numeric Range Filters", expanded=False):
+                st.markdown("### Publication Year")
+                if "Year of publication" in simulant_db_df.columns:
+                    numeric_years = pd.to_numeric(simulant_db_df["Year of publication"], errors="coerce")
+                    year_min, year_max = int(numeric_years.min(skipna=True)), int(numeric_years.max(skipna=True))
+
+                    if "year_range" not in st.session_state:
+                        st.session_state["year_range"] = (year_min, year_max)
+
+                    year_range = st.slider(
+                        "Select Year of publication Range",
+                        min_value=year_min,
+                        max_value=year_max,
+                        key="year_range"
+                    )
+                else:
+                    year_range = None
+
+                st.markdown("### Density (g/cm³)")
+                if "Bulk density (g/cm^3)" in simulant_db_df.columns:
+                    dens_min, dens_max = float(simulant_db_df["min_Bulk density (g/cm^3)"].min(skipna=True)), float(simulant_db_df["max_Bulk density (g/cm^3)"].max(skipna=True))
+
+                    if "density_range" not in st.session_state:
+                        st.session_state["density_range"] = (round(dens_min, 2), round(dens_max, 2))
+
+                    density_range = st.slider(
+                        "Select Density Range",
+                        min_value=round(dens_min, 2),
+                        max_value=round(dens_max, 2),
+                        value=st.session_state["density_range"],
+                        key="density_range")
+                else:
+                    density_range = None
+
+                st.markdown("### Cohesion (kPa)")
+                if "Cohesion (kPa)" in simulant_db_df.columns:
+                    coh_min, coh_max = float(simulant_db_df["min_Cohesion (kPa)"].min(skipna=True)), float(simulant_db_df["max_Cohesion (kPa)"].max(skipna=True))
+
+                    if "cohesion_range" not in st.session_state:
+                        st.session_state["cohesion_range"] = (round(coh_min, 1), round(coh_max, 1))
+
+                    cohesion_range = st.slider(
+                        "Select Cohesion Range",
+                        min_value=round(coh_min, 1),
+                        max_value=round(coh_max, 1),
+                        value=st.session_state["cohesion_range"],
+                        key="cohesion_range"
+                    )
+                else:
+                    cohesion_range = None
+
+                st.markdown("### Angle of Internal Friction (°)")
+                if "Angle of internal friction (degree)" in simulant_db_df.columns:
+                    ang_min, ang_max = float(simulant_db_df["min_Angle of internal friction (degree)"].min(skipna=True)), float(simulant_db_df["max_Angle of internal friction (degree)"].max(skipna=True))
+
+                    if "angle_range" not in st.session_state:
+                        st.session_state["angle_range"] = (round(ang_min, 1), round(ang_max, 1))
+
+                    angle_range = st.slider( 
+                        "Select Angle Range",
+                        min_value=round(ang_min, 1),
+                        max_value=round(ang_max, 1),
+                        value=st.session_state["angle_range"],
+                        key="angle_range"
+                        )
+                else:
+                    angle_range = None
+
+            with st.expander("Select Table Columns", expanded=False):
+                # --- Column Selection ---
+                st.divider()
+                st.header("Display Options")
+                all_columns = simulant_db_df.columns.tolist()
+                default_columns = ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Year of publication","DOI / URL"]
+                def select_all_columns():
+                    st.session_state["selected_columns"] = all_columns
+
+                def clear_columns():
+                    st.session_state["selected_columns"] = default_columns
+
+                col_select_all, col_clear_selection = st.columns([1, 1])
+
+                with col_select_all:
+                    st.button(
+                        "Select All Parameters", 
+                        on_click=select_all_columns, 
+                        use_container_width=True
+                    )
+
+                with col_clear_selection:
+                     st.button(
+                        "Clear Selection", 
+                        on_click=clear_columns, 
+                        use_container_width=True
+                )
+
+                selected_columns = st.multiselect(
+                    "Select columns to display:",
+                    options=all_columns,
+                    default=[col for col in default_columns if col in all_columns]
+                )
+            
+            st.button("Clear all filters", use_container_width=True, on_click=clear_all_filters)
+
+    filtered_db_df = simulant_db_df.copy()
+    if soil_group_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Soil Group"].isin(soil_group_filter)]
+    if test_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Test"].isin(test_filter)]
+    if agency_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Agency"].isin(agency_filter)]
+    if developer_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Developer"].isin(developer_filter)]
+    if year_range and isinstance(year_range, tuple) and (year_range != (year_min, year_max)):
+        filtered_db_df = filtered_db_df[
+            (filtered_db_df["Year of publication"] >= year_range[0]) &
+            (filtered_db_df["Year of publication"] <= year_range[1])
+        ]
+
+
+        # --- Numeric filters (keep NaN rows visible) ---
+    def filter_numeric_range(df, col_min, col_max, min_val, max_val):
+        """Filter keeping NaNs visible."""
+        return df[
+            ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
+            ((df[col_min].le(max_val)) | (df[col_min].isna()))
+        ]
+    
+    if density_range:
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Bulk density (g/cm^3)", "max_Bulk density (g/cm^3)",
+            density_range[0], density_range[1]
+        )
+    
+    if cohesion_range:
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Cohesion (kPa)", "max_Cohesion (kPa)",
+            cohesion_range[0], cohesion_range[1]
+        )
+    
+    if angle_range:
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Angle of internal friction (degree)", "max_Angle of internal friction (degree)",
+            angle_range[0], angle_range[1]
+        )
+    
+    # --- Prepare display dataframe with ranges as original strings ---
+    display_df = filtered_db_df.copy()
+
+    numeric_range_cols = [
+    "Bulk density (g/cm^3)",
+    "Angle of internal friction (degree)",
+    "Cohesion (kPa)",
+    ]
+
+    for col in range_columns:
+        # Keep _min, _max, _avg numeric, only replace the original column for display
+        if col in display_df.columns:
+            display_df[col] = simulant_db_df.loc[display_df.index, col]
+
+    # --- Display filtered table ---
+    st.subheader("Database Table")
+    if selected_columns:
+        st.dataframe(display_df[selected_columns])
+    else:
+        st.info("No columns selected. Please select at least one column to display.")
+
+
+    # Plotting Section & Display
+    st.subheader("Plot Numerical Data")
+    x_axis = st.selectbox("X-axis (categorical & numeric)", [
+        "Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  
+        "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)"
+    ])
+    y_axis = st.selectbox("Y-axis (numeric)", [
+        "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)"
+    ])
+
+    plot_mode = st.radio("Select value type to plot", ["Range", "Average", "Minimum", "Maximum"], horizontal=True)
+
+    legend_column = st.selectbox("Select Legend", options=[
+    "Agency", 
+    "Type of simulant", 
+    "Test", 
+    ], index=0)
+       
+
+    # Apply to lunar dataset once
+    for col in range_columns:
+        if col in simulant_db_df.columns:
+            simulant_db_df[[f"min_{col}", f"max_{col}"]] = simulant_db_df[col].apply(
+            lambda x: pd.Series(extract_range(x))
+            )
+            simulant_db_df[f"avg_{col}"] = simulant_db_df[
+                [f"min_{col}", f"max_{col}"]
+            ].mean(axis=1)
+
+    for col in range_columns:
+        if f"min_{col}" in simulant_db_df.columns:
+            simulant_db_df[f"min_{col}"] = pd.to_numeric(simulant_db_df[f"min_{col}"], errors="coerce")
+            simulant_db_df[f"max_{col}"] = pd.to_numeric(simulant_db_df[f"max_{col}"], errors="coerce")
+
+    # --- Apply filters ---
+    filtered_plot_df = simulant_db_df.copy()
+    filtered_plot_df["Year of publication"] = pd.to_numeric(filtered_plot_df["Year of publication"], errors="coerce")
+
+    if test_filter:
+        filtered_plot_df = filtered_plot_df[filtered_plot_df["Test"].isin(test_filter)]
+    if soil_group_filter:
+        filtered_plot_df = filtered_plot_df[filtered_plot_df["Type of simulant"].isin(soil_group_filter)]
+    if agency_filter:
+        filtered_plot_df = filtered_plot_df[filtered_plot_df["Agency"].isin(agency_filter)]
+    if developer_filter:
+        filtered_plot_df = filtered_plot_df[filtered_plot_df["Developer"].isin(developer_filter)]
+
+
+    # --- Numeric filters (keep NaN rows visible) ---
+    def filter_numeric_range(df, col_min, col_max, min_val, max_val):
+        return df[
+            ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
+            ((df[col_min].le(max_val)) | (df[col_min].isna()))
+        ]
+    
+    if year_range and isinstance(year_range, tuple) and (year_range != (year_min, year_max)):
+        filtered_plot_df = filtered_plot_df[
+            (filtered_plot_df["Year of publication"] >= year_range[0]) &
+            (filtered_plot_df["Year of publication"] <= year_range[1])
+        ]
+
+
+    if density_range and (density_range != (round(dens_min, 2), round(dens_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Bulk density (g/cm^3)", "max_Bulk density (g/cm^3)",
+            density_range[0], density_range[1]
+        )
+
+    if cohesion_range and (cohesion_range != (round(coh_min, 2), round(coh_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Cohesion (kPa)", "max_Cohesion (kPa)",
+            cohesion_range[0], cohesion_range[1]
+        )
+
+    if angle_range and (angle_range != (round(ang_min, 2), round(ang_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Angle of internal friction (degree)", "max_Angle of internal friction (degree)",
+            angle_range[0], angle_range[1]
+        )
+
+
+    # Define colors and markers
+
+    def get_plot_maps(column):
+    # Base colors/shapes for mission group
+
+        if column == "Type of simulant":
+            return {"Mare": "#1f77b4", "Highland": "#ff7f0e", "Pyroclastic deposit": "#2ca02c", "Other": "gray"}, {"Mare": "circle", "Highland": "square", "Pyroclastic deposit": "diamond", "Other": "cross"}
+
+        if column == "Agency":
+            return {"ESA": "#1f77b4", "NASA": "#ff7f0e", "CNSA": "#2ca02c", "KASA": "#9467bd", "ISRO": "#8c564b", "JAXA": "#d62728", "GISTDA": "#e377c2", "Other": "gray" }, {"ESA": "circle", "NASA": "square", "CNSA": "diamond", "KASA": "triangle-up", "ISRO": "triangle-down", "JAXA": "star", "GISTDA": "hexagon", "Other": "x"}
+        if column == "Test":
+            return {"Direct Shear": "#1f77b4", "Triaxial compression": "#ff7f0e", "Other": "#2ca02c"}, {"Direct Shear": "circle", "Triaxial compression": "square", "Other": "diamond"}
+        
+        return {"Mare": "#1f77b4", "Highland": "#ff7f0e", "Pyroclastic deposit": "#2ca02c", "Other": "gray"}, {"Mare": "circle", "Highland": "square", "Pyroclastic deposit": "diamond", "Other": "cross"}
+
+    color_map, marker_shapes = get_plot_maps(legend_column)
+
+    # --- Determine Y columns ---
+    y_min_col = f"min_{y_axis}"
+    y_max_col = f"max_{y_axis}"
+    y_col_map = {
+        "Average": f"avg_{y_axis}",
+        "Minimum": y_min_col,
+        "Maximum": y_max_col,
+        "Range": y_axis
+    }
+    y_col_name = y_col_map[plot_mode]
+
+    # Check if x-axis is numeric (one of the measurement columns)
+    x_axis_is_numeric = x_axis in range_columns
+
+    # Remove rows with missing Y data
+    if plot_mode == "Range":
+        filtered_plot_df = filtered_plot_df.dropna(subset=[y_min_col, y_max_col])
+        if x_axis_is_numeric:
+            # Also need x-axis range columns
+            x_min_col = f"min_{x_axis}"
+            x_max_col = f"max_{x_axis}"
+            filtered_plot_df = filtered_plot_df.dropna(subset=[x_min_col, x_max_col])
+    else:
+        filtered_plot_df = filtered_plot_df.dropna(subset=[y_col_name])
+
+
+     # --- RANGE MODE PLOTTING ---
+    if plot_mode == "Range":
+        fig = go.Figure()
+
+        # For categorical x-axis, create position mapping
+        if not x_axis_is_numeric:
+            x_categories = filtered_plot_df[x_axis].dropna().unique()
+            x_positions = {val: idx for idx, val in enumerate(x_categories)}
+
+        legend_groups = set()
+
+        if color_map is None:
+            color_map = {}
+            unique_groups = filtered_plot_df[legend_column].dropna().unique()
+            default_colors = px.colors.qualitative.Plotly
+            for i, group in enumerate(unique_groups):
+                color_map[group] = default_colors[i % len(default_colors)]
+
+        for _, row in filtered_plot_df.iterrows():
+            group = row[legend_column]
+            color = color_map.get(group, "gray")
+
+            # --- Handle X-axis positioning ---
+            if x_axis_is_numeric:
+                # X-axis is numeric: use actual range values
+                x_min_col = f"min_{x_axis}"
+                x_max_col = f"max_{x_axis}"
+                x_min = row[x_min_col]
+                x_max = row[x_max_col]
+
+                if pd.isna(x_min) or pd.isna(x_max):
+                    continue
+                
+                x_display = f"{x_min:.2f}–{x_max:.2f}"
+            else:
+                # X-axis is categorical: use position with small width
+                x_val = row[x_axis]
+                if pd.isna(x_val) or x_val not in x_positions:
+                    continue
+                
+                x_pos = x_positions[x_val]
+                x_min = x_pos - 0.35
+                x_max = x_pos + 0.35
+                x_display = str(x_val)
+
+            # --- Handle Y-axis range ---
+            y_min = row[y_min_col]
+            y_max = row[y_max_col]
+
+            if pd.isna(y_min) or pd.isna(y_max):
+                continue
+            
+            # Rectangle coordinates
+            x_coords = [x_min, x_max, x_max, x_min, x_min]
+            y_coords = [y_min, y_min, y_max, y_max, y_min]
+
+            # --- Draw filled rectangle ---
+            show_legend = group not in legend_groups
+            legend_groups.add(group)
+
+            fig.add_trace(go.Scatter(
+                x=x_coords,
+                y=y_coords,
+                fill="toself",
+                fillcolor=color,
+                line=dict(color=color, width=2),
+                opacity=0.5,
+                name=group,
+                legendgroup=group,
+                showlegend=show_legend,
+                hoverinfo="text",
+                hovertext=(
+                    f"Simulant: {row['Simulant']}<br>"
+                    f"{x_axis}: {x_display}<br>"
+                    f"{y_axis}: {y_min:.2f}–{y_max:.2f}<br>"
+                    f"Group: {group}"
+                )
+            ))
+
+        # --- Update layout based on x-axis type ---
+        if x_axis_is_numeric:
+            fig.update_layout(
+                xaxis=dict(
+                    title=x_axis,
+                    type="linear",
+                    tickformat=".2f"
+                )
+            )
+        else:
+            fig.update_layout(
+                xaxis=dict(
+                    title=x_axis,
+                    tickmode="array",
+                    tickvals=list(range(len(x_categories))),
+                    ticktext=list(x_categories)
+                )
+            )
+
+        fig.update_layout(
+            title=f"{y_axis} Range vs {x_axis}",
+            yaxis=dict(title=y_axis, tickformat=".2f"),
+            height=600,
+            width=800,
+            hovermode="closest",
+            legend_title_text=legend_column,
+        )
+
+
+    # --- SCATTER PLOT MODES (Average, Min, Max) ---
+    else:
+        fig = px.scatter(
+            filtered_plot_df,
+            x=x_axis,
+            y=y_col_name,
+            color=legend_column,
+            symbol=legend_column,
+            color_discrete_map=color_map,
+            symbol_map=marker_shapes,
+            hover_data={"Simulant": True, x_axis: True, y_col_name: ":.2f", legend_column: True},
+            title=f"{plot_mode} {y_axis} vs {x_axis}",
+        )
+        fig.update_traces(marker=dict(size=10, opacity=0.7))
+        fig.update_layout(
+            xaxis_title=x_axis,
+            yaxis_title=f"{y_axis} ({plot_mode})",
+            hoverlabel=dict(bgcolor="white", font_size=12, font_color="black"),
+            title=dict(x=0, xanchor='left', font=dict(size=20)),
+            legend_title_text=legend_column,
+            width=800,
+            height=500,
+        )
+     # --- Display plot ---
+    config = {"displayModeBar": False, "scrollZoom": True}
+    st.plotly_chart(fig, width='stretch', config=config)
+
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------- All Data Section ---------------------------
+elif db_choice == "Combined Data":
+    st.title("Combined Dataset")
+
+    all_db_df.columns = all_db_df.columns.str.strip()
+    numeric_cols = ["Year", "Year of publication"]
+    for col in numeric_cols:
+        if col in all_db_df.columns:
+            all_db_df[col] = pd.to_numeric(all_db_df[col], errors="coerce")
+
+    def categorize_mission(mission_name):
+        if pd.isna(mission_name):
+            return "Other"
+        name = mission_name.lower()
+        if "apollo" in name:
+            return "Apollo"
+        elif "orbiter" in name:
+            return "LRO"
+        elif "luna" in name:
+            return "Luna"
+        elif "surveyor" in name:
+            return "Surveyor"
+        elif "chang'e" in name:
+            return "Chang'e"
+        elif "chandrayaan" in name: 
+            return "Chandrayaan"
+        else:
+            return "Simulant"
+        
+    def categorize_soil(soil_name):
+        if pd.isna(soil_name):
+            return "Other"
+        name = soil_name.lower()
+        if "mare" in name:
+            return "Mare"
+        elif "highland" in name:
+            return "Highland"
+        elif "pyroclastic" in name:
+            return "Pyroclastic deposit"
+        else:
+            return "Other"
+    
+    def extract_range(value):
+        if pd.isna(value):
+            return (np.nan, np.nan)
+        
+        if isinstance(value, (int, float)):
+            return (float(value), float(value))
+
+        match = re.findall(r"[-+]?\d*\.?\d+", str(value))
+
+        if len(match) == 0:
+            return (np.nan, np.nan)
+
+        try:
+            numbers = [float(n) for n in match]
+        except ValueError:
+            return (np.nan, np.nan)
+
+        if len(numbers) == 1:
+            val = numbers[0]
+            return (val, val)
+        else:
+            return (min(numbers), max(numbers))
+
+    # --- Columns that may contain ranges ---
+    range_columns = [
+        "Bulk density (g/cm^3)",
+        "Angle of internal friction (degree)",
+        "Cohesion (kPa)",
+        "Bearing capacity (kPa)", 
+        "Normal stress range (kPa)", 
+        "Void ratio", 
+        "Density of grains (g/cm^3)", 
+        "Compressibility Coefficient", 
+        "Depth (cm)", 
+        "Porosity (%)", 
+        "Force applied (N)"
+    ]
+
+    # --- Numeric columns ---
+    for col in range_columns:
+        if col in all_db_df.columns:
+            all_db_df[[f"min_{col}", f"max_{col}"]] = all_db_df[col].apply(
+                lambda x: pd.Series(extract_range(x))
+            )
+            all_db_df[f"avg_{col}"] = all_db_df[
+                [f"min_{col}", f"max_{col}"]
+            ].mean(axis=1)
+
+    all_db_df["Mission Group"] = all_db_df["Mission / Simulant"].apply(categorize_mission)
+    all_db_df["Soil Group"] = all_db_df["Terrain"].apply(categorize_soil)
+
+    # Sidebar Filters
+    def clear_all_filters():
+        st.session_state["soil_group_filter"] = []
+        st.session_state["test_filter"] = []
+        st.session_state["mission_type_filter"] = []
+        st.session_state["mission_group_filter"] = []
+        st.session_state["test_location_filter"] = []
+        st.session_state["agency_filter"] = []
+        st.session_state["developer_filter"] = []
+        st.session_state["year_range"] = (year_min, year_max)
+        st.session_state["density_range"] = (round(dens_min, 2), round(dens_max, 2))
+        st.session_state["cohesion_range"] = (round(coh_min, 1), round(coh_max, 1))
+        st.session_state["angle_range"] = (round(ang_min, 1), round(ang_max, 1))
+        st.session_state["sbc_range"] = (round(sbc_min, 1), round(sbc_max, 1))
+        st.session_state["ns_range"] = (round(nf_min, 1), round(nf_max, 1))
+        st.session_state["vr_range"] = (round(vr_min, 2), round(vr_max, 2))
+        st.session_state["dg_range"] = (round(dg_min, 2), round(dg_max, 2))
+        st.session_state["cc_range"] = (round(cc_min, 4), round(cc_max, 4))
+        st.session_state["depth_range"] = (round(depth_min, 1), round(depth_max, 1))
+        st.session_state["por_range"] = (round(por_min, 1), round(por_max, 1))
+        st.session_state["fa_range"] = (round(fa_min, 1), round(fa_max, 1))
+        st.session_state["selected_columns"] = [
+            col for col in default_columns if col in lunar_db_df.columns
+        ]
+
+    with st.sidebar:
+        st.header("Filter Data")
+        with st.expander("Categorical Filters", expanded=False):
+            st.markdown("### Terrain")
+            soil_options = all_db_df["Terrain"].dropna().astype(str).unique()
+            soil_group_filter = st.multiselect("Select Terrain type", options=sorted(soil_options), key="soil_group_filter")
+            #soil_group_filter = st.multiselect("Select Terrain type", options=sorted(all_db_df["Soil Group"].dropna().unique()), key="soil_group_filter")
+            st.markdown("### Test Type")
+            test_filter = st.multiselect("Select Test Type", options=sorted(all_db_df["Test"].dropna().unique()), key="test_filter")
+            st.markdown("### Agency")
+            agency_filter = st.multiselect("Select Agency", ["NASA", "ESA", "JAXA", "KASA", "ISRO", "CNSA", "GISTDA"], key="agency_filter")
+            st.markdown("### Developer")
+            developer_filter = st.multiselect("Select Developer(s):", options=sorted(all_db_df["Developer"].dropna().unique()), key="developer_filter")
+            st.markdown("### Type of Mission")
+            mission_type_filter = st.multiselect(
+                "Select type of mission:",
+                options=sorted(all_db_df["Type of mission"].dropna().unique()),
+                key="mission_type_filter"
+            )
+
+            st.markdown("### Mission Group")
+            mission_group_filter = st.multiselect(
+                "Select Mission Group", 
+                options=["Apollo", "Luna", "Surveyor", "Chang'e", "Chandrayaan", "Lunar Reconnaissance Orbiter", "Other"],
+                key="mission_group_filter"
+            )
+
+            st.markdown("### Test Location")
+            test_location_filter = st.multiselect(
+                "Select Test Location", 
+                options=["In-Situ", "On Earth", "Remote", "Other"],
+                key="test_location_filter"
+            )
+
+            # --- Numeric Range Filters ---
+        with st.expander("Numeric Range Filters", expanded=False):
+            year_range = None
+            year_min = None 
+            year_max = None
+            st.markdown("### Publication Year")
+            if "Year of publication" in all_db_df.columns:
+                numeric_years = pd.to_numeric(all_db_df["Year of publication"], errors="coerce")
+                year_min = int(numeric_years.min(skipna=True))
+                year_max = int(numeric_years.max(skipna=True))
+
+                if "year_range" not in st.session_state:
+                    st.session_state["year_range"] = (year_min, year_max)
+
+                year_range = st.slider(
+                    "Select Year of publication Range",
+                    min_value=year_min,
+                    max_value=year_max,
+                    key="year_range"
+                )
+            else:
+                year_range = None
+
+
+            st.markdown("### Bulk Density (g/cm³)")
+            if "min_Bulk density (g/cm^3)" in all_db_df.columns:
+                dens_min = float(all_db_df["min_Bulk density (g/cm^3)"].min(skipna=True))
+                dens_max = float(all_db_df["max_Bulk density (g/cm^3)"].max(skipna=True))
+
+                if "density_range" not in st.session_state:
+                    st.session_state["density_range"] = (round(dens_min, 2), round(dens_max, 2))    
+
+                density_range = st.slider(
+                    "Select Density Range",
+                    min_value=round(dens_min, 2),
+                    max_value=round(dens_max, 2),
+                    value=(round(dens_min, 2), round(dens_max, 2)),
+                    key="density_range"
+                )
+            else:
+                density_range = None
+
+            st.markdown("### Cohesion (kPa)")
+            if "min_Cohesion (kPa)" in all_db_df.columns:
+                coh_min = float(all_db_df["min_Cohesion (kPa)"].min(skipna=True))
+                coh_max = float(all_db_df["max_Cohesion (kPa)"].max(skipna=True))
+
+                if "cohesion_range" not in st.session_state:
+                    st.session_state["cohesion_range"] = (round(coh_min, 1), round(coh_max, 1))
+
+                cohesion_range = st.slider(
+                    "Select Cohesion Range",
+                    min_value=round(coh_min, 1),
+                    max_value=round(coh_max, 1),
+                    value=(round(coh_min, 1), round(coh_max, 1)),
+                    key="cohesion_range"
+                )
+            else:
+                cohesion_range = None
+
+            st.markdown("### Angle of Internal Friction (°)")
+            if "min_Angle of internal friction (degree)" in all_db_df.columns:
+                ang_min = float(all_db_df["min_Angle of internal friction (degree)"].min(skipna=True))
+                ang_max = float(all_db_df["max_Angle of internal friction (degree)"].max(skipna=True))
+
+                if "angle_range" not in st.session_state:
+                    st.session_state["angle_range"] = (round(ang_min, 1), round(ang_max, 1))
+
+                angle_range = st.slider(
+                    "Select Angle Range",
+                    min_value=round(ang_min, 1),
+                    max_value=round(ang_max, 1),
+                    value=(round(ang_min, 1), round(ang_max, 1)),
+                    key="angle_range"
+                )
+            else:
+                angle_range = None
+
+            st.markdown("### Bearing Capacity (kPa)")
+            if "min_Bearing capacity (kPa)" in all_db_df.columns:
+                sbc_min = float(all_db_df["min_Bearing capacity (kPa)"].min(skipna=True))
+                sbc_max = float(all_db_df["max_Bearing capacity (kPa)"].max(skipna=True))
+
+                if "sbc_range" not in st.session_state:
+                    st.session_state["sbc_range"] = (round(sbc_min, 1), round(sbc_max, 1))
+
+                sbc_range = st.slider(
+                   "Select Bearing Capacity Range",
+                   min_value=round(sbc_min, 1),
+                   max_value=round(sbc_max, 1),
+                   value=(round(sbc_min, 1), round(sbc_max, 1)),
+                   key="sbc_range"
+               )
+            else:
+                sbc_range = None
+
+            st.markdown("### Normal Stress (kPa)")
+            if "min_Normal stress range (kPa)" in all_db_df.columns:
+                nf_min = float(all_db_df["min_Normal stress range (kPa)"].min(skipna=True))
+                nf_max = float(all_db_df["max_Normal stress range (kPa)"].max(skipna=True))
+
+                if "ns_range" not in st.session_state:
+                    st.session_state["ns_range"] = (round(nf_min, 1), round(nf_max, 1))
+
+                nf_range = st.slider(
+                   "Select Normal Stress Range",
+                   min_value=round(nf_min, 1),
+                   max_value=round(nf_max, 1),
+                   value=(round(nf_min, 1), round(nf_max, 1)),
+                   key="ns_range"
+               )
+            else:
+                nf_range = None
+
+            st.markdown("### Void Ratio")
+            if "min_Void ratio" in all_db_df.columns:
+                vr_min = float(all_db_df["min_Void ratio"].min(skipna=True))
+                vr_max = float(all_db_df["max_Void ratio"].max(skipna=True))
+
+                if "vr_range" not in st.session_state:
+                    st.session_state["vr_range"] = (round(vr_min, 2), round(vr_max, 2))
+
+                vr_range = st.slider(
+                   "Select Void Ratio Range",
+                   min_value=round(vr_min, 2),
+                   max_value=round(vr_max, 2),
+                   value=(round(vr_min, 2), round(vr_max, 2)),
+                   key="vr_range"
+               )
+            else:
+                vr_range = None
+
+            st.markdown("### Density of Grains (g/cm³)")
+            if "min_Density of grains (g/cm^3)" in all_db_df.columns:
+                dg_min = float(all_db_df["min_Density of grains (g/cm^3)"].min(skipna=True))
+                dg_max = float(all_db_df["max_Density of grains (g/cm^3)"].max(skipna=True))
+
+                if "dg_range" not in st.session_state:
+                    st.session_state["dg_range"] = (round(dg_min, 2), round(dg_max, 2))
+
+                dg_range = st.slider(
+                   "Select Density of Grains Range",
+                   min_value=round(dg_min, 2),
+                   max_value=round(dg_max, 2),
+                   value=(round(dg_min, 2), round(dg_max, 2)),
+                   key="dg_range"
+               )
+            else:
+                dg_range = None
+
+            st.markdown("### Compressibility Coefficient")
+            if "min_Compressibility Coefficient" in all_db_df.columns:
+                cc_min = float(all_db_df["min_Compressibility Coefficient"].min(skipna=True))
+                cc_max = float(all_db_df["max_Compressibility Coefficient"].max(skipna=True))
+
+                if "cc_range" not in st.session_state:
+                    st.session_state["cc_range"] = (round(cc_min, 4), round(cc_max, 4))
+
+                cc_range = st.slider(
+                   "Select Compressibility Coefficient Range",
+                   min_value=round(cc_min, 4),
+                   max_value=round(cc_max, 4),
+                   value=(round(cc_min, 4), round(cc_max, 4)),
+                   key="cc_range"
+               )
+            else:
+                cc_range = None
+
+            st.markdown("### Depth (cm)")
+            if "min_Depth (cm)" in all_db_df.columns:
+                depth_min = float(all_db_df["min_Depth (cm)"].min(skipna=True))
+                depth_max = float(all_db_df["max_Depth (cm)"].max(skipna=True))
+
+                if "depth_range" not in st.session_state:
+                    st.session_state["depth_range"] = (round(depth_min, 1), round(depth_max, 1))
+
+                depth_range = st.slider(
+                   "Select Depth Range",
+                   min_value=round(depth_min, 1),
+                   max_value=round(depth_max, 1),
+                   value=(round(depth_min, 1), round(depth_max, 1)),
+                   key="depth_range"
+               )
+            else:
+                depth_range = None  
+
+            st.markdown("### Porosity (%)")
+            if "min_Porosity (%)" in all_db_df.columns:
+                por_min = float(all_db_df["min_Porosity (%)"].min(skipna=True))
+                por_max = float(all_db_df["max_Porosity (%)"].max(skipna=True))
+
+                if "por_range" not in st.session_state:
+                    st.session_state["por_range"] = (round(por_min, 1), round(por_max, 1))
+
+                por_range = st.slider(
+                   "Select Porosity Range",
+                   min_value=round(por_min, 1),
+                   max_value=round(por_max, 1),
+                   value=(round(por_min, 1), round(por_max, 1)),
+                   key="por_range"
+               )
+            else:
+                por_range = None
+
+            st.markdown("### Force applied (N)")
+            if "min_Force applied (N)" in all_db_df.columns:
+                fa_min = float(all_db_df["min_Force applied (N)"].min(skipna=True))
+                fa_max = float(all_db_df["max_Force applied (N)"].max(skipna=True))
+
+                if "fa_range" not in st.session_state:
+                    st.session_state["fa_range"] = (round(fa_min, 1), round(fa_max, 1))
+
+                fa_range = st.slider(
+                   "Select Force applied Range",
+                   min_value=round(fa_min, 1),
+                   max_value=round(fa_max, 1),
+                   value=(round(fa_min, 1), round(fa_max, 1)),
+                   key="fa_range"
+               )
+            else:
+                fa_range = None
+        
+        with st.expander("Select Table Columns", expanded=False):
+            st.divider()
+            st.header("Display Options")
+            all_columns = all_db_df.columns.tolist()
+            default_columns = [
+        "Mission / Simulant", "Developer", "Agency", "Moon Location", "Terrain", "Year","Type of mission","Test", "Test location", 
+        "Bulk density (g/cm^3)", 
+        "Angle of internal friction (degree)", 
+        "Cohesion (kPa)", 
+        "Bearing capacity (kPa)", "Depth (cm)", 
+        "Source","Year of publication", "DOI / URL", "Comments"]         
+
+            def select_all_columns():
+                st.session_state["selected_columns"] = all_columns
+
+            def clear_columns():
+                st.session_state["selected_columns"] = default_columns
+
+            col_select_all, col_clear_selection = st.columns([1, 1])
+
+            with col_select_all:
+                st.button(
+                    "Select All Parameters", 
+                    on_click=select_all_columns, 
+                    use_container_width=True
+                )
+
+            with col_clear_selection:
+                 st.button(
+                    "Clear Selection", 
+                    on_click=clear_columns, 
+                    use_container_width=True
+                )
+
+            selected_columns = st.multiselect(
+                "Select columns to display:",
+                options=all_columns,
+                default=[col for col in default_columns if col in all_columns],
+                key="selected_columns"
+            )
+
+        st.button("Clear all filters", use_container_width=True, on_click=clear_all_filters)
+
+
+
+
+
+    # --- Apply Filters ---
+    filtered_db_df = all_db_df.copy()
+    numeric_cols = [
+    "Year of publication",
+    "Bulk density (g/cm^3)",
+    "Angle of internal friction (degree)",
+    "Cohesion (kPa)",
+    "Bearing capacity (kPa)",
+    "Normal stress range (kPa)",
+    "Void ratio",
+    "Density of grains (g/cm^3)",
+    "Compressibility Coefficient",
+    "Depth (cm)",
+    "Porosity (%)",
+    "Force applied (N)",
+    "Year"
+    ]
+
+    for col in numeric_cols:
+        if col in filtered_db_df.columns:
+            filtered_db_df[col] = pd.to_numeric(filtered_db_df[col], errors="coerce")
+
+    # Terrain type filter
+    #if soil_group_filter:
+    #    filtered_db_df = filtered_db_df[filtered_db_df["Terrain"].isin(soil_group_filter)]
+
+    if soil_group_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Terrain"].isin(soil_group_filter)]
+
+    if agency_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Agency"].isin(agency_filter)]
+
+    if developer_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Developer"].isin(developer_filter)]
+
+    # Test type filter
+    if test_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Test"].isin(test_filter)]
+
+    # Mission group filter (use Mission Group, not Mission)
+    if mission_group_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Mission Group"].isin(mission_group_filter)]
+
+    # Mission type filter
+    if mission_type_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Type of mission"].isin(mission_type_filter)]
+
+    # Test location filter
+    if test_location_filter:
+        filtered_db_df = filtered_db_df[filtered_db_df["Test location"].isin(test_location_filter)]
+
+    # Year of publication filter (only if slider active)
+    if year_range and isinstance(year_range, tuple) and (year_range != (year_min, year_max)):
+        filtered_db_df = filtered_db_df[
+            (filtered_db_df["Year of publication"] >= year_range[0]) &
+            (filtered_db_df["Year of publication"] <= year_range[1])
+        ]
+
+
+    # --- Numeric filters ---
+    def filter_numeric_range(df, col_min, col_max, min_val, max_val):
+        return df[
+            ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
+            ((df[col_min].le(max_val)) | (df[col_min].isna()))
+        ]
+
+    if density_range and (density_range != (round(dens_min, 2), round(dens_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Bulk density (g/cm^3)", "max_Bulk density (g/cm^3)",
+            density_range[0], density_range[1]
+        )
+
+
+    if cohesion_range and (cohesion_range != (round(coh_min, 2), round(coh_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Cohesion (kPa)", "max_Cohesion (kPa)",
+            cohesion_range[0], cohesion_range[1]
+        )
+
+    if angle_range and (angle_range != (round(ang_min, 2), round(ang_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Angle of internal friction (degree)", "max_Angle of internal friction (degree)",
+            angle_range[0], angle_range[1]
+        )
+
+    if sbc_range and (sbc_range != (round(sbc_min, 2), round(sbc_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Bearing capacity (kPa)", "max_Bearing capacity (kPa)",
+            sbc_range[0], sbc_range[1]
+        )
+
+    if nf_range and (nf_range != (round(nf_min, 2), round(nf_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Normal stress range (kPa)", "max_Normal stress range (kPa)",
+            nf_range[0], nf_range[1]
+        )
+
+    if vr_range and (vr_range != (round(vr_min, 2), round(vr_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Void ratio", "max_Void ratio",
+            vr_range[0], vr_range[1]
+        )
+    
+    if dg_range and (dg_range != (round(dg_min, 2), round(dg_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Density of grains (g/cm^3)", "max_Density of grains (g/cm^3)",
+            dg_range[0], dg_range[1]
+        )
+
+    if cc_range and (cc_range != (round(cc_min, 4), round(cc_max, 4))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Compressibility Coefficient", "max_Compressibility Coefficient",
+            cc_range[0], cc_range[1]
+        )
+    
+    if depth_range and (depth_range != (round(depth_min, 2), round(depth_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Depth (cm)", "max_Depth (cm)",
+            depth_range[0], depth_range[1]
+        )
+
+    if por_range and (por_range != (round(por_min, 2), round(por_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Porosity (%)", "max_Porosity (%)",
+            por_range[0], por_range[1]
+        )
+
+    if fa_range and (fa_range != (round(fa_min, 2), round(fa_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Force applied (N)", "max_Force applied (N)",
+            fa_range[0], fa_range[1]
+        )
+    
+    # --- Prepare display dataframe with ranges as original strings ---
+    display_df = filtered_db_df.copy()
+
+    # List of numeric columns where you want to display original ranges
+    numeric_range_cols = [
+        "Bulk density (g/cm^3)",
+        "Angle of internal friction (degree)",
+        "Cohesion (kPa)",
+        "Bearing capacity (kPa)",
+        "Normal stress range (kPa)",
+        "Void ratio",
+        "Density of grains (g/cm^3)",
+        "Compressibility Coefficient",
+        "Depth (cm)",
+        "Porosity (%)",
+        "Force applied (N)"
+    ]
+
+    for col in numeric_range_cols:
+        # Keep _min, _max, _avg numeric, only replace the original column for display
+        if col in display_df.columns:
+            display_df[col] = all_db_df.loc[display_df.index, col]
+
+    # --- Display filtered table ---
+    st.subheader("Database Table")
+    if selected_columns:
+        st.dataframe(display_df[selected_columns])
+    else:
+        st.info("No columns selected. Please select at least one column to display.")
+
+    st.markdown(
+        "<p style='font-size:12px; color:gray;'>* Indicates values estimated for the measurements.</p>",
+        unsafe_allow_html=True
+    )
+
+
+
+
+#---------- General Interpretation Section -------------
+#elif db_choice == "Lunar Regolith General Interpretations":
+#    st.title("Lunar Regolith General Interpretations")
+#    st.markdown("""Work in progress""")
+#    def extract_range(value):
+#        if pd.isna(value):
+#            return (np.nan, np.nan)
+#        
+#        if isinstance(value, (int, float)):
+#            return (float(value), float(value))
+#
+#        match = re.findall(r"[-+]?\d*\.?\d+", str(value))
+#
+#        if len(match) == 0:
+#            return (np.nan, np.nan)
+#
+#        try:
+#            numbers = [float(n) for n in match]
+#        except ValueError:
+#            return (np.nan, np.nan)
+#
+#        if len(numbers) == 1:
+#            val = numbers[0]
+#            return (val, val)
+#        else:
+#            return (min(numbers), max(numbers))
+#
+#    # --- Columns that may contain ranges ---
+#    range_columns = [
+#        "Bulk density (g/cm^3)",
+#        "Angle of internal friction (degree)",
+#        "Cohesion (kPa)",
+#        "Bearing capacity (kPa)", 
+#        "Normal stress range (kPa)", 
+#        "Void ratio", 
+#        "Density of grains (g/cm^3)", 
+#        "Compressibility Coefficient", 
+#        "Depth (cm)", 
+#        "Porosity (%)", 
+#        "Force applied (N)"
+#    ]
+#
+#------------------ Detailed Mission Pages Section ---------------------------
+elif db_choice == "Detailed Mission Pages":
+    st.title("Detailed Lunar Mission Pages")
+
+    BASE_DIR = Path(__file__).resolve().parent
+    MISSION_DIR = BASE_DIR / "mission_pages"
+
+    if not MISSION_DIR.exists():
+        st.error(f"Could not find mission directory: {MISSION_DIR}")
+    else:
+        # 1. Categorize missions into groups
+        mission_groups = {
+            "Apollo": {},
+            "Luna": {},
+            "Surveyor": {},
+            "Chang'e": {},
+            "Chandrayaan": {},
+            "Other": {}
+        }
+
+        for path in MISSION_DIR.glob("*.py"):
+            if path.name.startswith("__"): continue
+            
+            raw_name = path.stem.lower()
+            mission_name = pretty_mission_name(raw_name) # Assuming this helper exists
+            
+            if mission_name in ["Mission Page Template", "Mission"]: continue
+
+            # Sort into the correct dictionary key
+            if "apollo" in raw_name:
+                mission_groups["Apollo"][mission_name] = path
+            elif "luna" in raw_name:
+                mission_groups["Luna"][mission_name] = path
+            elif "surveyor" in raw_name:
+                mission_groups["Surveyor"][mission_name] = path
+            elif "chang" in raw_name:
+                mission_groups["Chang'e"][mission_name] = path
+            elif "chandrayaan" in raw_name:
+                mission_groups["Chandrayaan"][mission_name] = path
+            else:
+                mission_groups["Other"][mission_name] = path
+
+        # 2. Main Page Selection UI
+        st.write("### Explore Mission Data")
+        
+        # Create two columns for a clean look
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            group_choice = st.selectbox(
+                "Select a Space Program:",
+                options=list(mission_groups.keys())
+            )
+
+        with col2:
+            # Filter specific missions based on the group choice
+            specific_missions = mission_groups[group_choice]
+            mission_choice = st.selectbox(
+                "Select a Specific Mission:",
+                options=[""] + sorted(specific_missions.keys()),
+                format_func=lambda x: f"Select {group_choice} mission..." if x == "" else x
+            )
+
+        # 3. Load and display selected mission page
+        if mission_choice:
+            st.divider()
+            mission_file = specific_missions[mission_choice]
+
+            module_name = f"mission_{mission_file.stem}"
+            spec = importlib.util.spec_from_file_location(module_name, mission_file)
+            mission_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mission_module)
+            
+            if hasattr(mission_module, "show_mission"):
+                mission_module.show_mission(lunar_db_df)
+            else:
+                st.warning("No show_mission() function found.")
+        else:
+            st.info("Please select a specific mission from the dropdown menus above.")
+
+#elif db_choice == "Detailed Mission Pages":
+#    st.title("Detailed Lunar Mission Pages")
+#
+#    BASE_DIR = Path(__file__).resolve().parent
+#    MISSION_DIR = BASE_DIR / "mission_pages"
+#
+#    if not MISSION_DIR.exists():
+#        st.error(f"Could not find mission directory: {MISSION_DIR}")
+#    else:
+#        available_missions = {}
+#        for path in MISSION_DIR.glob("*.py"):
+#            if path.name.startswith("__"):
+#                continue
+#                
+#            raw_name = path.stem.lower()
+#                
+#            is_mission_page = (
+#                    "apollo" in raw_name or 
+#                    "luna" in raw_name or 
+#                    "surveyor" in raw_name or 
+#                    "chang" in raw_name or
+#                    "chandrayaan" in raw_name
+#                )
+#            if not is_mission_page:
+#                continue
+#
+#            clean_name = raw_name.replace("_", " ").replace("-", " ")
+#            mission_name = pretty_mission_name(raw_name)
+#
+#            if mission_name in ["Mission Page Template", "Mission"]:
+#                continue
+#
+#                    
+#            available_missions[mission_name] = path
+#
+#        # --- Sidebar selection ---
+#        st.sidebar.header("Mission Selection")
+#
+#        mission_choice = st.sidebar.selectbox(
+#            "Select a mission to view details:",
+#            options=[""] + sorted(available_missions.keys()), 
+#            format_func=lambda x: "Select a mission" if x == "" else x
+#        )
+#
+#        # --- Load and display selected mission page ---
+#        if mission_choice:
+#            st.divider()
+#            
+#            mission_file = available_missions[mission_choice]
+#
+#            module_name = f"mission_{mission_file.stem}"
+#            
+#            spec = importlib.util.spec_from_file_location(module_name, mission_file)
+#            mission_module = importlib.util.module_from_spec(spec)
+#            spec.loader.exec_module(mission_module)
+#            
+#            if hasattr(mission_module, "show_mission"):
+#                mission_module.show_mission(lunar_db_df)
+#            else:
+#                st.warning("No show_mission() function found in this mission script.")
+#        else:
+#            st.info("Select a mission from the sidebar to display its detailed page.")
+
+# ------------------- Footer --------------------
+import requests
+import datetime
+
+
+
+def get_last_commit_date(repo="leoniegasteiner/Lunar-Regolith-Database", branch="main"):
+    try:
+        token = st.secrets.get("GITHUB_TOKEN", None)
+        headers = {"Accept": "application/vnd.github.v3+json"}
+        if token:
+            headers["Authorization"] = f"token {token}"
+
+        url = f"https://api.github.com/repos/{repo}/commits/{branch}"
+        resp = requests.get(url, headers=headers, timeout=10)
+        resp.raise_for_status()
+
+        data = resp.json()
+        commit_iso = data["commit"]["committer"]["date"]
+        dt = datetime.datetime.fromisoformat(commit_iso.replace("Z", "+00:00"))
+        return dt.strftime("%d %B %Y")
+
+    except Exception as e:
+        return "Unknown"
+
+last_updated = get_last_commit_date()
+
+st.markdown(
+    f"<hr><p style='font-size:11px; color:gray; text-align:center;'>© 2026 Lunar Regolith Database <br> Contact us at gasteinerleonie@gmail.com <br> Last updated: {last_updated}</p>",
+    unsafe_allow_html=True
+)
+
