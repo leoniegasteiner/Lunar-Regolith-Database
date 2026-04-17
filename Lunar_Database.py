@@ -64,7 +64,7 @@ def load_database_data():
     header=0,
     skip_blank_lines=False,
     )
-    df.columns =  ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Porosity (%)", "Force applied (N)", "Source","Year of publication", "DOI / URL","Comments"]
+    df.columns =  ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Cone penetration resistance (kPa)", "Force applied (N)", "Source","Year of publication", "DOI / URL","Comments"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
     return df
 
@@ -188,12 +188,15 @@ if db_choice == "Lunar Regolith Database":
         "Angle of internal friction (degree)",
         "Cohesion (kPa)",
         "Bearing capacity (kPa)", 
+        "Static bearing pressure (kPa)",
         "Normal stress range (kPa)", 
         "Void ratio", 
         "Density of grains (g/cm^3)", 
         "Compressibility Coefficient", 
         "Depth (cm)", 
+        "Specific gravity",
         "Porosity (%)", 
+        "Cone penetration resistance (kPa)", 
         "Force applied (N)"
     ]
 
@@ -220,12 +223,14 @@ if db_choice == "Lunar Regolith Database":
         st.session_state["density_range"] = (round(dens_min, 2), round(dens_max, 2))
         st.session_state["cohesion_range"] = (round(coh_min, 1), round(coh_max, 1))
         st.session_state["angle_range"] = (round(ang_min, 1), round(ang_max, 1))
+        st.session_state["static_bearing_range"] = (round(staticbc_min, 1), round(staticbc_max, 1))
         st.session_state["sbc_range"] = (round(sbc_min, 1), round(sbc_max, 1))
         st.session_state["ns_range"] = (round(nf_min, 1), round(nf_max, 1))
         st.session_state["vr_range"] = (round(vr_min, 2), round(vr_max, 2))
         st.session_state["dg_range"] = (round(dg_min, 2), round(dg_max, 2))
         st.session_state["cc_range"] = (round(cc_min, 4), round(cc_max, 4))
         st.session_state["depth_range"] = (round(depth_min, 1), round(depth_max, 1))
+        st.session_state["specific_gravity_range"] = (round(sg_min, 2), round(sg_max, 2))
         st.session_state["por_range"] = (round(por_min, 1), round(por_max, 1))
         st.session_state["fa_range"] = (round(fa_min, 1), round(fa_max, 1))
         st.session_state["selected_columns"] = [
@@ -359,6 +364,24 @@ if db_choice == "Lunar Regolith Database":
             else:
                 sbc_range = None
 
+            st.markdown("### Static Bearing Pressure (kPa)")
+            if "min_Static bearing pressure (kPa)" in lunar_db_df.columns:
+                staticbc_min = float(lunar_db_df["min_Static bearing pressure (kPa)"].min(skipna=True))
+                staticbc_max = float(lunar_db_df["max_Static bearing pressure (kPa)"].max(skipna=True))
+
+                if "static_bearing_range" not in st.session_state:
+                    st.session_state["static_bearing_range"] = (round(staticbc_min, 1), round(staticbc_max, 1))
+
+                static_bearing_range = st.slider(
+                    "Select Static Bearing Pressure Range",
+                    min_value=round(staticbc_min, 1),
+                    max_value=round(staticbc_max, 1),
+                    value=(round(staticbc_min, 1), round(staticbc_max, 1)),
+                    key="static_bearing_range"
+                )
+            else:
+                static_bearing_range = None
+
             st.markdown("### Normal Stress (kPa)")
             if "min_Normal stress range (kPa)" in lunar_db_df.columns:
                 nf_min = float(lunar_db_df["min_Normal stress range (kPa)"].min(skipna=True))
@@ -448,6 +471,23 @@ if db_choice == "Lunar Regolith Database":
                )
             else:
                 depth_range = None  
+
+
+            st.markdown("### Specific Gravity")
+            if "min_Specific gravity" in lunar_db_df.columns:
+                sg_min = float(lunar_db_df["min_Specific gravity"].min(skipna=True))
+                sg_max = float(lunar_db_df["max_Specific gravity"].max(skipna=True))
+
+                if "specific_gravity_range" not in st.session_state:
+                    st.session_state["specific_gravity_range"] = (round(sg_min, 2), round(sg_max, 2))
+
+                specific_gravity_range = st.slider(
+                   "Select Specific Gravity Range",
+                   min_value=round(sg_min, 2),
+                   max_value=round(sg_max, 2),
+                   value=(round(sg_min, 2), round(sg_max, 2)),
+                   key="specific_gravity_range"
+               )
 
             st.markdown("### Porosity (%)")
             if "min_Porosity (%)" in lunar_db_df.columns:
@@ -541,11 +581,13 @@ if db_choice == "Lunar Regolith Database":
     "Angle of internal friction (degree)",
     "Cohesion (kPa)",
     "Bearing capacity (kPa)",
+    "Static bearing pressure (kPa)",
     "Normal stress range (kPa)",
     "Void ratio",
     "Density of grains (g/cm^3)",
     "Compressibility Coefficient",
     "Depth (cm)",
+    "Specific gravity",
     "Porosity (%)",
     "Force applied (N)",
     "Year"
@@ -619,6 +661,13 @@ if db_choice == "Lunar Regolith Database":
             sbc_range[0], sbc_range[1]
         )
 
+    if static_bearing_range and (static_bearing_range != (round(staticbc_min, 2), round(staticbc_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Static bearing pressure (kPa)", "max_Static bearing pressure (kPa)",
+            static_bearing_range[0], static_bearing_range[1]
+        )
+
     if nf_range and (nf_range != (round(nf_min, 2), round(nf_max, 2))):
         filtered_db_df = filter_numeric_range(
             filtered_db_df,
@@ -654,6 +703,13 @@ if db_choice == "Lunar Regolith Database":
             depth_range[0], depth_range[1]
         )
 
+    if specific_gravity_range and (specific_gravity_range != (round(sg_min, 2), round(sg_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Specific gravity", "max_Specific gravity",
+            specific_gravity_range[0], specific_gravity_range[1]
+        )
+
     if por_range and (por_range != (round(por_min, 2), round(por_max, 2))):
         filtered_db_df = filter_numeric_range(
             filtered_db_df,
@@ -679,11 +735,13 @@ if db_choice == "Lunar Regolith Database":
         "Angle of internal friction (degree)",
         "Cohesion (kPa)",
         "Bearing capacity (kPa)",
+        "Static bearing pressure (kPa)",
         "Normal stress range (kPa)",
         "Void ratio",
         "Density of grains (g/cm^3)",
         "Compressibility Coefficient",
         "Depth (cm)",
+        "Specific gravity",
         "Porosity (%)",
         "Force applied (N)"
     ]
@@ -714,11 +772,11 @@ if db_choice == "Lunar Regolith Database":
     x_axis = st.selectbox("X-axis (categorical & numeric)", options=[
         "Mission", "Location", "Terrain", "Test", "Type of mission", 
         "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
-        "Cohesion (kPa)", "Bearing capacity (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Porosity (%)", "Force applied (N)", "Year of publication"
+        "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Force applied (N)", "Year of publication"
     ])
     y_axis = st.selectbox("Y-axis (numeric)", options=[
         "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
-        "Cohesion (kPa)", "Bearing capacity (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Porosity (%)", "Force applied (N)", "Year of publication"
+        "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Force applied (N)", "Year of publication"
     ])
     plot_mode = st.radio("Select value type to plot", ["Range", "Average", "Minimum", "Maximum"], horizontal=True)
 
@@ -739,11 +797,13 @@ if db_choice == "Lunar Regolith Database":
         "Angle of internal friction (degree)",
         "Cohesion (kPa)",
         "Bearing capacity (kPa)", 
+        "Static bearing pressure (kPa)",
         "Normal stress range (kPa)",
         "Void ratio",
         "Density of grains (g/cm^3)",
         "Compressibility Coefficient",
         "Depth (cm)",
+        "Specific gravity",
         "Porosity (%)",
         "Force applied (N)"
     ]            
@@ -816,6 +876,13 @@ if db_choice == "Lunar Regolith Database":
             sbc_range[0], sbc_range[1]
         )
 
+    if static_bearing_range and (static_bearing_range != (round(staticbc_min, 2), round(staticbc_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Static bearing pressure (kPa)", "max_Static bearing pressure (kPa)",
+            static_bearing_range[0], static_bearing_range[1]
+        )
+
     if nf_range and (nf_range != (round(nf_min, 2), round(nf_max, 2))):
         filtered_plot_df = filter_numeric_range(
             filtered_plot_df,
@@ -849,6 +916,13 @@ if db_choice == "Lunar Regolith Database":
             filtered_plot_df,
             "min_Depth (cm)", "max_Depth (cm)",
             depth_range[0], depth_range[1]
+        )
+
+    if specific_gravity_range and (specific_gravity_range != (round(sg_min, 2), round(sg_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Specific gravity", "max_Specific gravity",
+            specific_gravity_range[0], specific_gravity_range[1]
         )
 
     if por_range and (por_range != (round(por_min, 2), round(por_max, 2))):
