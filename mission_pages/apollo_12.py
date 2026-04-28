@@ -31,29 +31,25 @@ def show_mission(df):
             use_container_width=True
         )
 
-#    # --- Data and plot ---
-#    st.header("Lunar Regolith Density Variation with Depth")
-#
-#    # No numeric data available
-#    data = pd.DataFrame({
-#        "Testing Method": [],
-#        "Depth (cm)": [],
-#        "Density (g/cm³)": []
-#    })
-#
-#    # --- Plot or message ---
-#    if data.empty:
-#        st.info("No quantitative density–depth data available for the Apollo 12 mission.")
-#    else:
-#        fig = px.line(
-#            data,
-#            x="Depth (cm)",
-#            y="Density (g/cm³)",
-#            color="Testing Method",
-#            title="Density vs Depth",
-#            markers=True
-#        )
-#        st.plotly_chart(fig, use_container_width=True)
-#
-#
-#
+    st.subheader("Apollo 12 Lunar Samples")
+    st.markdown("""The Apollo 12 mission landed on the Moon on the 19th of November 1969, and returned a total of 34.35 kg of Lunar material to Earth. 
+                The samples included a contingency sample of 1.9 kg containing loose material scooped from the surface, a selected sample of 14.8 kg including loose material and a drive tube, 
+                a documented sample of 11 kg with different types of rocks and soil collected for different experiments, including a double core tube sample and a unopened drive tube, and a tote-bag sample containing 6.6 kg of soil and rocks. 
+                The samples were received and analyzed in the Lunar Receiving Laboratory (LRL). 
+                The table below lists all the samples returned from the Apollo 12 mission, based on the data available in the Apollo 12 Lunar Sample Information technical report from NASA (J. Warner, 1970, "Apollo 12 Lunar-Sample Information, NASA TR R-353).""")
+    @st.cache_data
+    def load_sample_data():
+        df = pd.read_csv(
+        "mission_pages/Apollo 12.csv",
+        sep=";",
+        dtype=str,
+        header=0,
+        skip_blank_lines=False,
+        )
+        df.columns =  ["Sample ID", "Serial Number", "Return Container", "Container", "Sample Type", "Weight (g)"]
+        df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+        return df
+
+    samples_data = load_sample_data()
+
+    st.dataframe(samples_data)

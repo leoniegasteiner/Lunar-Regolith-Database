@@ -13,6 +13,8 @@ def show_mission(df):
     if MISSION_NAME == "Apollo 11":
         st.markdown("""
         <div style="text-align: justify;">
+    The Apollo 11 lunar lander touched down on the Moon on July 20 1969. 
+    The primary objectives of the mission were to land men on the Lunar surface, collect lunar material samples, and return the crew safely to Earth.
     Specific scientific objectives of the Soil Mechanics Investigation at the Apollo 11 landing site included the following:
     to verify lunar soil models previously formulated from Earth-based observations, laboratory investigations, and data from lunar orbiting and unmanned landing missions.
     <br><br>
@@ -37,121 +39,26 @@ def show_mission(df):
             use_container_width=True
         )
 
-#    # --- Data and plot ---
-#    st.header("Lunar Regolith Density Variation with Depth")
-#
-#    # Data
-#    data = pd.DataFrame({
-#        "Testing Method": ["Penetrometer", "Penetrometer", "Penetrometer", "Core Tube"],
-#        "Depth (cm)": ["0-2", "0-2", "0-2", "0-10"],
-#        "Density (g/cm³)": [1.36, 1.77, 1.80, 1.66],
-#        "Porosity (%)": [None, None, None, 46.5],
-#        "Force Applied (N)": [1.82, 10.5, 54.5, None]
-#    })
-#
-#    # --- Sidebar Filters ---
-#    methods_selected = st.multiselect(
-#        "Select Testing Method(s)", data["Testing Method"].unique(), default=data["Testing Method"].unique()
-#    )
-#    value_to_plot = st.radio("Value to plot", ["Density (g/cm³)", "Porosity (%)", "Force Applied (N)"])
-#    filtered_data = data[data["Testing Method"].isin(methods_selected)].copy()
-#
-#    # --- Convert depth ranges and value ranges for plotting and table ---
-#    processed_data = []
-#    for _, row in filtered_data.iterrows():
-#        # Depth
-#        try:
-#            depth_start, depth_end = map(float, row["Depth range (cm)"].split("-"))
-#        except:
-#            continue
-#
-#        # Value handling (supports ranges)
-#        val_str = str(row[value_to_plot])
-#        if val_str.upper() == "NA":
-#            val_start = val_end = None
-#        elif "-" in val_str:
-#            try:
-#                val_start, val_end = map(float, val_str.split("-"))
-#            except:
-#                val_start = val_end = None
-#        else:
-#            try:
-#                val_start = val_end = float(val_str)
-#            except:
-#                val_start = val_end = None
-#
-#        processed_data.append({
-#            "Testing Method": row["Testing Method"],
-#            "Depth Start (cm)": depth_start,
-#            "Depth End (cm)": depth_end,
-#            f"{value_to_plot} Start": val_start,
-#            f"{value_to_plot} End": val_end
-#        })
-#
-#    table_df = pd.DataFrame(processed_data)
-#
-#    # --- Display table ---
-#    st.subheader(f"{value_to_plot} vs Depth Table")
-#    if not table_df.empty:
-#        st.dataframe(table_df)
-#    else:
-#        st.info("No data available for the selected filters.")
-#
-#    # --- Prepare bars ---
-#    bars = []
-#    color_map = {method: px.colors.qualitative.Plotly[i % 10] for i, method in enumerate(filtered_data["Testing Method"].unique())}
-#
-#    for _, row in filtered_data.iterrows():
-#        # Depth
-#        try:
-#            depth_start, depth_end = map(float, row["Depth range (cm)"].split("-"))
-#        except:
-#            continue
-#
-#        # Value handling
-#        val_str = str(row[value_to_plot])
-#        if val_str.upper() == "NA":
-#            continue
-#        if "-" in val_str:
-#            try:
-#                val_start, val_end = map(float, val_str.split("-"))
-#            except:
-#                continue
-#        else:
-#            val_start = val_end = float(val_str)
-#
-#        # Rectangle for each bar (x = value range, y = depth range)
-#        bars.append(go.Scatter(
-#            x=[val_start, val_end, val_end, val_start, val_start],
-#            y=[depth_start, depth_start, depth_end, depth_end, depth_start],
-#            fill="toself",
-#            fillcolor=color_map[row["Testing Method"]],
-#            line=dict(color=color_map[row["Testing Method"]], width=2),  # outline matches method color
-#            opacity=0.5,
-#            name=row["Testing Method"],
-#            hoverinfo='text',
-#            hovertext=f"Method: {row['Testing Method']}<br>{value_to_plot}: {val_start}-{val_end}<br>Depth: {depth_start}-{depth_end} cm",
-#            showlegend=False
-#        ))
-#
-#    fig = go.Figure(bars)
-#
-#    # Manual legend for methods
-#    for method, color in color_map.items():
-#        fig.add_trace(go.Scatter(
-#            x=[None], y=[None],
-#            mode='markers',
-#            marker=dict(size=10, color=color, line=dict(color=color, width=2)),
-#            name=method,
-#            showlegend=True
-#        ))
-#
-#    fig.update_layout(
-#        title=f"{value_to_plot} vs Depth",
-#        xaxis_title=value_to_plot,
-#        yaxis_title="Depth (cm)",
-#        yaxis=dict(autorange="reversed"),
-#        height=600
-#    )
-#
-#    st.plotly_chart(fig, use_container_width=True)
+    st.subheader("Apollo 11 Lunar Samples")
+    st.markdown(""" the Apollo 11 mission returned a total of 21.55 kg of lunar material, representing the first documented rock samples brough back from an extraterrestial body.
+                The samples were received and analyzed in the Lunar Receiving Laboratory (LRL). A re-examination of the samples was done in 1977, applying the knowledge earned during the five subsequent Apollo missions.
+                The contingency sample of the mission was collected by scooping loose material from the surface near the lunar module into a bag. 
+                The bulk sample consisted of 15kg of soil and rocks scooped into a container, and the documented sample consisted of approximately 20 samples picked up by the astronaut. 
+                Additionally to the rocks, the documented sample included two drive tubes that were inserted into the lunar surface using a hammer.
+                The table below includes information on the lunar samples returned from the Apollo 11 mission, based on the data available in the revised Apollo 11 lunar sample catalog (F.E. Kramer, D.B. Twendell, and W.J.A Walton, 1977, "Apollo-11 Lunar Sample Catalogue (Revised), JSC12522). """)
+    @st.cache_data
+    def load_sample_data():
+        df = pd.read_csv(
+        "mission_pages/Apollo 11.csv",
+        sep=";",
+        dtype=str,
+        header=0,
+        skip_blank_lines=False,
+        )
+        df.columns =  ["Sample ID", "Serial Number", "Return Container", "Container", "Sample Type", "Weight (g)"]
+        df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+        return df
+
+    samples_data = load_sample_data()
+
+    st.dataframe(samples_data)

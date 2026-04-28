@@ -1,0 +1,560 @@
+sample ID;serial number ;return container;Container;sample type;weight (g)
+60001;180;NA;Drill core bit;NA;30.1
+60002;18;NA;Drill core stem;NA;211.9
+60003;19;NA;Drill core stem;NA;215.5
+60004;15;NA;Drill core stem;NA;202.7
+60005;24;NA;Drill core stem;NA;76.1
+60006;12;NA;drive tube ;NA;165.6
+60007;14;NA;Drill core bottom;NA;105.7
+60009;2054;NA;Drive tube;NA;759.8
+60010;2045;NA;Drive tube ;NA;634.3
+60013;2032;NA;Drive tube;NA;757.2
+60014;2027;NA;Drive tube ;NA;570.3
+60015;NA;SCB5;NA;pristine cataclastic anorthosite ;5574
+60016;NA;SCB7;NA;fragmental polymict breccia;4307
+60017;NA;SCB7;NA;variolitic impact melt / breccia;2102
+60018;NA;SCB7;NA;basaltic impact melt ;1501
+60019;NA;SCB4;NA;glassy breccia;1887
+60025;NA;SCB3;NA;pristine cataclastic anorthosite ;1836
+60035;NA;SRC1;DB351;polymict granoblastic breccia;1052
+60055;NA;SRC1;DB355;pristine cataclastic anorthosite ;35.48
+60056;NA;SRC1;DB355;cataclastic anorthosite ;16.07
+60057;NA;SRC1;DB355;cataclastic anorthosite ;3.1
+60058;NA;SRC1;DB355;fragmental polymict breccia;2.12
+60059;NA;SRC1;DB355;cataclastic anorthosite ;1.05
+60075;NA;SRC 1;DB373;fragmental polymict breccia;183.8
+60095;NA;SCB1;DB004;glass ;46.6
+60115;NA;SCB1;DB381;glassy breccia;132.5
+60135;NA;SCB6;DB430;cataclastic anorthosite ;137.7
+60215;NA;SCB6;DB13;pristine cataclastic anorthosite ;385.8
+60235;NA;SCB6;DB15;basaltic impact melt ;70.13
+60255;NA;SCB6;DB17;regolith breccia;871
+60275;NA;SCB7;DB18;glassy breccia;255.2
+60315;NA;SCB7;DB20;poikilitic impact melt;787.7
+60335;NA;SCB6;DB331;basaltic impact melt ;317.8
+60515;NA;SCB4;DB349;cataclastic anorthosite ;16.74
+60516;NA;SCB4;DB349;cataclastic anorthosite ;7.91
+60517;NA;SCB4;DB349;cataclastic anorthosite ;1.23
+60518;NA;SCB4;DB349;cataclastic anorthosite ;1.12
+60519;NA;SCB4;DB349;cataclastic anorthosite ;0.5
+60525;NA;SCB4;DB349;poikilitic impact melt;12.84
+60526;NA;SCB4;DB349;poikilitic impact melt;8.42
+60527;NA;SCB4;DB349;crystalline polymict breccia;7.36
+60528;NA;SCB4;DB349;glassy impact melt ;2.94
+60529;NA;SCB4;DB349;basaltic impact melt ;1.24
+60535;NA;SCB4;DB349;fragmental polymict breccia;7.23
+60615;NA;SCB4;DB347;basaltic impact melt ;32.97
+60616;NA;SCB4;DB347;poikilitic impact melt;3.4
+60617;NA;SCB4;DB347;crystalline impact melt;2.77
+60618;NA;SCB4;DB347;basaltic impact melt ;21.67
+60619;NA;SCB4;DB347;granoblastic anorthosite;28
+60625;NA;SCB4;DB347;poikilitic impact melt;117
+60626;NA;SCB4;DB347;poikilitic impact melt;15.87
+60627;NA;SCB4;DB347;crystalline impact melt;12.09
+60628;NA;SCB4;DB347;cataclastic anorthosite ;6.86
+60629;NA;SCB4;DB347;cataclastic anorthosite ;4.92
+60635;NA;SCB4;DB347;basaltic impact melt ;15.05
+60636;NA;SCB4;DB347;basaltic impact melt ;35.65
+60637;NA;SCB4;DB347;fragmental polymict breccia;7.98
+60638;NA;SCB4;DB347;fragmental polymict breccia;0.72
+60639;NA;SCB4;DB347;fragmental polymict breccia;175.1
+60645;NA;SCB4;DB347;fine-grained impact melt;33.5
+60646;NA;SCB4;DB347;fine-grained impact melt;3.39
+60647;NA;SCB4;DB347;glassy impact melt ;1.76
+60648;NA;SCB4;DB347;glassy breccia;2.84
+60649;NA;SCB4;DB347;glassy breccia;1.03
+60655;NA;SCB4;DB347;glassy impact melt ;8.63
+60656;NA;SCB4;DB347;glassy impact melt ;11.23
+60657;NA;SCB4;DB347;fragmental polymict breccia;6.05
+60658;NA;SCB4;DB347;glassy impact melt ;5.47
+60659;NA;SCB4;DB347;fragmental polymict breccia;22.2
+60665;NA;SCB4;DB347;glass;90.1
+60666;NA;SCB4;DB347;glassy impact melt ;15.95
+60667;NA;SCB4;DB347;glassy impact melt ;7.66
+60668;NA;SCB4;DB347;glassy impact melt ;2.91
+60669;NA;SCB4;DB347;glass;2.54
+60675;NA;SCB4;DB347;fine-grained impact melt;1.3
+60676;NA;SCB4;DB347;glassy impact melt ;8.92
+60677;NA;SCB4;DB347;glassy breccia;5.23
+60678;NA;SCB4;DB347;glassy impact melt ;1.25
+60679;NA;SCB4;DB347;glassy impact melt ;2.96
+61015;NA;SRC1;NA;dilithologic breccia;1804
+61016;NA;BSLSS;NA;basaltic impact melt ;11729
+61017;NA;SRC1;NA;cataclastic anorthosite ;2.62
+61135;NA;SRC1;DB362;fragmental polymict breccia;245.1
+61155;NA;SRC1;DB371;glassy impact melt ;47.59
+61156;NA;SRC1;DB371;meta-poikilitic impact melt;58.46
+61157;NA;SRC1;DB371;fragmental polymict breccia;11.26
+61158;NA;SRC1;DB371;fragmental polymict breccia;14.79
+61175;NA;SRC1;DB364;fragmental polymict breccia;542.7
+61195;NA;SRC1;DB002;regolith breccia;587.9
+61225;NA;SRC1;DB357;crystalline impact melt;3.52
+61226;NA;SRC1;DB357;cataclastic anorthosite ;1.53
+61245;NA;SRC1;DB352;fine-grained impact melt;8.25
+61246;NA;SRC1;DB352;fine-grained impact melt;6.05
+61247;NA;SRC1;DB352;poikilitic impact melt;2.48
+61248;NA;SRC1;DB352;fragmental polymict breccia;1.71
+61249;NA;SRC1;DB352;basaltic impact melt ;1.17
+61255;NA;SRC1;DB352;cindery glass;1.13
+61295;NA;SRC1;DB353;regolith breccia;187
+61505;NA;SRC1;DB354;fine-grained impact melt;1.651
+61515;NA;SRC1;DB372;fragmental polymict breccia;2
+61516;NA;SRC1;DB372;fragmental polymict breccia;2.38
+61517;NA;SRC1;DB372;fragmental polymict breccia;0.47
+61518;NA;SRC1;DB372;fragmental polymict breccia;0.16
+61519;NA;SRC1;DB372;fragmental polymict breccia;0.33
+61525;NA;SRC1;DB372;glassy breccia;10.35
+61526;NA;SRC1;DB372;fragmental polymict breccia;4.08
+61527;NA;SRC1;DB372;fragmental polymict breccia;0.52
+61528;NA;SRC1;DB372;fragmental polymict breccia;0.24
+61529;NA;SRC1;DB372;fragmental polymict breccia;0.28
+61535;NA;SRC1;DB372;fragmental polymict breccia;0.23
+61536;NA;SRC1;DB372;glassy breccia;85.99
+61537;NA;SRC1;DB372;fragmental polymict breccia;6.62
+61538;NA;SRC1;DB372;fragmental polymict breccia;4.76
+61539;NA;SRC1;DB372;glassy breccia;5.78
+61545;NA;SRC1;DB372;fragmental polymict breccia;3.61
+61546;NA;SRC1;DB372;glassy impact melt ;110.7
+61547;NA;SRC1;DB372;basaltic impact melt ;17.93
+61548;NA;SRC1;DB372;glassy impact melt ;24.18
+61549;NA;SRC1;DB372;basaltic impact melt ;3.76
+61555;NA;SRC1;DB372;glassy impact melt ;3.46
+61556;NA;SRC1;DB372;glass ;2.23
+61557;NA;SRC1;DB372;glassy impact melt ;0.93
+61558;NA;SRC1;DB372;glass;3
+61559;NA;SRC1;DB372;glassy breccia;0.62
+61565;NA;SRC1;DB372;glassy breccia;0.88
+61566;NA;SRC1;DB372;glassy impact melt ;0.66
+61567;NA;SRC1;DB372;glassy impact melt ;0.19
+61568;NA;SRC1;DB372;basaltic impact melt ;19.32
+61569;NA;SRC1;DB372;poikilitic impact melt;12.02
+61575;NA;SRC1;DB372;crystalline impact melt;5.26
+61576;NA;SRC1;DB372;plagioclase crystal;5.87
+61577;NA;SRC1;DB372;granoblastic anorthosite;0.21
+62235;NA;SRC1;DB005;poikilitic impact melt;319.6
+62236;NA;SRC1;DB005;pristine noritic anorthosite;57.27
+62237;NA;SRC1;DB005;pristine troctolitic anorthosite;62.35
+62238;NA;SRC1;DB005;cataclastic anorthosite ;1.565
+62245;NA;SRC1;DB006;crystalline impact melt;6.03
+62246;NA;SRC1;DB006;cataclastic anorthosite ;4.59
+62247;NA;SRC1;DB006;fragmental polymict breccia;2.11
+62248;NA;SRC1;DB006;fragmental polymict breccia;1.61
+62249;NA;SRC1;DB006;fragmental polymict breccia;1.41
+62255;NA;SRC1;DB007;dilithologic breccia;1239
+62275;NA;SRC1;DB009;cataclastic anorthosite ;443
+62285;NA;SRC1;DB011;friable regolith clod;3.524
+62286;NA;SRC1;DB011;friable regolith clod;2.917
+62287;NA;SRC1;DB011;fine-grained impact melt;2.474
+62288;NA;SRC1;DB011;fragmental polymict breccia;1.939
+62289;NA;SRC1;DB011;friable regolith clod;1.135
+62295;NA;SRC1;DB010;basaltic impact melt ;250.8
+62305;NA;SRC1;DB011;fragmental polymict breccia;0.81
+62315;NA;SRC1;DB006;fragmental polymict breccia;0.77
+63335;NA;SCB6;DB428;fine-grained impact melt;65.4
+63355;NA;SCB6;DB429;poikilitic impact melt;68.24
+63505;NA;SCB4;DB346;fine-grained impact melt;5.41
+63506;NA;SCB4;DB346;basaltic impact melt ;4.9
+63507;NA;SCB4;DB346;fragmental polymict breccia;2.78
+63508;NA;SCB4;DB346;fine-grained impact melt;2.61
+63509;NA;SCB4;DB346;fine-grained impact melt;2.05
+63515;NA;SCB4;DB346;fine-grained impact melt;1.32
+63525;NA;SCB4;DB345;fine-grained impact melt;6.68
+63526;NA;SCB4;DB345;fine-grained impact melt;2.91
+63527;NA;SCB4;DB345;basaltic impact melt ;6.1
+63528;NA;SCB4;DB345;fine-grained impact melt;4.12
+63529;NA;SCB4;DB345;fine-grained impact melt;23.48
+63535;NA;SCB4;DB345;basaltic impact melt ;6.85
+63536;NA;SCB4;DB345;basaltic impact melt ;1.02
+63537;NA;SCB4;DB345;basaltic impact melt ;4.78
+63538;NA;SCB4;DB345;fine-grained impact melt;35.06
+63539;NA;SCB4;DB345;fine-grained impact melt;0.39
+63545;NA;SCB4;DB345;basaltic impact melt ;15.95
+63546;NA;SCB4;DB345;fine-grained impact melt;9.23
+63547;NA;SCB4;DB345;poikilitic impact melt;4.9
+63548;NA;SCB4;DB345;fine-grained impact melt;1.13
+63549;NA;SCB4;DB345;basaltic impact melt ;26.57
+63555;NA;SCB4;DB345;fine-grained impact melt;3.38
+63556;NA;SCB4;DB345;poikilitic impact melt;18.1
+63557;NA;SCB4;DB345;fine-grained impact melt;7.53
+63558;NA;SCB4;DB345;poikilitic impact melt;7.09
+63559;NA;SCB4;DB345;glass;6.04
+63565;NA;SCB4;DB345;glass;0.94
+63566;NA;SCB4;DB345;glass;19.61
+63567;NA;SCB4;DB345;glass;3.21
+63568;NA;SCB4;DB345;glass;4.06
+63569;NA;SCB4;DB345;glass;0.43
+63575;NA;SCB4;DB345;glass;4.72
+63576;NA;SCB4;DB345;glass;1.23
+63577;NA;SCB4;DB345;crystalline polymict breccia;12.41
+63578;NA;SCB4;DB345;fine-grained impact melt;19.6
+63579;NA;SCB4;DB345;fine-grained impact melt;11.35
+63585;NA;SCB4;DB345;basaltic impact melt ;32.62
+63586;NA;SCB4;DB345;fine-grained impact melt;1.98
+63587;NA;SCB4;DB345;poikilitic impact melt;20.51
+63588;NA;SCB4;DB345;fragmental polymict breccia;2.4
+63589;NA;SCB4;DB345;fragmental polymict breccia;13.5
+63595;NA;SCB4;DB345;fragmental polymict breccia;2.1
+63596;NA;SCB4;DB345;poikilitic impact melt;6.4
+63597;NA;SCB4;DB345;poikilitic impact melt;5.67
+63598;NA;SCB4;DB345;poikilitic impact melt;12.66
+64001;2038;NA;Drive tube;drive tube ;752.3
+64002;2043;NA;Drive tube;drive tube ;584.1
+64425;NA;SCB3;DB399;dilithologic breccia;14.62
+64435;NA;SCB1;DB394;fine-grained impact melt;1079
+64455;NA;SCB3;DB397;basaltic impact melt ;56.68
+64475;NA;SCB3;DB398;dilithologic breccia;1032
+64476;NA;SCB3;DB398;dilithologic breccia;125.1
+64477;NA;SCB3;DB398;glassy breccia;19.32
+64478;NA;SCB3;DB398;poikilitic impact melt;12.34
+64505;NA;SCB1;DB396;fragmental polymict breccia;5.392
+64506;NA;SCB1;DB396;basaltic impact melt ;5.079
+64507;NA;SCB1;DB396;dilithologic breccia;4.474
+64508;NA;SCB1;DB396;dilithologic breccia;4.168
+64509;NA;SCB1;DB396;fragmental polymict breccia;3.15
+64515;NA;SCB1;DB396;basaltic impact melt ;3.761
+64516;NA;SCB1;DB396;cataclastic anorthosite ;2.929
+64517;NA;SCB1;DB396;crystalline polymict breccia;1.546
+64518;NA;SCB1;DB396;fine-grained impact melt;1.49
+64519;NA;SCB1;DB396;cataclastic anorthosite ;1.124
+64525;NA;SCB1;DB396;cataclastic anorthosite ;1.107
+64535;NA;SCB1;DB395;dilithologic breccia;256.6
+64536;NA;SCB1;DB395;dilithologic breccia;177.5
+64537;NA;SCB1;DB395;dilithologic breccia;124.3
+64538;NA;SCB1;DB395;polylithologic breccia;30.03
+64539;NA;SCB1;DB395;dilithologic breccia;17.76
+64545;NA;SCB1;DB395;dilithologic breccia;14.09
+64546;NA;SCB1;DB395;dilithologic breccia;12.8
+64547;NA;SCB1;DB395;fragmental polymict breccia;10.9
+64548;NA;SCB1;DB395;dilithologic breccia;8.49
+64549;NA;SCB1;DB395;dilithologic breccia;6.47
+64555;NA;SCB1;DB395;fragmental dilithologic breccia;5.29
+64556;NA;SCB1;DB395;dilithologic breccia;5.15
+64557;NA;SCB1;DB395;fine-grained impact melt;4.79
+64558;NA;SCB1;DB395;dilithologic breccia;3.13
+64559;NA;SCB1;DB395;basaltic impact melt ;21.82
+64565;NA;SCB1;DB395;glassy impact melt ;14.73
+64566;NA;SCB1;DB395;fine-grained impact melt;14.13
+64567;NA;SCB1;DB395;poikilitic impact melt;13.86
+64568;NA;SCB1;DB395;poikilitic impact melt;9.379
+64569;NA;SCB1;DB395;poikilitic impact melt;14.32
+64575;NA;SCB1;DB395;poikilitic impact melt;6.837
+64576;NA;SCB1;DB395;basaltic impact melt ;6.916
+64577;NA;SCB1;DB395;glassy breccia;5.692
+64578;NA;SCB1;DB395;fine-grained impact melt;5.596
+64579;NA;SCB1;DB395;fine-grained impact melt;4.802
+64585;NA;SCB1;DB395;basaltic impact melt ;4.696
+64586;NA;SCB1;DB395;fine-grained impact melt;3.337
+64587;NA;SCB1;DB395;fragmental polymict breccia;7.18
+64588;NA;SCB1;DB395;fragmental polymict breccia;2.546
+64589;NA;SCB1;DB395;cataclastic anorthosite ;4.039
+64815;NA;SCB3;DB401;meta-poikilitic impact melt;20.9
+64816;NA;SCB3;DB401;poikilitic impact melt;3.83
+64817;NA;SCB3;DB401;basaltic impact melt ;8.98
+64818;NA;SCB3;DB401;dilithologic breccia;15.98
+64819;NA;SCB3;DB401;pristine cataclastic anorthosite;11.76
+64825;NA;SCB3;DB401;fragmental polymict breccia;21.5
+64826;NA;SCB3;DB401;fragmental polymict breccia;11.33
+64827;NA;SCB3;DB401;fragmental polymict breccia;8.11
+64828;NA;SCB3;DB401;fragmental polymict breccia;0.97
+64829;NA;SCB3;DB401;fragmental polymict breccia;2.2
+64835;NA;SCB3;DB401;fragmental polymict breccia;2.32
+64836;NA;SCB3;DB401;fragmental polymict breccia;1.76
+64837;NA;SCB3;DB401;fragmental polymict breccia;2.18
+65015;NA;SCB3;NA;poikilitic impact melt;1802
+65016;NA;SCB1;NA;glass;21.02
+65035;NA;SCB1;DB404;cataclastic anorthosite ;446.1
+65055;NA;SCB3;DB337;basaltic impact melt ;500.8
+65056;NA;SCB3;DB337;variolitic impact melt;64.78
+65075;NA;SCB1;DB403;basaltic impact melt ;107.9
+65095;NA;SCB3;DB336;fragmental polymict breccia;560.1
+65315;NA;SCB1;DB405;pristine cataclastic anorthosite;300.4
+65325;NA;SCB1;DB405;pristine cataclastic anorthosite;67.87
+65326;NA;SCB1;DB405;cataclastic anorthosite ;36.4
+65327;NA;SCB1;DB405;pristine cataclastic anorthosite;9.97
+65328;NA;SCB1;DB405;cataclastic anorthosite ;1.28
+65329;NA;SCB1;DB405;cataclastic anorthosite ;1.92
+65335;NA;SCB1;DB405;cataclastic anorthosite ;1.63
+65336;NA;SCB1;DB405;cataclastic anorthosite ;0.6
+65337;NA;SCB1;DB405;fragmental polymict breccia;11.57
+65338;NA;SCB1;DB405;fragmental polymict breccia;2.65
+65339;NA;SCB1;DB405;fragmental polymict breccia;1.62
+65345;NA;SCB1;DB405;fragmental polymict breccia;0.86
+65346;NA;SCB1;DB405;fragmental polymict breccia;0.8
+65347;NA;SCB1;DB405;fragmental polymict breccia;0.43
+65348;NA;SCB1;DB405;glass ;11.66
+65349;NA;SCB1;DB405;glassy impact melt ;7.58
+65355;NA;SCB1;DB405;glassy impact melt ;4.94
+65356;NA;SCB1;DB405;glassy impact melt ;2.53
+65357;NA;SCB1;DB405;poikilitic impact melt;18.76
+65358;NA;SCB1;DB405;poikilitic impact melt;7.02
+65359;NA;SCB1;DB405;fragmental polymict breccia;2.53
+65365;NA;SCB1;DB405;poikilitic impact melt;2.16
+65366;NA;SCB1;DB405;glass;8.48
+65515;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);50.25
+65516;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);10.49
+65517;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);11.85
+65518;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);9.477
+65519;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);10.58
+65525;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);7.483
+65526;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);3.545
+65527;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);2.89
+65528;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);3.082
+65529;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);2.555
+65535;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);2.658
+65536;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);1.575
+65537;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);2.426
+65538;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);2.342
+65539;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);2.18
+65545;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);1.797
+65546;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);1.346
+65547;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);1.587
+65548;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);3.023
+65549;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);2.094
+65555;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);2.202
+65556;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);1.17
+65557;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);1.114
+65558;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);1.695
+65559;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);1.533
+65565;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);0.852
+65566;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);1.998
+65567;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);1.289
+65568;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);0.808
+65569;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);0.873
+65575;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);0.907
+65576;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);0.906
+65577;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);0.706
+65578;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);0.32
+65579;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);0.612
+65585;NA;SRC2;DB332;cindery glass;9.294
+65586;NA;SRC2;DB332;fragmental polymict breccia (regolith clod);6.763
+65587;NA;SRC2;DB332;fragmental polymict breccia;2.141
+65588;NA;SRC2;DB332;fragmental polymict breccia;9.626
+65715;NA;SCB1;DB334;fragmental polymict breccia;31.36
+65716;NA;SCB1;DB334;fragmental polymict breccia;14.28
+65717;NA;SCB1;DB334;fragmental polymict breccia;7.415
+65718;NA;SCB1;DB334;fragmental polymict breccia;10.61
+65719;NA;SCB1;DB334;fragmental polymict breccia;7.04
+65725;NA;SCB1;DB334;fragmental polymict breccia;6.67
+65726;NA;SCB1;DB334;fragmental polymict breccia;5.19
+65727;NA;SCB1;DB334;fragmental polymict breccia;4.3
+65728;NA;SCB1;DB334;fragmental polymict breccia;4.22
+65729;NA;SCB1;DB334;fragmental polymict breccia;3.81
+65735;NA;SCB1;DB334;fragmental polymict breccia;4.26
+65736;NA;SCB1;DB334;fragmental polymict breccia;2.74
+65737;NA;SCB1;DB334;fragmental polymict breccia;0.85
+65738;NA;SCB1;DB334;fragmental polymict breccia;1.17
+65739;NA;SCB1;DB334;fragmental polymict breccia;0.95
+65745;NA;SCB1;DB334;fragmental polymict breccia;7.76
+65746;NA;SCB1;DB334;fragmental polymict breccia;4.19
+65747;NA;SCB1;DB334;fragmental polymict breccia;0.82
+65748;NA;SCB1;DB334;fragmental polymict breccia;0.97
+65749;NA;SCB1;DB334;fragmental polymict breccia;0.95
+65755;NA;SCB1;DB334;glassy impact melt ;1.42
+65756;NA;SCB1;DB334;fragmental polymict breccia;0.77
+65757;NA;SCB1;DB334;glassy impact melt ;26.2
+65758;NA;SCB1;DB334;dilithologic breccia;5.95
+65759;NA;SCB1;DB334;cataclastic anorthosite ;3.11
+65765;NA;SCB1;DB334;dilithologic breccia;1.12
+65766;NA;SCB1;DB334;cataclastic anorthosite ;1.01
+65767;NA;SCB1;DB334;glass;17.51
+65768;NA;SCB1;DB334;fragmental polymict breccia;3.25
+65769;NA;SCB1;DB334;fragmental polymict breccia;2.74
+65775;NA;SCB1;DB334;fragmental polymict breccia;3.5
+65776;NA;SCB1;DB334;glassy impact melt ;2.33
+65777;NA;SCB1;DB334;poikilitic impact melt;16.53
+65778;NA;SCB1;DB334;poikilitic impact melt;12.22
+65779;NA;SCB1;DB334;basaltic impact melt ;12.71
+65785;NA;SCB1;DB334;basaltic impact melt ;5.16
+65786;NA;SCB1;DB334;glassy breccia;83.02
+65787;NA;SCB1;DB334;crystalline polymict breccia;8.28
+65788;NA;SCB1;DB334;glassy impact melt ;9.32
+65789;NA;SCB1;DB334;cataclastic anorthosite ;12.24
+65795;NA;SCB1;DB334;basaltic impact melt ;6.84
+65905;NA;SCB1;DB406;basaltic impact melt ;12.08
+65906;NA;SCB1;DB406;basaltic impact melt ;6.584
+65907;NA;SCB1;DB406;fragmental polymict breccia;4.658
+65908;NA;SCB1;DB406;glass;2.162
+65909;NA;SCB1;DB406;cataclastic anorthosite ;2.024
+65915;NA;SCB1;DB406;glassy impact melt ;2.06
+65916;NA;SCB1;DB406;cataclastic anorthosite ;0.994
+65925;NA;SCB1;DB335;fragmental polymict breccia;3.82
+65926;NA;SCB1;DB335;fragmental polymict breccia;3.03
+65927;NA;SCB1;DB335;fragmental polymict breccia;0.72
+66035;NA;SCB1;DB407;fragmental polymict breccia;211.4
+66036;NA;SCB1;DB407;fragmental polymict breccia;4.384
+66037;NA;SCB1;DB407;glassy breccia;3.718
+66055;NA;SCB1;DB408;polymict breccia;1306
+66075;NA;SRC2;DB409;fragmental polymict breccia;347.1
+66085;NA;SRC2;DB339;fragmental polymict breccia;3.66
+66086;NA;SRC2;DB339;fragmental polymict breccia;2.027
+66095;NA;SCB1;DB410;basaltic impact melt ;1185
+67015;NA;SCB7;NA;fragmental polymict breccia;1194
+67016;NA;BSLSS;NA;fragmental polymict breccia;4262
+67025;NA;BSLSS;NA;basaltic impact melt ;16.06
+67035;NA;SCB7;DB382;fragmental polymict breccia;245.2
+67055;NA;SCB7;DB383;fragmental polymict breccia;221.9
+67075;NA;SCB7;DB384;cataclastic anorthosite ;219.2
+67095;NA;SCB7;DB385;basaltic impact melt ;339.8
+67115;NA;SCB7;DB386;fragmental polymict breccia;240
+67215;NA;SCB6;PDB1;fragmental breccia;276.2
+67235;NA;SCB6;PDB2;poikilitic impact melt;937.2
+67415;NA;SCB6;DB387;cataclastic noritic anorthosite;174.9
+67435;NA;SCB6;DB415;crystalline polymict breccia;353.5
+67455;NA;SCB6;DB416;fragmental polymict breccia;942.2
+67475;NA;SCB6;DB418;glassy impact melt ;175.1
+67485;NA;SCB6;DB419;fine-grained impact melt;6.55
+67486;NA;SCB6;DB419;glass;5.8
+67487;NA;SCB6;DB419;fine-grained impact melt;2.65
+67488;NA;SCB6;DB419;fine-grained impact melt;2.25
+67489;NA;SCB6;DB419;basaltic impact melt ;2.06
+67495;NA;SCB6;DB419;fine-grained impact melt;1.34
+67515;NA;SCB6;DB420;fragmental polymict breccia;60.8
+67516;NA;SCB6;DB420;crystalline polymict breccia;14.38
+67517;NA;SCB6;DB420;fragmental polymict breccia;9.65
+67518;NA;SCB6;DB420;fragmental polymict breccia;3.74
+67519;NA;SCB6;DB420;fragmental polymict breccia;2.04
+67525;NA;SCB6;DB420;cataclastic anorthosite ;2.52
+67526;NA;SCB6;DB420;fragmental polymict breccia;2.44
+67527;NA;SCB6;DB420;fragmental polymict breccia;2.4
+67528;NA;SCB6;DB420;fragmental polymict breccia;1.24
+67529;NA;SCB6;DB420;cataclastic anorthosite ;1.13
+67535;NA;SCB6;DB420;fragmental breccia;0.99
+67536;NA;SCB6;DB420;fragmental breccia;1.2
+67537;NA;SCB6;DB420;cataclastic anorthosite ;1.29
+67538;NA;SCB6;DB420;fragmental polymict breccia;1.77
+67539;NA;SCB6;DB420;fragmental polymict breccia;2.12
+67545;NA;SCB6;DB420;fragmental polymict breccia;1.88
+67546;NA;SCB6;DB420;fragmental polymict breccia;1.5
+67547;NA;SCB6;DB420;fragmental polymict breccia;0.83
+67548;NA;SCB6;DB420;fragmental polymict breccia;1.36
+67549;NA;SCB6;DB420;fragmental polymict breccia;43.1
+67555;NA;SCB6;DB420;glassy breccia;3.54
+67556;NA;SCB6;DB420;basaltic impact melt ;82.1
+67557;NA;SCB6;DB420;regolith breccia;3.3
+67558;NA;SCB6;DB420;fragmental polymict breccia;2.56
+67559;NA;SCB6;DB420;basaltic impact melt ;32.9
+67565;NA;SCB6;DB420;poikilitic impact melt;10.43
+67566;NA;SCB6;DB420;granoblastic impactite;4.31
+67567;NA;SCB6;DB420;glass;11.51
+67568;NA;SCB6;DB420;glass;11.05
+67569;NA;SCB6;DB420;glass;7.27
+67575;NA;SCB6;DB420;glassy breccia;4.47
+67576;NA;SCB6;DB420;glassy breccia;3.98
+67605;NA;SCB6;DB422;fragmental polymict breccia;44.52
+67615;NA;SCB6;DB421;fine-grained impact melt;8.77
+67616;NA;SCB6;DB421;fine-grained impact melt;21.29
+67617;NA;SCB6;DB421;fine-grained impact melt;14.32
+67618;NA;SCB6;DB421;crystalline breccia;11.17
+67619;NA;SCB6;DB421;fine-grained impact melt;6.15
+67625;NA;SCB6;DB421;fine-grained impact melt;6.72
+67626;NA;SCB6;DB421;crystalline polymict breccia;19.19
+67627;NA;SCB6;DB421;glass;79.64
+67629;NA;SCB6;DB421;glass;5.43
+67635;NA;SCB6;DB421;pristine cataclastic anorthosite;9.12
+67636;NA;SCB6;DB421;pristine cataclastic anorthosite;3.23
+67637;NA;SCB6;DB421;pristine cataclastic anorthosite;2.34
+67638;NA;SCB6;DB421;fragmental polymict breccia;7.23
+67639;NA;SCB6;DB421;crystalline polymict breccia;7.34
+67645;NA;SCB6;DB421;fragmental polymict breccia;0.84
+67646;NA;SCB6;DB421;fragmental polymict breccia;3.94
+67647;NA;SCB6;DB421;regolith breccia;47.72
+67648;NA;SCB6;DB421;crystalline polymict breccia;7.88
+67649;NA;SCB6;DB421;fragmental polymict breccia;1.6
+67655;NA;SCB6;DB421;crystalline polymict breccia;4.11
+67656;NA;SCB6;DB421;fragmental polymict breccia;1.93
+67657;NA;SCB6;DB421;fragmental polymict breccia;1.7
+67658;NA;SCB6;DB421;fragmental polymict breccia;1.35
+67659;NA;SCB6;DB421;crystalline polymict breccia;1.62
+67665;NA;SCB6;DB421;fragmental polymict breccia;5.88
+67666;NA;SCB6;DB421;glassy breccia;5.47
+67667;NA;SCB6;DB421;pristine feldspathic lherzolite;7.89
+67668;NA;SCB6;DB421;poikilitic impact melt;3.58
+67669;NA;SCB6;DB421;fragmental polymict breccia;12.54
+67675;NA;SCB6;DB421;glass;1.07
+67676;NA;SCB6;DB421;variolitic impact melt;2.33
+67685;NA;SCB6;DB421;cindery glass;28.04
+67686;NA;SCB6;DB421;cindery glass;11.75
+67687;NA;SCB6;DB421;cindery glass;7.6
+67688;NA;SCB6;DB421;cindery glass;2.32
+67695;NA;SCB6;DB421;glass;14.02
+67696;NA;SCB6;DB421;glass;7.85
+67697;NA;SCB6;DB421;glassy breccia;5.54
+67705;NA;SCB4;DB388;glass;5.82
+67706;NA;SCB4;DB388;fragmental polymict breccia;1.52
+67707;NA;SCB4;DB388;fragmental polymict breccia;1.42
+67708;NA;SCB4;DB388;fragmental polymict breccia;1.33
+67715;NA;SCB4;DB423;fine-grained impact melt;9.44
+67716;NA;SCB4;DB423;fine-grained impact melt;17.02
+67717;NA;SCB4;DB423;glassy breccia;5.56
+67718;NA;SCB4;DB423;fine-grained impact melt;41.05
+67719;NA;SCB4;DB423;fine-grained impact melt;2.13
+67725;NA;SCB4;DB423;crystalline polymict breccia;5.85
+67726;NA;SCB4;DB423;crystalline polymict breccia;4.53
+67727;NA;SCB4;DB423;fine-grained impact melt;1.8
+67728;NA;SCB4;DB423;fine-grained impact melt;9.25
+67729;NA;SCB4;DB423;glassy breccia;73.2
+67735;NA;SCB4;DB423;glassy impact melt ;13.3
+67736;NA;SCB4;DB423;crystalline impact melt;14.92
+67737;NA;SCB4;DB423;fine-grained impact melt;4.56
+67738;NA;SCB4;DB423;fine-grained impact melt;5.84
+67739;NA;SCB4;DB423;fine-grained impact melt;2.03
+67745;NA;SCB4;DB423;fine-grained impact melt;3.53
+67746;NA;SCB4;DB423;poikiloblastic impactite;3.47
+67747;NA;SCB4;DB423;basaltic impact melt ;6.3
+67748;NA;SCB4;DB423;fine-grained impact melt;4.74
+67749;NA;SCB4;DB423;fragmental polymict breccia;11.47
+67755;NA;SCB4;DB423;fine-grained impact melt;3.53
+67756;NA;SCB4;DB423;crystalline polymict breccia;4.82
+67757;NA;SCB4;DB423;basaltic impact melt ;4.83
+67758;NA;SCB4;DB423;crystalline polymict breccia;4.06
+67759;NA;SCB4;DB423;fragmental polymict breccia;4.56
+67765;NA;SCB4;DB423;fine-grained impact melt;1.73
+67766;NA;SCB4;DB423;crystalline polymict breccia;5.47
+67767;NA;SCB4;DB423;fragmental polymict breccia;1.67
+67768;NA;SCB4;DB423;fragmental polymict breccia;0.99
+67769;NA;SCB4;DB423;poikilitic impact melt;3.05
+67775;NA;SCB4;DB423;fine-grained impact melt;6.58
+67776;NA;SCB4;DB423;fragmental polymict breccia;3.1
+67915;NA;SCB4;NA;crystalline polymict breccia;2559
+67935;NA;SCB4;DB389;basaltic impact melt ;108.9
+67936;NA;SCB4;DB389;basaltic impact melt ;61.82
+67937;NA;SCB4;DB389;basaltic impact melt ;59.67
+67945;NA;SCB4;DB390;basaltic impact melt ;4.37
+67946;NA;SCB4;DB390;variolitic impact melt;3.2
+67947;NA;SCB4;DB390;basaltic impact melt ;2.43
+67948;NA;SCB4;DB390;basaltic impact melt ;1.59
+67955;NA;SCB4;DB390;poikiloblastic impactite;162.6
+67956;NA;SCB4;DB390;basaltic impact melt ;3.7
+67957;NA;SCB4;DB390;glassy breccia;1.73
+67975;NA;SCB4;DB392;fragmental polymict breccia;446.6
+68001;2036;NA;Drive tube ;drive tube ;840.7
+68002;2029;NA;Drive tube ;drive tube ;583.5
+68035;NA;SCB3;DB413;crystalline polymict breccia;20.96
+68115;NA;SRC2;DB340;glassy breccia;1191
+68415;NA;SRC2;DB341-2;basaltic impact melt ;371.2
+68416;NA;SRC2;DB341;basaltic impact melt ;178.4
+68505;NA;SCB3;DB412;poikilitic impact melt;1.3
+68515;NA;SCB3;DB411;dilithologic breccia;236.1
+68516;NA;SCB3;DB411;fine-grained impact melt;34.04
+68517;NA;SCB3;DB411;crystalline fragmental polymict breccia;13.13
+68518;NA;SCB3;DB411;glass;29.82
+68519;NA;SCB3;DB411;basaltic impact melt ;10.56
+68525;NA;SCB3;DB411;poikilitic impact melt;38.96
+68526;NA;SCB3;DB411;poikilitic impact melt;7.21
+68527;NA;SCB3;DB411;crystalline polymict breccia;3.03
+68528;NA;SCB3;DB411;crystalline polymict breccia;1.08
+68529;NA;SCB3;DB411;glass;7.03
+68535;NA;SCB3;DB411;glassy breccia;8.04
+68536;NA;SCB3;DB411;basaltic impact melt ;1.85
+68537;NA;SCB3;DB411;fine-grained impact melt;1.41
+68815;NA;SRC2;DB343;glassy breccia;1826
+68825;NA;SCB1;DB375;glassy impact melt ;8.658
+68845;NA;SCB1;DB344;fine-grained impact melt;4.556
+68846;NA;SCB1;DB344;fine-grained impact melt;2.284
+68847;NA;SCB1;DB344;fine-grained impact melt;2.854
+68848;NA;SCB1;DB344;basaltic impact melt ;1.77
+69001;2034;NA;Drive tube ;NA;558.4
+69935;NA;SCB3;DB378;glassy breccia;127.6
+69945;NA;SCB3;DB377;poikilitic impact melt;6.88
+69955;NA;SCB3;DB380;cataclastic anorthosite ;75.94
+69965;NA;SCB3;DB379;fragmental polymict breccia;1.12

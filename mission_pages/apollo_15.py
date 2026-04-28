@@ -9,16 +9,16 @@ def show_mission(df):
 
     st.header("The Apollo 15 Mission")
     if MISSION_NAME == "Apollo 15":
-        st.markdown("""<div style="text-align: justify;">
+        st.markdown("""
     The Soil Mechanics Investigation conducted during the Apollo 15 mission benefited from an expanded set of instruments and tools to analyze the mechanical behavior of the lunar regolith.
     The crew was equipped with a self-recording penetrometer (SRP), core tubes for sample return, the Apollo Lunar Surface Drill (ALSD), and the Lunar Roving Vehicle (LRV).
-    <br><br>
+
     The SRP experiment provided in-situ measurements that allowed the determination of key mechanical parameters, including bulk density, internal friction angle, and cohesion.
     These data were compared with simulation results to validate soil models developed from previous missions. A trench test was also conducted by the Lunar Module Pilot to further assess the strength and stability of the surface material.
-    <br><br>
+
     A comparison of bulk density values obtained across the various Apollo missions, as analyzed by different experts, is presented in pages 7–23 of the mission report.
     No specific mechanical data are available for the samples returned to Earth from Apollo 15.
-    </div>""", unsafe_allow_html=True)
+""")
         
     st.subheader(f"Lunar regolith data from the {MISSION_NAME} mission")
     
@@ -34,133 +34,43 @@ def show_mission(df):
             use_container_width=True
         )
 
-#    # --- Data and plot ---
-#    st.header("Lunar Regolith Density Variation with Depth")
-#
-#    data = pd.DataFrame({
-#        "Testing Method": [
-#            "Drive tube", "Drive tube", "Drive tube", "Drive tube", "Drive tube",
-#            "Drill stem", "Drill stem", "Drill stem", "Drill stem", "Drill stem", "Drill stem",
-#            "Penetrometer"
-#        ],
-#        "Depth range (cm)": [
-#            "0-35", "35-70", "0-35", "0-23", "23-68",
-#            "0-236", "0-236", "0-236", "0-236", "0-236", "0-236",
-#            "0-20"
-#        ],
-#        "Density (g/cm³)": [
-#            "1.36", "1.64-1.69", "1.35", "1.69", "1.79-1.91",
-#            "1.62-1.96", "1.84", "1.75", "1.79", "1.62", "2.15",
-#            "NA"
-#        ],
-#        "Porosity (%)": ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA"],
-#        "Force Applied (N)": ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA"]
-#    })
-#
-#   # --- Sidebar Filters ---
-#    methods_selected = st.multiselect(
-#        "Select Testing Method(s)", data["Testing Method"].unique(), default=data["Testing Method"].unique()
-#    )
-#    value_to_plot = st.radio("Value to plot", ["Density (g/cm³)", "Porosity (%)", "Force Applied (N)"])
-#    filtered_data = data[data["Testing Method"].isin(methods_selected)].copy()
-#
-#    # --- Convert depth ranges and value ranges for plotting and table ---
-#    processed_data = []
-#    for _, row in filtered_data.iterrows():
-#        # Depth
-#        try:
-#            depth_start, depth_end = map(float, row["Depth range (cm)"].split("-"))
-#        except:
-#            continue
-#
-#        # Value handling (supports ranges)
-#        val_str = str(row[value_to_plot])
-#        if val_str.upper() == "NA":
-#            val_start = val_end = None
-#        elif "-" in val_str:
-#            try:
-#                val_start, val_end = map(float, val_str.split("-"))
-#            except:
-#                val_start = val_end = None
-#        else:
-#            try:
-#                val_start = val_end = float(val_str)
-#            except:
-#                val_start = val_end = None
-#
-#        processed_data.append({
-#            "Testing Method": row["Testing Method"],
-#            "Depth Start (cm)": depth_start,
-#            "Depth End (cm)": depth_end,
-#            f"{value_to_plot} Start": val_start,
-#            f"{value_to_plot} End": val_end
-#        })
-#
-#    table_df = pd.DataFrame(processed_data)
-#
-#    # --- Display table ---
-#    st.subheader(f"{value_to_plot} vs Depth Table")
-#    if not table_df.empty:
-#        st.dataframe(table_df)
-#    else:
-#        st.info("No data available for the selected filters.")
-#
-#    # --- Prepare bars ---
-#    bars = []
-#    color_map = {method: px.colors.qualitative.Plotly[i % 10] for i, method in enumerate(filtered_data["Testing Method"].unique())}
-#
-#    for _, row in filtered_data.iterrows():
-#        # Depth
-#        try:
-#            depth_start, depth_end = map(float, row["Depth range (cm)"].split("-"))
-#        except:
-#            continue
-#
-#        # Value handling
-#        val_str = str(row[value_to_plot])
-#        if val_str.upper() == "NA":
-#            continue
-#        if "-" in val_str:
-#            try:
-#                val_start, val_end = map(float, val_str.split("-"))
-#            except:
-#                continue
-#        else:
-#            val_start = val_end = float(val_str)
-#
-#        # Rectangle for each bar (x = value range, y = depth range)
-#        bars.append(go.Scatter(
-#            x=[val_start, val_end, val_end, val_start, val_start],
-#            y=[depth_start, depth_start, depth_end, depth_end, depth_start],
-#            fill="toself",
-#            fillcolor=color_map[row["Testing Method"]],
-#            line=dict(color=color_map[row["Testing Method"]], width=2),  # outline matches method color
-#            opacity=0.5,
-#            name=row["Testing Method"],
-#            hoverinfo='text',
-#            hovertext=f"Method: {row['Testing Method']}<br>{value_to_plot}: {val_start}-{val_end}<br>Depth: {depth_start}-{depth_end} cm",
-#            showlegend=False
-#        ))
-#
-#    fig = go.Figure(bars)
-#
-#    # Manual legend for methods
-#    for method, color in color_map.items():
-#        fig.add_trace(go.Scatter(
-#            x=[None], y=[None],
-#            mode='markers',
-#            marker=dict(size=10, color=color, line=dict(color=color, width=2)),
-#            name=method,
-#            showlegend=True
-#        ))
-#
-#    fig.update_layout(
-#        title=f"{value_to_plot} vs Depth",
-#        xaxis_title=value_to_plot,
-#        yaxis_title="Depth (cm)",
-#        yaxis=dict(autorange="reversed"),
-#        height=600
-#    )
-#
-#    st.plotly_chart(fig, use_container_width=True)
-#
+    st.subheader("Apollo 15 Lunar Samples")
+    st.markdown("""The Apollo 15 mission returned a total of 77 kg of lunar material, including a large amount of rocks and soil samples collected from the Hadley-Apennine region.
+                The samples were received and analyzed in the Lunar Receiving Laboratory (LRL).
+                The table below lists all the samples returned from the Apollo 15 mission, based on the data available in the Apollo 15 lunar sample information catalog (1971, "Lunar Sample Information Catalog Apollo 15", Lunar Receiving Laboratory, MSC 03209).""")
+    @st.cache_data
+    def load_sample_data():
+        df = pd.read_csv(
+        "mission_pages/Apollo 15.csv",
+        sep=";",
+        dtype=str,
+        header=0,
+        skip_blank_lines=False,
+        )
+        df.columns =  ["Sample ID", "Serial Number", "Return Container", "Container", "Sample Type", "Weight (g)"]
+        df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+        return df
+
+    samples_data = load_sample_data()
+
+    st.dataframe(samples_data)
+    st.markdown(""" The sample ID was assigned following a specific convention:
+
+                Each sample is identified by a 5-digit number, where the first two digits correspond to the mission number (15 for Apollo 15).
+
+                The last three digits indicate the sample type and allow to group samples by collection location.
+
+                The first 14 numbers (15001 - 15014) were assigned to Drill stems, drive tubes, and special environment sample containers (SESC).
+
+                The last samples (15900 - 15999) are the samples that are not easily categorized such as dust sweepings and material caught on filters, etc.
+
+                The materials from the rakes and the soil samples were assigned the numbers 15100 - 15199, 15300 - 15399, and 15600 - 15699.
+
+                Whithin these samples, the fines are categorized based on their size through their unit digit:
+                * An unsieved reserve of each sample was kept and assigned a 0 as the unit digit (15XY0), 
+                * the fines smaller than 1mm were assigned a 1 (15XY1), 
+                * the fines between 1 and 2mm were assigned a 2 (15XY2), 
+                * the fines between 2 and 4mm were assigned a 3 (15XY3), 
+                * and the fines between 4 and 10mm were assigned a 4 (15XY4).
+
+                The remaining IDs correspond to rocks.""")
