@@ -1,3 +1,23 @@
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~LUNAR REGOLITH DATABASE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+#Author: Léonie Gasteiner 
+#Contact: gasteinerleonie@gmail.com
+
+#Structure: 
+# - Initialization: 15-228
+# - Lunar Regolith Database Section: 235 - 1475
+# - Lunar Simulants Database Section: 1480 - 2015
+# - Lunar Samples Database Section: 2020 - 2235
+# - Detailed Mission Pages Section: 2280 - 2360
+# - Combined Data Section: 2365-2965
+# - Footer: 2965-3000
+
+
+
+
+
+
 #Necessary imports
 from email.quoprimime import quote
 from altair import value
@@ -110,7 +130,7 @@ def load_samples_data():
     header=0,
     skip_blank_lines=False,
     )
-    df.columns =  ["Mission", "Sample", "Serial Number", "Return Container", "Container", "Sample Type", "Weight (g)"]
+    df.columns =  ["Mission", "Sample", "Serial Number", "Return Container", "Container", "Sample Type", "Weight (g)", "Source"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
     return df
 
@@ -127,7 +147,7 @@ def load_samples_PSD_data():
     header=0,
     skip_blank_lines=False,
     )
-    df.columns =  ["Mission", "Sample", "Subsample", "depth (cm)", "Sieve size (µm)", "weight %", "D50 (µm)"]
+    df.columns =  ["Mission", "Sample", "Subsample", "depth (cm)", "Sieve size (µm)", "weight %", "D50 (µm)", "Source"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
     return df
 
@@ -2107,7 +2127,7 @@ elif db_choice == "Lunar Samples Database":
 
     st.subheader("Particle Size Distribution Data")
 
-    summary_cols = ["Mission", "Sample", "Subsample", "depth (cm)", "D50 (µm)"]
+    summary_cols = ["Mission", "Sample", "Subsample", "depth (cm)", "D50 (µm)","Source"]
     
     existing_summary_cols = [c for c in summary_cols if c in filtered_psd_df.columns]
     
@@ -2254,6 +2274,9 @@ elif db_choice == "Lunar Samples Database":
 #        "Force applied (N)"
 #    ]
 #
+
+
+
 #------------------ Detailed Mission Pages Section ---------------------------
 elif db_choice == "Detailed Mission Pages":
     st.title("Detailed Lunar Mission Pages")
@@ -2333,6 +2356,8 @@ elif db_choice == "Detailed Mission Pages":
                 st.warning("No show_mission() function found.")
         else:
             st.info("Please select a specific mission from the dropdown menus above.")
+
+
 
 
 
