@@ -31,130 +31,43 @@ def show_mission(df):
             use_container_width=True
         )
 
-#    # --- Data and plot ---
-#    st.header("Lunar Regolith Density Variation with Depth")
-#
-#    # Original data with depth ranges
-#    data = pd.DataFrame({
-#        "Testing Method": [
-#            "Drive tube", "Drive tube", "Drive tube", "Drive tube",
-#            "Drive tube", "Drive tube", "Drive tube", "Drive tube",
-#            "Drill stem", "Drill stem", "Drill stem", "Drill stem", "Drill stem", "Drill stem"
-#        ],
-#        "Depth range (cm)": [
-#            "0-22", "22-70", "0-33", "33-71",
-#            "0-16", "0-20", "20-71", "0-28",
-#            "0-305", "0-305", "0-305", "0-305", "0-305", "0-305"
-#        ],
-#        "Density (g/cm³)": [1.6, 1.73, 2.04, 2.29, 1.57, 1.67, 1.74, 1.77, 1.99, 1.8, 1.85, 1.84, 1.83, 1.74],
-#        "Porosity (%)": ["NA"] * 14,
-#        "Force Applied (N)": ["NA"] * 14
-#    })
-#
-#    # --- Sidebar Filters ---
-#    methods_selected = st.multiselect(
-#        "Select Testing Method(s)", data["Testing Method"].unique(), default=data["Testing Method"].unique()
-#    )
-#    value_to_plot = st.radio("Value to plot", ["Density (g/cm³)", "Porosity (%)", "Force Applied (N)"])
-#    filtered_data = data[data["Testing Method"].isin(methods_selected)].copy()
-#
-#    # --- Convert depth ranges and value ranges for plotting and table ---
-#    processed_data = []
-#    for _, row in filtered_data.iterrows():
-#        # Depth
-#        try:
-#            depth_start, depth_end = map(float, row["Depth range (cm)"].split("-"))
-#        except:
-#            continue
-#
-#        # Value handling (supports ranges)
-#        val_str = str(row[value_to_plot])
-#        if val_str.upper() == "NA":
-#            val_start = val_end = None
-#        elif "-" in val_str:
-#            try:
-#                val_start, val_end = map(float, val_str.split("-"))
-#            except:
-#                val_start = val_end = None
-#        else:
-#            try:
-#                val_start = val_end = float(val_str)
-#            except:
-#                val_start = val_end = None
-#
-#        processed_data.append({
-#            "Testing Method": row["Testing Method"],
-#            "Depth Start (cm)": depth_start,
-#            "Depth End (cm)": depth_end,
-#            f"{value_to_plot} Start": val_start,
-#            f"{value_to_plot} End": val_end
-#        })
-#
-#    table_df = pd.DataFrame(processed_data)
-#
-#    # --- Display table ---
-#    st.subheader(f"{value_to_plot} vs Depth Table")
-#    if not table_df.empty:
-#        st.dataframe(table_df)
-#    else:
-#        st.info("No data available for the selected filters.")
-#
-#    # --- Prepare bars ---
-#    bars = []
-#    color_map = {method: px.colors.qualitative.Plotly[i % 10] for i, method in enumerate(filtered_data["Testing Method"].unique())}
-#
-#    for _, row in filtered_data.iterrows():
-#        # Depth
-#        try:
-#            depth_start, depth_end = map(float, row["Depth range (cm)"].split("-"))
-#        except:
-#            continue
-#
-#        # Value handling
-#        val_str = str(row[value_to_plot])
-#        if val_str.upper() == "NA":
-#            continue
-#        if "-" in val_str:
-#            try:
-#                val_start, val_end = map(float, val_str.split("-"))
-#            except:
-#                continue
-#        else:
-#            val_start = val_end = float(val_str)
-#
-#        # Rectangle for each bar (x = value range, y = depth range)
-#        bars.append(go.Scatter(
-#            x=[val_start, val_end, val_end, val_start, val_start],
-#            y=[depth_start, depth_start, depth_end, depth_end, depth_start],
-#            fill="toself",
-#            fillcolor=color_map[row["Testing Method"]],
-#            line=dict(color=color_map[row["Testing Method"]], width=2),  # outline matches method color
-#            opacity=0.5,
-#            name=row["Testing Method"],
-#            hoverinfo='text',
-#            hovertext=f"Method: {row['Testing Method']}<br>{value_to_plot}: {val_start}-{val_end}<br>Depth: {depth_start}-{depth_end} cm",
-#            showlegend=False
-#        ))
-#
-#    fig = go.Figure(bars)
-#
-#    # Manual legend for methods
-#    for method, color in color_map.items():
-#        fig.add_trace(go.Scatter(
-#            x=[None], y=[None],
-#            mode='markers',
-#            marker=dict(size=10, color=color, line=dict(color=color, width=2)),
-#            name=method,
-#            showlegend=True
-#        ))
-#
-#    fig.update_layout(
-#        title=f"{value_to_plot} vs Depth",
-#        xaxis_title=value_to_plot,
-#        yaxis_title="Depth (cm)",
-#        yaxis=dict(autorange="reversed"),
-#        height=600
-#    )
-#
-#    st.plotly_chart(fig, use_container_width=True)
-#
+
+    st.subheader("Apollo 17 Lunar Samples")
+    st.markdown("""The Apollo 17 mission returned a total of 110.4 kg of lunar material, including a large amount of rocks and soil samples collected from the Taurus-Littrow region.
+                The samples were received and analyzed in the Lunar Receiving Laboratory (LRL).
+                The table below lists all the samples returned from the Apollo 17 mission, based on the data available in the Apollo 17 lunar sample information catalog (P. Butler, M.Duke, W.McCown,1973, "Apollo 17 Lunar Sample Information Catalog", Lunar Receiving Laboratory, MSC 03211).""")
+    @st.cache_data
+    def load_sample_data():
+        df = pd.read_csv(
+        "mission_pages/Apollo 17.csv",
+        sep=";",
+        dtype=str,
+        header=0,
+        skip_blank_lines=False,
+        )
+        df.columns =  ["Sample ID", "Serial Number", "Return Container", "Container", "Sample Type", "Weight (g)"]
+        df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+        return df
+
+    samples_data = load_sample_data()
+
+    st.dataframe(samples_data)
+
+    st.markdown("""The sample ID was assigned following a specific convention:
+                
+                Each sample is identified by a 5-digit number, where the first digit correspond to the mission number (7 for Apollo 17). 
+
+                The Apollo 17 samples are grouped by sampling site, each group of one-thousand corresponds to an area around the lunar module.
+
+                The first numbers for each area were used for drive tube, drill stems, and special samples. 
+
+                The last digit is used to categorize soil samples based on their size: 
+                * An unsieved reserve of each sample was kept and assigned a 0 as the unit digit (7WXY0), 
+                * the fines smaller than 1mm were assigned a 1 (7WXY1), 
+                * the fines between 1 and 2mm were assigned a 2 (7WXY2), 
+                * the fines between 2 and 4mm were assigned a 3 (7WXY3), 
+                * and the fines between 4 and 10mm were assigned a 4 (7WXY4). 
+            
+                Rocks from a documented bag are numbered 7WXY5 - 7WXY9 in order of decreasing size. 
+                 
+                """)

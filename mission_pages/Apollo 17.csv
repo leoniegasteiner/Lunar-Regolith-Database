@@ -1,0 +1,740 @@
+sample ID;serial number ;return container;Container;sample type;weight (g)
+70001;179;DSB;Drill core bit;NA;29.78
+70002;70;DSB;Drill core stem ;NA;207.8
+70003;62;DSB;Drill core stem ;NA;237.8
+70004;66;DSB;Drill core stem ;NA;238.8
+70005;69;DSB;Drill core stem ;NA;240.7
+70006;65;DSB;Drill core stem ;NA;234.2
+70007;63;DSB;Drill core stem ;NA;179.4
+70008;67;DSB;Drill core stem ;NA;261
+70009;61;DSB;Drill core stem top;NA;143.3
+70010;NA;DSB;NA;Fines outside stem ;3.92
+70011;NA;SCB5;SESC;NA;440.7
+70012;2052;BSLSS;Drive tube ;NA;434.8
+70017;NA;BSLSS;NA;coarse basalt;2957
+70018;NA;SRC1;SCB1;dark matrix breccia;51.58
+70019;NA;SRC2;DB469;agglutinate;159.9
+70030;NA;SCB2;NA;SCB residue ;33.92
+70035;NA;SCB2;NA;coarse basalt;5765
+70040;NA;NA;suit pockets;fragments;2.494
+70050;NA;BSLSS;NA;BSLSS residue unsieved;573.4
+70051;NA;BSLSS;NA;BSLSS residue <1mm;1438
+70052;NA;BSLSS;NA;BSLSS residue 1-2mm;67.76
+70053;NA;BSLSS;NA;BSLSS residue 2-4mm;86.93
+70054;NA;BSLSS;NA;BSLSS residue 4-10mm;94.41
+70060;NA;SCB7;DB15E;dust and sweepings;0.24
+70061;NA;SCB7;DB15E;<1mm fines;60.8
+70062;NA;SCB7;DB15E;1-2mm fines;2.12
+70063;NA;SCB7;DB15E;2-4mm fines;1.24
+70064;NA;SCB7;DB15E;4-10mm fines;0.86
+70070;NA;BSLSS;DB108;dust and sweepings;0.11
+70075;NA;BSLSS;DB108;fine basalt;5.64
+70130;NA;SCB2;DB10E;DB residue ;12.18
+70135;NA;SCB2;DB10E;coarse basalt;446.3
+70136;NA;SCB2;DB10E;coarse basalt;10.65
+70137;NA;SCB2;DB10E;coarse basalt;6.16
+70138;NA;SCB2;DB10E;coarse basalt;3.66
+70139;NA;SCB2;DB10E;coarse basalt;3.16
+70145;NA;SCB2;DB10E;coarse basalt;3.07
+70146;NA;SCB2;DB10E;coarse basalt;1.71
+70147;NA;SCB2;DB10E;coarse basalt;1.35
+70148;NA;SCB2;DB10E;coarse basalt;0.92
+70149;NA;SCB2;DB10E;coarse basalt;0.95
+70155;NA;SCB2;DB10E;coarse basalt;0.77
+70156;NA;SCB2;DB10E;coarse basalt;0.63
+70157;NA;SCB2;DB10E;coarse basalt;0.57
+70160;NA;SCB1;DB474;unsieved fines ;106.1
+70161;NA;SCB1;DB474;<1mm fines;197.7
+70162;NA;SCB1;DB474;1-2mm fines;5.14
+70163;NA;SCB1;DB474;2-4mm fines;3.43
+70164;NA;SCB1;DB474;4-10mm fines;1.66
+70165;NA;SCB1;DB474;coarse basalt;2.143
+70170;NA;SCB5;DB55Y;DB residue ;42.31
+70175;NA;SCB5;DB55Y;dark matrix breccia;339.6
+70180;NA;SCB1;DB475;unsieved fines ;93.25
+70181;NA;SCB1;DB475;<1mm fines;157.1
+70182;NA;SCB1;DB475;1-2mm fines;4.63
+70183;NA;SCB1;DB475;2-4mm fines;3.12
+70184;NA;SCB1;DB475;4-10mm fines;1.68
+70185;NA;SCB1;DB475;coarse basalt;466.6
+70215;NA;BSLSS;NA;fine basalt;8110
+70250;NA;SCB8;DB22E;DB residue ;62.04
+70255;NA;SCB8;DB22E;fine basalt;277.2
+70270;NA;SCB8;DB23E;unsieved fines ;70.46
+70271;NA;SCB8;DB23E;<1mm fines;116.1
+70272;NA;SCB8;DB23E;1-2mm fines;2.97
+70273;NA;SCB8;DB23E;2-4mm fines;1.46
+70274;NA;SCB8;DB23E;4-10mm fines;2.33
+70275;NA;SCB8;DB23E;medium basalt;171.4
+70290;NA;SCB7;DB45Y;DB residue ;56.36
+70295;NA;SCB7;DB45Y;dark matrix breccia;361.2
+70310;NA;SCB5;DB54Y;DB residue ;6.82
+70311;NA;SCB5;DB54Y;<1mm fines;106.5
+70312;NA;SCB5;DB54Y;1-2mm fines;4.2
+70313;NA;SCB5;DB54Y;2-4mm fines;3.21
+70314;NA;SCB5;DB54Y;4-10mm fines;5.25
+70315;NA;SCB5;DB54Y;coarse basalt;148.6
+70320;NA;SCB5;DB53Y;unsieved fines ;78.24
+70321;NA;SCB5;DB53Y;<1mm fines;141.6
+70322;NA;SCB5;DB53Y;1-2mm fines;5.42
+70323;NA;SCB5;DB53Y;2-4mm fines;4.1
+70324;NA;SCB5;DB53Y;4-10mm fines;4
+71010;NA;SRC1;NA;residues in SRC1 and SCB1;32.84
+71030;NA;SCB1;DB476;DB residue ;36.28
+71035;NA;SCB1;DB476;medium basalt;144.8
+71036;NA;SCB1;DB476;medium basalt;118.4
+71037;NA;SCB1;DB476;medium basalt;14.39
+71040;NA;SCB1;DB455;unsieved fines ;94.89
+71041;NA;SCB1;DB455;<1mm fines;137.8
+71042;NA;SCB1;DB455;1-2mm fines;7.21
+71043;NA;SCB1;DB455;2-4mm fines;6.19
+71044;NA;SCB1;DB455;4-10mm fines;12.84
+71045;NA;SCB1;DB455;medium basalt;11.92
+71046;NA;SCB1;DB455;medium basalt;3.037
+71047;NA;SCB1;DB455;coarse basalt;2.78
+71048;NA;SCB1;DB455;fine basalt;2.457
+71049;NA;SCB1;DB455;fine basalt;1.86
+71050;NA;SCB1;DB454;DB residue ;4
+71055;NA;SCB1;DB454;medium basalt;669.6
+71060;NA;SCB1;DB456;unsieved fines ;199.4
+71061;NA;SCB1;DB456;<1mm fines;229.2
+71062;NA;SCB1;DB456;1-2mm fines;20.74
+71063;NA;SCB1;DB456;2-4mm fines;22.79
+71064;NA;SCB1;DB456;4-10mm fines;34.35
+71065;NA;SCB1;DB456;fine basalt;28.83
+71066;NA;SCB1;DB456;fine basalt;19.96
+71067;NA;SCB1;DB456;medium basalt;4.245
+71068;NA;SCB1;DB456;medium basalt;4.208
+71069;NA;SCB1;DB456;fine basalt;4.058
+71075;NA;SCB1;DB455;medium basalt;1.563
+71085;NA;SCB1;DB456;medium basalt;3.402
+71086;NA;SCB1;DB456;fine basalt;3.329
+71087;NA;SCB1;DB456;fine basalt;2.2
+71088;NA;SCB1;DB456;fine basalt;2.064
+71089;NA;SCB1;DB456;medium basalt;1.733
+71095;NA;SCB1;DB456;medium basalt;1.483
+71096;NA;SCB1;DB456;medium basalt;1.368
+71097;NA;SCB1;DB456;medium basalt;1.355
+71130;NA;SCB1;DB477;unsieved fines ;49.51
+71131;NA;SCB1;DB477;<1mm fines;86.4
+71132;NA;SCB1;DB477;1-2mm fines;3.99
+71133;NA;SCB1;DB477;2-4mm fines;3.22
+71134;NA;SCB1;DB477;4-10mm fines;0.91
+71135;NA;SCB1;DB477;fine basalt;36.85
+71136;NA;SCB1;DB477;fine basalt;25.39
+71150;NA;SCB1;DB478;DB residue ;1.565
+71151;NA;SCB1;DB478;<1mm fines;57.6
+71152;NA;SCB1;DB478;1-2mm fines;2.6
+71153;NA;SCB1;DB478;2-4mm fines;2.36
+71154;NA;SCB1;DB478;4-10mm fines;1.37
+71155;NA;SCB1;DB478;fine basalt;26.15
+71156;NA;SCB1;DB478;fine basalt;5.42
+71157;NA;SCB1;DB478;fine basalt;1.466
+71170;NA;SCB1;DB479;DB residue ;16.38
+71175;NA;SCB1;DB479;medium basalt;207.8
+71500;NA;SCB1;DB459;unsieved fines ;359.5
+71501;NA;SCB1;DB459;<1mm fines;600.9
+71502;NA;SCB1;DB459;1-2mm fines;22.68
+71503;NA;SCB1;DB459;2-4mm fines;17.58
+71504;NA;SCB1;DB459;4-10mm fines;13.13
+71505;NA;SCB1;DB459;fine basalt;29.45
+71506;NA;SCB1;DB459;fine basalt;12.11
+71507;NA;SCB1;DB459;medium basalt;3.962
+71508;NA;SCB1;DB459;coarse basalt;3.423
+71509;NA;SCB1;DB459;coarse basalt;1.69
+71515;NA;SCB1;DB459;agglutinate;1.635
+71520;NA;SCB1;DB457;DB residue ;48.16
+71525;NA;SCB1;DB457;fine basalt;3.9
+71526;NA;SCB1;DB457;fine basalt;12.91
+71527;NA;SCB1;DB457;fine basalt;2.186
+71528;NA;SCB1;DB457;fine basalt;11.25
+71529;NA;SCB1;DB457;medium basalt;6.025
+71535;NA;SCB1;DB457;coarse basalt;17.71
+71536;NA;SCB1;DB457;coarse basalt;5.322
+71537;NA;SCB1;DB457;fine basalt;12.25
+71538;NA;SCB1;DB457;fine basalt;8.038
+71539;NA;SCB1;DB457;fine basalt;10.9
+71545;NA;SCB1;DB457;fine basalt;17.26
+71546;NA;SCB1;DB457;fine basalt;150.7
+71547;NA;SCB1;DB457;medium basalt;12.54
+71548;NA;SCB1;DB457;medium basalt;25.46
+71549;NA;SCB1;DB457;medium basalt;7.903
+71555;NA;SCB1;DB457;medium basalt;4.547
+71556;NA;SCB1;DB457;coarse basalt;29.14
+71557;NA;SCB1;DB457;coarse basalt;40.35
+71558;NA;SCB1;DB457;coarse basalt;15.81
+71559;NA;SCB1;DB457;coarse basalt;82.16
+71565;NA;SCB1;DB457;coarse basalt;24.09
+71566;NA;SCB1;DB457;coarse basalt;415.4
+71567;NA;SCB1;DB457;coarse basalt;146
+71568;NA;SCB1;DB457;coarse basalt;10.02
+71569;NA;SCB1;DB457;fine basalt;289.6
+71575;NA;SCB1;DB457;fine basalt;2.113
+71576;NA;SCB1;DB457;fine basalt;23.54
+71577;NA;SCB1;DB457;fine basalt;234.7
+71578;NA;SCB1;DB457;medium basalt;353.9
+71579;NA;SCB1;DB457;medium basalt;7.937
+71585;NA;SCB1;DB457;medium basalt;13.86
+71586;NA;SCB1;DB457;medium basalt;26.92
+71587;NA;SCB1;DB457;medium basalt;41.27
+71588;NA;SCB1;DB457;medium basalt;48.98
+71589;NA;SCB1;DB457;medium basalt;6.86
+71595;NA;SCB1;DB457;medium basalt;25.21
+71596;NA;SCB1;DB457;medium basalt;61.05
+71597;NA;SCB1;DB457;coarse basalt;12.35
+72010;NA;SCB8;NA;SCB residue ;76.92
+72130;NA;SCB8;DB26E;unsieved fines ;79.91
+72131;NA;SCB8;DB26E;<1mm fines;107.9
+72132;NA;SCB8;DB26E;1-2mm fines;8.53
+72133;NA;SCB8;DB26E;2-4mm fines;10.95
+72134;NA;SCB8;DB26E;4-10mm fines;13.18
+72135;NA;SCB8;DB26E;dark breccia of basalt fragments ;336.9
+72140;NA;SCB6;DB27E;unsieved fines ;115
+72141;NA;SCB6;DB27E;<1mm fines;225.9
+72142;NA;SCB6;DB27E;1-2mm fines;5.32
+72143;NA;SCB6;DB27E;2-4mm fines;1.88
+72144;NA;SCB6;DB27E;4-10mm fines;2.73
+72145;NA;SCB6;DB27E;dark matrix breccia;1.25
+72150;NA;SCB6;DB28E;DB residue ;53.29
+72155;NA;SCB6;DB28E;medium basalt;238.5
+72160;NA;SCB8;DB29E;unsieved fines ;80
+72161;NA;SCB8;DB29E;<1mm fines;162.5
+72162;NA;SCB8;DB29E;1-2mm fines;4.018
+72163;NA;SCB8;DB29E;2-4mm fines;2.538
+72164;NA;SCB8;DB29E;4-10mm fines;0.946
+72210;NA;SCB6;DB514;DB residue ;1.83
+72215;NA;SCB6;DB514;layered breccia;379.2
+72220;NA;SCB8;DB496;unsieved fines ;136.2
+72221;NA;SCB8;DB496;<1mm fines;225.8
+72222;NA;SCB8;DB496;1-2mm fines;11.13
+72223;NA;SCB8;DB496;2-4mm fines;7.92
+72224;NA;SCB8;DB496;4-10mm fines;7.51
+72230;NA;SCB6;DB515;DB residue ;1.66
+72235;NA;SCB6;DB515;layered breccia;61.91
+72240;NA;SCB8;DB497;unsieved fines ;113.3
+72241;NA;SCB8;DB497;<1mm fines;186
+72242;NA;SCB8;DB497;1-2mm fines;11.2
+72243;NA;SCB8;DB497;2-4mm fines;7.93
+72244;NA;SCB8;DB497;4-10mm fines;3.99
+72250;NA;SCB8;DB494;DB residue ;7.74
+72255;NA;SCB8;DB494;layered breccia;461.2
+72260;NA;SCB8;DB498;unsieved fines ;100.6
+72261;NA;SCB8;DB498;<1mm fines;161.9
+72262;NA;SCB8;DB498;1-2mm fines;7.7
+72263;NA;SCB8;DB498;2-4mm fines;4.4
+72264;NA;SCB8;DB498;4-10mm fines;4.4
+72270;NA;SCB8;DB495;DB residue ;26.11
+72275;NA;SCB8;DB495;layered breccia;3640
+72310;NA;SCB6;DB516;DB residue ;1.09
+72315;NA;SCB6;DB516;vesicular poikilitic clast;131.4
+72320;NA;SCB8;DB500;unsieved fines ;26.17
+72321;NA;SCB8;DB500;<1mm fines;77.3
+72322;NA;SCB8;DB500;1-2mm fines;1.38
+72323;NA;SCB8;DB500;2-4mm fines;0.5
+72324;NA;SCB8;DB500;4-10mm fines;0.96
+72330;NA;SCB6;DB517;DB residue ;0.36
+72335;NA;SCB6;DB517;vesicular poikilitic clast;108.9
+72350;NA;SRC2;DB518;dust and sweepings;1.7
+72355;NA;SRC2;DB518;green gray breccia;367.4
+72370;NA;SRC2;DB519;dust and sweepings;0.02
+72375;NA;SRC2;DB519;green gray breccia;18.16
+72390;NA;SCB8;DB499;DB residue ;20.63
+72395;NA;SCB8;DB499;green gray breccia;536.4
+72410;NA;SCB8;DB503;DB residue ;52
+72415;NA;SCB8;DB503;brecciated dunite clast ;32.34
+72416;NA;SCB8;DB503;brecciated dunite clast ;11.53
+72417;NA;SCB8;DB503;brecciated dunite clast ;11.32
+72418;NA;SCB8;DB503;brecciated dunite clast ;3.55
+72430;NA;SCB8;DB504;dust and sweepings;1.45
+72431;NA;SCB8;DB504;<1mm fines;72
+72432;NA;SCB8;DB504;1-2mm fines;3.62
+72433;NA;SCB8;DB504;2-4mm fines;2.33
+72434;NA;SCB8;DB504;4-10mm fines;1.47
+72435;NA;SCB8;DB504;blue gray breccia;160.6
+72440;NA;SCB8;DB505;unsieved fines ;161.6
+72441;NA;SCB8;DB505;<1mm fines;267.3
+72442;NA;SCB8;DB505;1-2mm fines;10.6
+72443;NA;SCB8;DB505;2-4mm fines;7.98
+72444;NA;SCB8;DB505;4-10mm fines;2.91
+72460;NA;SCB8;DB506;dust and sweepings;0.51
+72461;NA;SCB8;DB506;<1mm fines;113.7
+72462;NA;SCB8;DB506;1-2mm fines;5.14
+72463;NA;SCB8;DB506;2-4mm fines;3.9
+72464;NA;SCB8;DB506;4-10mm fines;1.76
+72500;NA;SCB8;DB502;unsieved fines ;325.5
+72501;NA;SCB8;DB502;<1mm fines;687.2
+72502;NA;SCB8;DB502;1-2mm fines;24.13
+72503;NA;SCB8;DB502;2-4mm fines;12.94
+72504;NA;SCB8;DB502;4-10mm fines;7.96
+72505;NA;SCB8;DB502;green gray breccia;3.09
+72530;NA;SCB8;DB501;DB residue ;18.14
+72535;NA;SCB8;DB501;blue gray breccia;221.4
+72536;NA;SCB8;DB501;blue gray breccia;52.3
+72537;NA;SCB8;DB501;blue gray breccia;5.192
+72538;NA;SCB8;DB501;blue gray breccia;11.09
+72539;NA;SCB8;DB501;blue gray breccia;11.22
+72545;NA;SCB8;DB501;blue gray breccia;4.055
+72546;NA;SCB8;DB501;blue gray breccia;4.856
+72547;NA;SCB8;DB501;blue gray breccia;5.045
+72548;NA;SCB8;DB501;blue gray breccia;29.29
+72549;NA;SCB8;DB501;green gray breccia;21
+72555;NA;SCB8;DB501;green gray breccia;10.48
+72556;NA;SCB8;DB501;green gray breccia;3.861
+72557;NA;SCB8;DB501;green gray breccia;4.559
+72558;NA;SCB8;DB501;green gray breccia;5.713
+72559;NA;SCB8;DB501;feldspathic breccia;27.84
+72700;NA;SCB8;DB508;unsieved fines ;295.2
+72701;NA;SCB8;DB508;<1mm fines;557.3
+72702;NA;SCB8;DB508;1-2mm fines;17.7
+72703;NA;SCB8;DB508;2-4mm fines;8.05
+72704;NA;SCB8;DB508;4-10mm fines;4.76
+72705;NA;SCB8;DB508;anorthosite breccia;2.39
+72730;NA;SCB8;DB507;DB residue ;1.98
+72735;NA;SCB8;DB507;green gray breccia;51.11
+72736;NA;SCB8;DB507;tan breccia;28.73
+72737;NA;SCB8;DB507;tan breccia;3.33
+72738;NA;SCB8;DB507;blue gray breccia;23.75
+73001;2046;SRC2;Drive tube lower;drive tube;809
+73002;2031;SRC2;Drive tube upper;drive tube ;429.7
+73010;NA;SCB6;NA;SCB residue ;34.56
+73120;NA;SCB6;DB30E;unsieved fines ;100.2
+73121;NA;SCB6;DB30E;<1mm fines;179.7
+73122;NA;SCB6;DB30E;1-2mm fines;5.25
+73123;NA;SCB6;DB30E;2-4mm fines;2.03
+73124;NA;SCB6;DB30E;4-10mm fines;0.5
+73130;NA;SCB8;DB31E;unsieved fines ;77.2
+73131;NA;SCB8;DB31E;<1mm fines;132.3
+73132;NA;SCB8;DB31E;1-2mm fines;10.38
+73133;NA;SCB8;DB31E;2-4mm fines;8.58
+73134;NA;SCB8;DB31E;4-10mm fines;9.61
+73140;NA;SCB6;DB40Y;unsieved fines ;121.6
+73141;NA;SCB6;DB40Y;<1mm fines;191.4
+73142;NA;SCB6;DB40Y;1-2mm fines;11.69
+73143;NA;SCB6;DB40Y;2-4mm fines;7.84
+73144;NA;SCB6;DB40Y;4-10mm fines;4.47
+73145;NA;SCB6;DB40Y;dark matrix breccia;5.6
+73146;NA;SCB6;DB40Y;brecciated anorthosite ;3.01
+73150;NA;SCB6;DB32E;unsieved fines ;52.56
+73151;NA;SCB6;DB32E;<1mm fines;101.2
+73152;NA;SCB6;DB32E;1-2mm fines;3.57
+73153;NA;SCB6;DB32E;2-4mm fines;1.31
+73154;NA;SCB6;DB32E;4-10mm fines;0.31
+73155;NA;SCB6;DB32E;blue gray breccia;79.3
+73156;NA;SCB6;DB32E;fine crystalline ;3.15
+73210;NA;SCB6;DB527;unsieved fines ;37.89
+73211;NA;SCB6;DB527;<1mm fines;51.95
+73212;NA;SCB6;DB527;1-2mm fines;3.47
+73213;NA;SCB6;DB527;2-4mm fines;2.8
+73214;NA;SCB6;DB527;4-10mm fines;2.47
+73215;NA;SCB6;DB527;light gray breccia;1062
+73216;NA;SCB6;DB527;green gray breccia;162.2
+73217;NA;SCB6;DB527;blue gray breccia;138.8
+73218;NA;SCB6;DB527;blue gray breccia;39.67
+73219;NA;SCB6;DB527;fine basalt;2.88
+73220;NA;SCB6;DB520;unsieved fines ;20.8
+73221;NA;SCB6;DB520;<1mm fines;48.11
+73222;NA;SCB6;DB520;1-2mm fines;2.71
+73223;NA;SCB6;DB520;2-4mm fines;2.61
+73224;NA;SCB6;DB520;4-10mm fines;1.65
+73225;NA;SCB6;DB520;crystalline ;3.66
+73230;NA;SCB6;DB524;DB residue ;21.34
+73235;NA;SCB6;DB524;blue gray breccia;878.3
+73240;NA;SCB6;DB521;unsieved fines ;114.7
+73241;NA;SCB6;DB521;<1mm fines;192.7
+73242;NA;SCB6;DB521;1-2mm fines;14.94
+73243;NA;SCB6;DB521;2-4mm fines;14.38
+73244;NA;SCB6;DB521;4-10mm fines;22.25
+73245;NA;SCB6;DB521;brecciated anorthosite clast;1.6
+73250;NA;SCB6;DB525;DB residue ;15.25
+73255;NA;SCB6;DB525;light gray breccia;394.1
+73260;NA;SCB6;DB522;unsieved fines ;103.5
+73261;NA;SCB6;DB522;<1mm fines;194.8
+73262;NA;SCB6;DB522;1-2mm fines;12.01
+73263;NA;SCB6;DB522;2-4mm fines;9.47
+73264;NA;SCB6;DB522;4-10mm fines;6.45
+73270;NA;SCB6;DB526;DB residue ;22.43
+73275;NA;SCB6;DB526;green gray breccia;429.6
+73280;NA;SCB6;DB523;unsieved fines ;53.54
+73281;NA;SCB6;DB523;<1mm fines;95.75
+73282;NA;SCB6;DB523;1-2mm fines;5.38
+73283;NA;SCB6;DB523;2-4mm fines;4.74
+73284;NA;SCB6;DB523;4-10mm fines;7.14
+73285;NA;SCB6;DB523;glass coated friable breccia;2.58
+74001;2044;SRC2;Drive tube lower;drive tube;1072
+74002;2035;SRC2;Drive tube upper;drive tube;909.6
+74010;NA;SRC2;NA;SRC residue;22.52
+74110;NA;SCB8;DB41Y;unsieved fines ;92.12
+74111;NA;SCB8;DB41Y;<1mm fines;116.8
+74112;NA;SCB8;DB41Y;1-2mm fines;11.12
+74113;NA;SCB8;DB41Y;2-4mm fines;12.11
+74114;NA;SCB8;DB41Y;4-10mm fines;13.26
+74115;NA;SCB8;DB41Y;friable breccia;15.36
+74116;NA;SCB8;DB41Y;friable breccia;12.68
+74117;NA;SCB8;DB41Y;friable breccia;3.69
+74118;NA;SCB8;DB41Y;friable breccia;3.59
+74119;NA;SCB8;DB41Y;friable breccia;1.79
+74120;NA;SCB8;DB42Y;unsieved fines ;124.1
+74121;NA;SCB8;DB42Y;<1mm fines;252
+74122;NA;SCB8;DB42Y;1-2mm fines;6.65
+74123;NA;SCB8;DB42Y;2-4mm fines;2.73
+74124;NA;SCB8;DB42Y;4-10mm fines;0.39
+74220;NA;SRC2;DB509;unsieved fines ;1180
+74230;NA;SCB8;DB12E;db residue ;0.7
+74235;NA;SCB8;DB12E;basalt vitrophyre;59.04
+74240;NA;SRC2;DB510;unsieved fines ;544.9
+74241;NA;SRC2;DB510;<1mm fines;307.3
+74242;NA;SRC2;DB510;1-2mm fines;22.5
+74243;NA;SRC2;DB510;2-4mm fines;27.67
+74244;NA;SRC2;DB510;4-10mm fines;21.95
+74245;NA;SRC2;DB510;fine basalt;64.34
+74246;NA;SRC2;DB510;dark matrix breccia;28.81
+74247;NA;SRC2;DB510;fine basalt;7.761
+74248;NA;SRC2;DB510;fine basalt;5.682
+74249;NA;SRC2;DB510;fine basalt;4.183
+74250;NA;SCB6;DB512;db residue ;22.56
+74255;NA;SCB6;DB512;coarse basalt;737.3
+74260;NA;SRC2;DB511;unsieved fines ;526.7
+74270;NA;SCB4;DB461;db residue ;9.61
+74275;NA;SCB4;DB461;fine basalt;1493
+74285;NA;SRC2;DB510;medium basalt;2.212
+74286;NA;SRC2;DB510;medium basalt;2.102
+74287;NA;SRC2;DB510;fine basalt;1.568
+75010;NA;SCB6;DB462;db residue ;9.25
+75015;NA;SCB6;DB462;coarse basalt;1006
+75030;NA;SCB6;DB463;db residue ;2.63
+75035;NA;SCB6;DB463;medium basalt;1235
+75050;NA;SRC6;DB464;dust and sweepings;2.5
+75055;NA;SRC6;DB464;coarse basalt;949.4
+75060;NA;SRC2;DB465;db residue ;0.527
+75061;NA;SRC2;DB465;<1mm fines;157.9
+75062;NA;SRC2;DB465;1-2mm fines;8.52
+75063;NA;SRC2;DB465;2-4mm fines;6.28
+75064;NA;SRC2;DB465;4-10mm fines;11.63
+75065;NA;SRC2;DB465;medium basalt;1.263
+75066;NA;SRC2;DB465;dark gray breccia;0.98
+75070;NA;SRC2;DB466;db residue ;7.26
+75075;NA;SRC2;DB466;medium basalt;1008
+75080;NA;SRC2;DB467;unsieved fines ;524.2
+75081;NA;SRC2;DB467;<1mm fines;932.4
+75082;NA;SRC2;DB467;1-2mm fines;38.92
+75083;NA;SRC2;DB467;2-4mm fines;30.88
+75084;NA;SRC2;DB467;4-10mm fines;23.31
+75085;NA;SRC2;DB467;medium basalt;4.298
+75086;NA;SRC2;DB467;medium basalt;2.323
+75087;NA;SRC2;DB467;medium basalt;2.321
+75088;NA;SRC2;DB467;fine basalt;1.992
+75089;NA;SRC2;DB467;fine basalt;1.718
+75110;NA;SCB8;DB43Y;unsieved fines ;122.5
+75111;NA;SCB8;DB43Y;<1mm fines;235
+75112;NA;SCB8;DB43Y;1-2mm fines;10.2
+75113;NA;SCB8;DB43Y;2-4mm fines;6.76
+75114;NA;SCB8;DB43Y;4-10mm fines;6.87
+75115;NA;SCB8;DB43Y;fine basalt;2.6
+75120;NA;SCB8;DB44Y;unsieved fines ;126.6
+75121;NA;SCB8;DB44Y;<1mm fines;240.3
+75122;NA;SCB8;DB44Y;1-2mm fines;5.208
+75123;NA;SCB8;DB44Y;2-4mm fines;2.147
+75124;NA;SCB8;DB44Y;4-10mm fines;0.956
+76001;2048;SCB7;Drive tube ;drive tube;711.6
+76010;NA;SCB4;NA;SCB residue ;20.13
+76015;NA;SCB4;NA;green gray breccia;2819
+76030;NA;SCB5;DB48Y;db residue ;16.06
+76031;NA;SCB5;DB48Y;<1mm fines;152.6
+76032;NA;SCB5;DB48Y;1-2mm fines;5.71
+76033;NA;SCB5;DB48Y;2-4mm fines;4.58
+76034;NA;SCB5;DB48Y;4-10mm fines;2.01
+76035;NA;SCB5;DB48Y;blue gray breccia;376.2
+76036;NA;SCB5;DB48Y;blue gray breccia;3.95
+76037;NA;SCB5;DB48Y;medium basalt;2.52
+76055;NA;SCB5;DB48Y;green gray breccia;6412
+76120;NA;SCB5;DB46Y;unsieved fines;107
+76121;NA;SCB5;DB46Y;<1mm fines;188.1
+76122;NA;SCB5;DB46Y;1-2mm fines;4.72
+76123;NA;SCB5;DB46Y;2-4mm fines;2.49
+76124;NA;SCB5;DB46Y;4-10mm fines;1.61
+76130;NA;SCB5;DB47Y;db residue ;19.57
+76131;NA;SCB5;DB47Y;<1mm fines;146.1
+76132;NA;SCB5;DB47Y;1-2mm fines;6.79
+76133;NA;SCB5;DB47Y;2-4mm fines;5.21
+76134;NA;SCB5;DB47Y;4-10mm fines;3.1
+76135;NA;SCB5;DB47Y;green gray breccia;133.5
+76136;NA;SCB5;DB47Y;medium basalt;86.6
+76137;NA;SCB5;DB47Y;fine grained crystalline;2.46
+76210;NA;SCB4;DB535;db residue ;2.74
+76215;NA;SCB4;DB535;green gray breccia;643.9
+76220;NA;SCB7;DB534;unsieved fines ;196.7
+76221;NA;SCB7;DB534;<1mm fines;390.4
+76222;NA;SCB7;DB534;1-2mm fines;13.65
+76223;NA;SCB7;DB534;2-4mm fines;8.26
+76224;NA;SCB7;DB534;4-10mm fines;3.83
+76230;NA;SCB4;DB556;db residue ;6.63
+76235;NA;SCB4;DB556;brecciated olivine norite;26.56
+76236;NA;SCB4;DB556;brecciated olivine norite;19.18
+76237;NA;SCB4;DB556;brecciated olivine norite;10.31
+76238;NA;SCB4;DB556;brecciated olivine norite;8.21
+76239;NA;SCB4;DB556;brecciated olivine norite;6.23
+76240;NA;SCB4;DB312;unsieved fines ;450.7
+76241;NA;SCB4;DB312;<1mm fines;21.14
+76242;NA;SCB4;DB312;1-2mm fines;1.2
+76243;NA;SCB4;DB312;2-4mm fines;1.23
+76244;NA;SCB4;DB312;4-10mm fines;1.53
+76245;NA;SCB4;DB312;green gray breccia;8.24
+76246;NA;SCB4;DB312;green gray breccia;6.5
+76250;NA;SCB4;DB536;db residue ;4.63
+76255;NA;SCB4;DB536;tan breccia;406.6
+76260;NA;SCB4;DB313;unsieved fines ;96.6
+76261;NA;SCB4;DB313;<1mm fines;170.7
+76262;NA;SCB4;DB313;1-2mm fines;8.55
+76263;NA;SCB4;DB313;2-4mm fines;6.57
+76264;NA;SCB4;DB313;4-10mm fines;8.76
+76265;NA;SCB4;DB313;green gray breccia;1.75
+76270;NA;SCB4;DB537;db residue ;0.46
+76275;NA;SCB4;DB537;blue gray breccia;55.93
+76280;NA;SCB4;DB472;unsieved fines ;153
+76281;NA;SCB4;DB472;<1mm fines;251.8
+76282;NA;SCB4;DB472;1-2mm fines;14.27
+76283;NA;SCB4;DB472;2-4mm fines;12.71
+76284;NA;SCB4;DB472;4-10mm fines;10.69
+76285;NA;SCB4;DB472;agglutinate;2.208
+76286;NA;SCB4;DB472;brecciated troctolite;1.704
+76290;NA;SCB4;DB538;db residue ;9.65
+76295;NA;SCB4;DB538;tan breccia;260.7
+76305;NA;SCB4;DB556;brecciated olivine norite;4.01
+76306;NA;SCB4;DB556;brecciated olivine norite;4.25
+76307;NA;SCB4;DB556;brecciated olivine norite;2.49
+76310;NA;SCB7;DB539;db residue ;25.39
+76315;NA;SCB7;DB539;blue gray breccia;671.1
+76320;NA;SCB7;DB557;unsieved fines ;260.3
+76321;NA;SCB7;DB557;<1mm fines;502.7
+76322;NA;SCB7;DB557;1-2mm fines;23.1
+76323;NA;SCB7;DB557;2-4mm fines;15.84
+76324;NA;SCB7;DB557;4-10mm fines;11.8
+76330;NA;BSLSS;DB560;db residue ;418.6
+76335;NA;BSLSS;DB560;friable anorthositic breccia;352.9
+76500;NA;SCB4;DB559;unsieved fines ;345.2
+76501;NA;SCB4;DB559;<1mm fines;630.7
+76502;NA;SCB4;DB559;1-2mm fines;22.76
+76503;NA;SCB4;DB559;2-4mm fines;10.09
+76504;NA;SCB4;DB559;4-10mm fines;10.72
+76505;NA;SCB4;DB559;green gray breccia;4.69
+76506;NA;SCB4;DB559;friable dark matrix breccia;2.81
+76530;NA;SCB4;DB558;db residue ;70.27
+76535;NA;SCB4;DB558;coarse norite ;155.5
+76536;NA;SCB4;DB558;brecciated norite;10.26
+76537;NA;SCB4;DB558;fine basalt;26.48
+76538;NA;SCB4;DB558;medium basalt;5.87
+76539;NA;SCB4;DB558;vitrophyric basalt;14.8
+76545;NA;SCB4;DB558;dark vitreous matrix breccia;7.676
+76546;NA;SCB4;DB558;dark vitreous matrix breccia;24.31
+76547;NA;SCB4;DB558;dark vitreous matrix breccia;10.05
+76548;NA;SCB4;DB558;dark vitreous matrix breccia;2.527
+76549;NA;SCB4;DB558;dark vitreous matrix breccia;9.175
+76555;NA;SCB4;DB558;crystalline basalt;8.435
+76556;NA;SCB4;DB558;crystalline matrix rich basalt;7.396
+76557;NA;SCB4;DB558;crystalline matrix rich basalt;5.592
+76558;NA;SCB4;DB558;crystalline matrix rich basalt;0.683
+76559;NA;SCB4;DB558;crystalline matrix rich basalt;0.747
+76565;NA;SCB4;DB558;friable dark matrix breccia;11.6
+76566;NA;SCB4;DB558;friable dark matrix breccia;2.639
+76567;NA;SCB4;DB558;friable dark matrix breccia;5.49
+76568;NA;SCB4;DB558;basalt rich breccia;9.477
+76569;NA;SCB4;DB558;crystalline breccia;4.207
+76575;NA;SCB4;DB558;crystalline breccia;16.25
+76576;NA;SCB4;DB558;crystalline breccia;5.327
+76577;NA;SCB4;DB558;crystalline breccia;13.54
+77010;NA;SCB7;NA;SCB residue ;93.65
+77017;NA;SCB7;DB541;brecciated olivine gabbro;1730
+77035;NA;BSLSS;NA;green gray breccia;5727
+77070;NA;SCB7;DB544;db residue ;9.28
+77075;NA;SCB7;DB544;dark gray dike;172.4
+77076;NA;SCB7;DB544;dark gray dike;13.97
+77077;NA;SCB7;DB544;dark gray dike;5.45
+77110;NA;SCB4;DB561;dust and sweepings;0.15
+77115;NA;SCB4;DB561;blue gray breccia;115.9
+77130;NA;SCB4;DB562;db residue ;1.42
+77135;NA;SCB4;DB562;green gray breccia;337.4
+77210;NA;SCB7;DB543;db residue ;111.7
+77215;NA;SCB7;DB543;brecciated norite;846.4
+77510;NA;SCB7;DB540;unsieved fines ;77.57
+77511;NA;SCB7;DB540;<1mm fines;118.1
+77512;NA;SCB7;DB540;1-2mm fines;2.45
+77513;NA;SCB7;DB540;2-4mm fines;1.19
+77514;NA;SCB7;DB540;4-10mm fines;1.24
+77515;NA;SCB7;DB540;green gray breccia;337.6
+77516;NA;SCB7;DB540;medium basalt;103.7
+77517;NA;SCB7;DB540;feldspathic breccia;45.6
+77518;NA;SCB7;DB540;green gray breccia;42.5
+77519;NA;SCB7;DB540;green gray breccia;27.4
+77525;NA;SCB7;DB540;feldspathic breccia;1.19
+77526;NA;SCB7;DB540;feldspathic breccia;1.07
+77530;NA;SCB7;DB542;unsieved fines ;82.76
+77531;NA;SCB7;DB542;<1mm fines;126.6
+77532;NA;SCB7;DB542;1-2mm fines;3.13
+77533;NA;SCB7;DB542;2-4mm fines;2.51
+77534;NA;SCB7;DB542;4-10mm fines;4.46
+77535;NA;SCB7;DB542;coarse basalt;577.8
+77536;NA;SCB7;DB542;coarse basalt;355.3
+77537;NA;SCB7;DB542;green gray breccia;71.7
+77538;NA;SCB7;DB542;light gray breccia;47.2
+77539;NA;SCB7;DB542;tan breccia;39.6
+77545;NA;SCB7;DB542;green gray breccia;29.5
+78120;NA;SCB5;DB50Y;unsieved fines ;75.78
+78121;NA;SCB5;DB50Y;<1mm fines;121.6
+78122;NA;SCB5;DB50Y;1-2mm fines;4.43
+78123;NA;SCB5;DB50Y;2-4mm fines;2.49
+78124;NA;SCB5;DB50Y;4-10mm fines;5.64
+78130;NA;SCB4;DB563;db residue ;3.62
+78135;NA;SCB4;DB563;medium basalt;133.9
+78150;NA;SCB4;DB567;dust and sweepings;0.65
+78155;NA;SCB4;DB567;babbroic breccia;401.1
+78220;NA;SCB7;DB545;unsieved fines ;108.3
+78221;NA;SCB7;DB545;<1mm fines;227.1
+78222;NA;SCB7;DB545;1-2mm fines;5.21
+78223;NA;SCB7;DB454;2-4mm fines;2.69
+78224;NA;SCB7;DB454;4-10mm fines;1.48
+78230;NA;SCB4;DB564;unsieved fines ;82.98
+78231;NA;SCB4;DB564;<1mm fines;122.7
+78232;NA;SCB4;DB564;1-2mm fines;2.68
+78233;NA;SCB4;DB564;2-4mm fines;1.42
+78234;NA;SCB4;DB564;4-10mm fines;0.72
+78235;NA;SCB4;DB564;coarse norite ;199
+78236;NA;SCB4;DB564;coarse norite ;93.06
+78238;NA;SCB4;DB564;coarse norite ;57.58
+78250;NA;SCB4;DB546;unsieved fines ;50.57
+78255;NA;SCB4;DB546;coarse norite ;48.31
+78420;NA;SCB4;DB548;unsieved fines ;97.94
+78421;NA;SCB4;DB548;<1mm fines;186.2
+78422;NA;SCB4;DB548;1-2mm fines;4.16
+78423;NA;SCB4;DB548;2-4mm fines;2.41
+78424;NA;SCB4;DB548;4-10mm fines;1.91
+78440;NA;SCB4;DB551;unsieved fines ;81.38
+78441;NA;SCB4;DB551;<1mm fines;162.8
+78442;NA;SCB4;DB551;1-2mm fines;3.78
+78443;NA;SCB4;DB551;2-4mm fines;2.44
+78444;NA;SCB4;DB551;4-10mm fines;1.19
+78460;NA;SCB7;DB550;unsieved fines ;138.1
+78461;NA;SCB7;DB550;<1mm fines;264.5
+78462;NA;SCB7;DB550;1-2mm fines;5.328
+78463;NA;SCB7;DB550;2-4mm fines;2.787
+78464;NA;SCB7;DB550;4-10mm fines;1.303
+78465;NA;SCB7;DB550;dark matrix breccia;1.039
+78480;NA;SCB4;DB549;unsieved fines ;89.33
+78481;NA;SCB4;DB549;<1mm fines;173.9
+78482;NA;SCB4;DB549;1-2mm fines;2.69
+78483;NA;SCB4;DB549;2-4mm fines;1.21
+78484;NA;SCB4;DB549;4-10mm fines;0.32
+78500;NA;SCB4;DB566;unsieved fines ;391.1
+78501;NA;SCB4;DB566;<1mm fines;718.7
+78502;NA;SCB4;DB566;1-2mm fines;21.38
+78503;NA;SCB4;DB566;2-4mm fines;16.41
+78504;NA;SCB4;DB566;4-10mm fines;19.16
+78505;NA;SCB4;DB566;coarse basalt;506.3
+78506;NA;SCB4;DB566;coarse basalt ;55.97
+78507;NA;SCB4;DB566;coarse basalt;23.35
+78508;NA;SCB4;DB566;friable dark matrix breccia;10.67
+78509;NA;SCB4;DB566;basalt  ;8.68
+78515;NA;SCB4;DB566;coherent dark matrix breccia;4.76
+78516;NA;SCB4;DB566;friable dark matrix breccia;3.18
+78517;NA;SCB4;DB566;friable white breccia;1.82
+78518;NA;SCB4;DB566;friable dark matrix breccia;0.88
+78525;NA;SCB4;DB565;agglutinate;5.11
+78526;NA;SCB4;DB565;breccia with green glass veins ;8.77
+78527;NA;SCB4;DB565;brecciated gabbroic rock ;5.16
+78528;NA;SCB4;DB565;fine basalt ;7
+78530;NA;SCB4;DB565;db residue ;88.92
+78535;NA;SCB4;DB565;coherent dark matrix breccia;103.4
+78536;NA;SCB4;DB565;coherent dark matrix breccia;8.67
+78537;NA;SCB4;DB565;coherent dark matrix breccia;11.76
+78538;NA;SCB4;DB565;coherent dark matrix breccia;5.82
+78539;NA;SCB4;DB565;coherent dark matrix breccia;3.73
+78545;NA;SCB4;DB565;coherent dark matrix breccia;8.6
+78546;NA;SCB4;DB565;coherent dark matrix breccia;42.66
+78547;NA;SCB4;DB565;friable dark matrix breccia;29.91
+78548;NA;SCB4;DB565;friable dark matrix breccia;15.95
+78549;NA;SCB4;DB565;friable dark matrix breccia;16.09
+78555;NA;SCB4;DB565;friable dark matrix breccia;6.64
+78556;NA;SCB4;DB565;friable dark matrix breccia;9.5
+78557;NA;SCB4;DB565;friable dark matrix breccia;7.19
+78558;NA;SCB4;DB565;friable dark matrix breccia;3.78
+78559;NA;SCB4;DB565;friable dark matrix breccia;3.05
+78565;NA;SCB4;DB565;friable dark matrix breccia;3.5
+78566;NA;SCB4;DB565;friable dark matrix breccia;0.77
+78567;NA;SCB4;DB565;friable dark matrix breccia;18.88
+78568;NA;SCB4;DB565;friable dark matrix breccia;3.57
+78569;NA;SCB4;DB565;friable dark matrix breccia;14.53
+78575;NA;SCB4;DB565;coarse basalt;140
+78576;NA;SCB4;DB565;coarse basalt;11.64
+78577;NA;SCB4;DB565;coarse basalt;8.84
+78578;NA;SCB4;DB565;coarse basalt;17.13
+78579;NA;SCB4;DB565;medium basalt;6.07
+78585;NA;SCB4;DB565;fine basalt;44.6
+78586;NA;SCB4;DB565;fine basalt;10.73
+78587;NA;SCB4;DB565;fine basalt;11.48
+78588;NA;SCB4;DB565;fine basalt;3.77
+78589;NA;SCB4;DB565;fine basalt;4.1
+78595;NA;SCB4;DB565;fine basalt;4.19
+78596;NA;SCB4;DB565;fine basalt;7.55
+78597;NA;SCB4;DB565;fine basalt;319.1
+78598;NA;SCB4;DB565;fine basalt;224.1
+78599;NA;SCB4;DB565;fine basalt;198.6
+79001;2050;SCB7;Drive tube lower;drive tube ;743.4
+79002;2037;ACB7;Drive tube upper;drive tube ;409.4
+79010;NA;SCB5;NA;SCB residue ;87.05
+79035;NA;BSLSS;NA;dark matrix breccia;2806
+79110;NA;SCB5;DB568;db residue ;66.3
+79115;NA;SCB5;DB568;dark matrix breccia;346.3
+79120;NA;SCB5;DB569;unsieved fines ;116.4
+79121;NA;SCB5;DB569;<1mm fines;214.4
+79122;NA;SCB5;DB569;1-2mm fines;13.97
+79123;NA;SCB5;DB569;2-4mm fines;13.14
+79124;NA;SCB5;DB569;4-10mm fines;14.48
+79125;NA;SCB5;DB569;dark matrix breccia;1.91
+79130;NA;SCB5;DB480;dust and sweepings;3.99
+79135;NA;SCB5;DB480;dark matrix breccia;2283
+79150;NA;SCB7;DB571;db residue ;5.63
+79155;NA;SCB7;DB571;coarse basalt ;318.8
+79170;NA;SCB7;DB481;db residue ;43.42
+79175;NA;SCB7;DB481;agglutinate;677.7
+79190;NA;SCB7;DB482;db residue ;13.38
+79195;NA;SCB7;DB482;dark matrix breccia;368.5
+79210;NA;SCB7;DB486;db residue ;5.55
+79215;NA;SCB7;DB486;brecciated troctolite ;553.8
+79220;NA;SCB5;DB483;unsieved fines ;93.49
+79221;NA;SCB5;DB483;<1mm fines;152.6
+79222;NA;SCB5;DB483;1-2mm fines;7.22
+79223;NA;SCB5;DB483;2-4mm fines;6.24
+79224;NA;SCB5;DB483;4-10mm fines;9.75
+79225;NA;SCB5;DB483;friable dark matrix breccia;7.42
+79226;NA;SCB5;DB483;friable dark matrix breccia;6.73
+79227;NA;SCB5;DB483;disaggregated clod;5.57
+79228;NA;SCB5;DB483;disaggregated clod;2.5
+79240;NA;SCB5;DB484;unsieved fines ;113.3
+79241;NA;SCB5;DB484;<1mm fines;174.3
+79242;NA;SCB5;DB484;1-2mm fines;11.32
+79243;NA;SCB5;DB484;2-4mm fines;10.46
+79244;NA;SCB5;DB484;4-10mm fines;10.85
+79245;NA;SCB5;DB484;crystalline ;10.11
+79260;NA;SCB5;DB485;unsieved fines ;118.9
+79261;NA;SCB5;DB485;<1mm fines;187.8
+79262;NA;SCB5;DB485;1-2mm fines;11.74
+79263;NA;SCB5;DB485;2-4mm fines;11.46
+79264;NA;SCB5;DB485;4-10mm fines;15.85
+79265;NA;SCB5;DB485;basalt;2.6
+79510;NA;SCB5;DB570;unsieved fines ;107.6
+79511;NA;SCB5;DB570;<1mm fines;179.2
+79512;NA;SCB5;DB570;1-2mm fines;11.32
+79513;NA;SCB5;DB570;2-4mm fines;9.94
+79514;NA;SCB5;DB570;4-10mm fines;12.24
+79515;NA;SCB5;DB570;medium basalt;33
+79516;NA;SCB5;DB570;medium basalt;23.92
+79517;NA;SCB5;DB570;dark matrix breccia;10.23
+79518;NA;SCB5;DB570;dark matrix breccia;5.2
+79519;NA;SCB5;DB570;dark matrix breccia;3.65
+79525;NA;SCB5;DB570;dark matrix breccia;3.03
+79526;NA;SCB5;DB570;dark matrix breccia;2.93
+79527;NA;SCB5;DB570;dark matrix breccia;2.65
+79528;NA;SCB5;DB570;dark matrix breccia;2.38
+79529;NA;SCB5;DB570;dark matrix breccia;1.84
+79535;NA;SCB5;DB570;dark matrix breccia;1.69
+79536;NA;SCB5;DB570;dark matrix breccia;1.66
+79537;NA;SCB5;DB570;dark matrix breccia;1.05

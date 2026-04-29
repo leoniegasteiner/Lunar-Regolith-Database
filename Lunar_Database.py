@@ -1,3 +1,23 @@
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~LUNAR REGOLITH DATABASE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#--------------------------------------------------------------------------------------------------------------------------------------------------------
+#Author: Léonie Gasteiner 
+#Contact: gasteinerleonie@gmail.com
+
+#Structure: 
+# - Initialization: 15-228
+# - Lunar Regolith Database Section: 235 - 1475
+# - Lunar Simulants Database Section: 1480 - 2015
+# - Lunar Samples Database Section: 2020 - 2235
+# - Detailed Mission Pages Section: 2280 - 2360
+# - Combined Data Section: 2365-2965
+# - Footer: 2965-3000
+
+
+
+
+
+
 #Necessary imports
 from email.quoprimime import quote
 from altair import value
@@ -34,10 +54,6 @@ ROMAN_NUMERAL_WORDS = {
 }
 
 def pretty_mission_name(raw_name: str) -> str:
-    """
-    Turn a filename-like mission id (e.g. 'surveyor_iii')
-    into a nice label (e.g. 'Surveyor III').
-    """
     clean = raw_name.replace("_", " ").replace("-", " ").strip()
     words = clean.split()
 
@@ -54,6 +70,7 @@ def pretty_mission_name(raw_name: str) -> str:
 
 # --------------- DATA LOADING SECTION ---------------
 st.cache_data.clear()
+
 #Lunar Data Loading 
 @st.cache_data
 def load_database_data():
@@ -64,7 +81,7 @@ def load_database_data():
     header=0,
     skip_blank_lines=False,
     )
-    df.columns =  ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Porosity (%)", "Force applied (N)", "Source","Year of publication", "DOI / URL","Comments"]
+    df.columns =  ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Cone penetration resistance (kPa)", "Force applied (N)", "Source","Year of publication", "DOI / URL","Comments"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
     return df
 
@@ -103,6 +120,40 @@ def load_all_data():
 
 all_db_df = load_all_data()
 
+#Lunar Samples data loading 
+@st.cache_data
+def load_samples_data():
+    df = pd.read_csv(
+    "Dataset_Samples.csv",
+    sep=";",
+    dtype=str,
+    header=0,
+    skip_blank_lines=False,
+    )
+    df.columns =  ["Mission", "Sample", "Serial Number", "Return Container", "Container", "Sample Type", "Weight (g)", "Source"]
+    df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+    return df
+
+samples_db_df = load_samples_data()
+
+#Samples PSD data loading 
+
+@st.cache_data
+def load_samples_PSD_data():
+    df = pd.read_csv(
+    "Dataset_Samples_PSD.csv",
+    sep=";",
+    dtype=str,
+    header=0,
+    skip_blank_lines=False,
+    )
+    df.columns =  ["Mission", "Sample", "Subsample", "depth (cm)", "Sieve size (µm)", "weight %", "D50 (µm)", "Source"]
+    df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+    return df
+
+samples_PSD_db_df = load_samples_PSD_data()
+
+#General data loading
 @st.cache_data
 def load_general_data():
     df = pd.read_csv(
@@ -121,7 +172,7 @@ general_db_df = load_general_data()
 # Sidebar to choose database (Lunar mission or Simulants)
 db_choice = st.sidebar.radio(
     "Select Database:",
-    ["Lunar Regolith Database", "Lunar Regolith Simulants Database", "Combined Data", "Detailed Mission Pages"]
+    ["Lunar Regolith Database", "Lunar Regolith Simulants Database", "Lunar Samples Database", "Detailed Mission Pages", "Combined Data"]
 )
 
 #visual 
@@ -134,66 +185,72 @@ hide_st_style = """
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
+#------------------Functions -------------------
+
+def categorize_mission(mission_name):
+    if pd.isna(mission_name):
+        return "Other"
+    name = mission_name.lower()
+    if "apollo" in name:
+        return "Apollo"
+    elif "orbiter" in name:
+        return "LRO"
+    elif "luna" in name:
+        return "Luna"
+    elif "surveyor" in name:
+        return "Surveyor"
+    elif "chang'e" in name:
+        return "Chang'e"
+    elif "chandrayaan" in name: 
+        return "Chandrayaan"
+    else:
+        return "Other"
+    
+def extract_range(value):
+    if pd.isna(value):
+        return (np.nan, np.nan)
+    
+    if isinstance(value, (int, float)):
+        return (float(value), float(value))
+    match = re.findall(r"[-+]?\d*\.?\d+", str(value))
+    if len(match) == 0:
+        return (np.nan, np.nan)
+    try:
+        numbers = [float(n) for n in match]
+    except ValueError:
+        return (np.nan, np.nan)
+    if len(numbers) == 1:
+        val = numbers[0]
+        return (val, val)
+    else:
+        return (min(numbers), max(numbers))
+    
+def filter_numeric_range(df, col_min, col_max, min_val, max_val):
+    return df[
+        ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
+        ((df[col_min].le(max_val)) | (df[col_min].isna()))
+    ]
+
 # --------------------------- Lunar Mission Database Section ---------------------------
 if db_choice == "Lunar Regolith Database":
 
     st.title("Lunar Regolith Database")
 
-    # Mission categorization function
-    def categorize_mission(mission_name):
-        if pd.isna(mission_name):
-            return "Other"
-        name = mission_name.lower()
-        if "apollo" in name:
-            return "Apollo"
-        elif "orbiter" in name:
-            return "LRO"
-        elif "luna" in name:
-            return "Luna"
-        elif "surveyor" in name:
-            return "Surveyor"
-        elif "chang'e" in name:
-            return "Chang'e"
-        elif "chandrayaan" in name: 
-            return "Chandrayaan"
-        else:
-            return "Other"
-        
-    def extract_range(value):
-        if pd.isna(value):
-            return (np.nan, np.nan)
-        
-        if isinstance(value, (int, float)):
-            return (float(value), float(value))
-
-        match = re.findall(r"[-+]?\d*\.?\d+", str(value))
-
-        if len(match) == 0:
-            return (np.nan, np.nan)
-
-        try:
-            numbers = [float(n) for n in match]
-        except ValueError:
-            return (np.nan, np.nan)
-
-        if len(numbers) == 1:
-            val = numbers[0]
-            return (val, val)
-        else:
-            return (min(numbers), max(numbers))
-
-    # --- Columns that may contain ranges ---
+    # --- Columns that contain ranges ---
     range_columns = [
         "Bulk density (g/cm^3)",
         "Angle of internal friction (degree)",
         "Cohesion (kPa)",
         "Bearing capacity (kPa)", 
+        "Static bearing pressure (kPa)",
         "Normal stress range (kPa)", 
         "Void ratio", 
         "Density of grains (g/cm^3)", 
         "Compressibility Coefficient", 
         "Depth (cm)", 
+        "Specific gravity",
         "Porosity (%)", 
+        "Cone penetration resistance (kPa)", 
         "Force applied (N)"
     ]
 
@@ -220,12 +277,14 @@ if db_choice == "Lunar Regolith Database":
         st.session_state["density_range"] = (round(dens_min, 2), round(dens_max, 2))
         st.session_state["cohesion_range"] = (round(coh_min, 1), round(coh_max, 1))
         st.session_state["angle_range"] = (round(ang_min, 1), round(ang_max, 1))
+        st.session_state["static_bearing_range"] = (round(staticbc_min, 1), round(staticbc_max, 1))
         st.session_state["sbc_range"] = (round(sbc_min, 1), round(sbc_max, 1))
         st.session_state["ns_range"] = (round(nf_min, 1), round(nf_max, 1))
         st.session_state["vr_range"] = (round(vr_min, 2), round(vr_max, 2))
         st.session_state["dg_range"] = (round(dg_min, 2), round(dg_max, 2))
         st.session_state["cc_range"] = (round(cc_min, 4), round(cc_max, 4))
         st.session_state["depth_range"] = (round(depth_min, 1), round(depth_max, 1))
+        st.session_state["specific_gravity_range"] = (round(sg_min, 2), round(sg_max, 2))
         st.session_state["por_range"] = (round(por_min, 1), round(por_max, 1))
         st.session_state["fa_range"] = (round(fa_min, 1), round(fa_max, 1))
         st.session_state["selected_columns"] = [
@@ -359,6 +418,24 @@ if db_choice == "Lunar Regolith Database":
             else:
                 sbc_range = None
 
+            st.markdown("### Static Bearing Pressure (kPa)")
+            if "min_Static bearing pressure (kPa)" in lunar_db_df.columns:
+                staticbc_min = float(lunar_db_df["min_Static bearing pressure (kPa)"].min(skipna=True))
+                staticbc_max = float(lunar_db_df["max_Static bearing pressure (kPa)"].max(skipna=True))
+
+                if "static_bearing_range" not in st.session_state:
+                    st.session_state["static_bearing_range"] = (round(staticbc_min, 1), round(staticbc_max, 1))
+
+                static_bearing_range = st.slider(
+                    "Select Static Bearing Pressure Range",
+                    min_value=round(staticbc_min, 1),
+                    max_value=round(staticbc_max, 1),
+                    value=(round(staticbc_min, 1), round(staticbc_max, 1)),
+                    key="static_bearing_range"
+                )
+            else:
+                static_bearing_range = None
+
             st.markdown("### Normal Stress (kPa)")
             if "min_Normal stress range (kPa)" in lunar_db_df.columns:
                 nf_min = float(lunar_db_df["min_Normal stress range (kPa)"].min(skipna=True))
@@ -448,6 +525,23 @@ if db_choice == "Lunar Regolith Database":
                )
             else:
                 depth_range = None  
+
+
+            st.markdown("### Specific Gravity")
+            if "min_Specific gravity" in lunar_db_df.columns:
+                sg_min = float(lunar_db_df["min_Specific gravity"].min(skipna=True))
+                sg_max = float(lunar_db_df["max_Specific gravity"].max(skipna=True))
+
+                if "specific_gravity_range" not in st.session_state:
+                    st.session_state["specific_gravity_range"] = (round(sg_min, 2), round(sg_max, 2))
+
+                specific_gravity_range = st.slider(
+                   "Select Specific Gravity Range",
+                   min_value=round(sg_min, 2),
+                   max_value=round(sg_max, 2),
+                   value=(round(sg_min, 2), round(sg_max, 2)),
+                   key="specific_gravity_range"
+               )
 
             st.markdown("### Porosity (%)")
             if "min_Porosity (%)" in lunar_db_df.columns:
@@ -541,11 +635,13 @@ if db_choice == "Lunar Regolith Database":
     "Angle of internal friction (degree)",
     "Cohesion (kPa)",
     "Bearing capacity (kPa)",
+    "Static bearing pressure (kPa)",
     "Normal stress range (kPa)",
     "Void ratio",
     "Density of grains (g/cm^3)",
     "Compressibility Coefficient",
     "Depth (cm)",
+    "Specific gravity",
     "Porosity (%)",
     "Force applied (N)",
     "Year"
@@ -584,11 +680,7 @@ if db_choice == "Lunar Regolith Database":
 
 
     # --- Numeric filters ---
-    def filter_numeric_range(df, col_min, col_max, min_val, max_val):
-        return df[
-            ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
-            ((df[col_min].le(max_val)) | (df[col_min].isna()))
-        ]
+
 
     if density_range and (density_range != (round(dens_min, 2), round(dens_max, 2))):
         filtered_db_df = filter_numeric_range(
@@ -617,6 +709,13 @@ if db_choice == "Lunar Regolith Database":
             filtered_db_df,
             "min_Bearing capacity (kPa)", "max_Bearing capacity (kPa)",
             sbc_range[0], sbc_range[1]
+        )
+
+    if static_bearing_range and (static_bearing_range != (round(staticbc_min, 2), round(staticbc_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Static bearing pressure (kPa)", "max_Static bearing pressure (kPa)",
+            static_bearing_range[0], static_bearing_range[1]
         )
 
     if nf_range and (nf_range != (round(nf_min, 2), round(nf_max, 2))):
@@ -654,6 +753,13 @@ if db_choice == "Lunar Regolith Database":
             depth_range[0], depth_range[1]
         )
 
+    if specific_gravity_range and (specific_gravity_range != (round(sg_min, 2), round(sg_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Specific gravity", "max_Specific gravity",
+            specific_gravity_range[0], specific_gravity_range[1]
+        )
+
     if por_range and (por_range != (round(por_min, 2), round(por_max, 2))):
         filtered_db_df = filter_numeric_range(
             filtered_db_df,
@@ -679,11 +785,13 @@ if db_choice == "Lunar Regolith Database":
         "Angle of internal friction (degree)",
         "Cohesion (kPa)",
         "Bearing capacity (kPa)",
+        "Static bearing pressure (kPa)",
         "Normal stress range (kPa)",
         "Void ratio",
         "Density of grains (g/cm^3)",
         "Compressibility Coefficient",
         "Depth (cm)",
+        "Specific gravity",
         "Porosity (%)",
         "Force applied (N)"
     ]
@@ -714,11 +822,11 @@ if db_choice == "Lunar Regolith Database":
     x_axis = st.selectbox("X-axis (categorical & numeric)", options=[
         "Mission", "Location", "Terrain", "Test", "Type of mission", 
         "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
-        "Cohesion (kPa)", "Bearing capacity (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Porosity (%)", "Force applied (N)", "Year of publication"
+        "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Force applied (N)", "Year of publication"
     ])
     y_axis = st.selectbox("Y-axis (numeric)", options=[
         "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
-        "Cohesion (kPa)", "Bearing capacity (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Porosity (%)", "Force applied (N)", "Year of publication"
+        "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Force applied (N)", "Year of publication"
     ])
     plot_mode = st.radio("Select value type to plot", ["Range", "Average", "Minimum", "Maximum"], horizontal=True)
 
@@ -739,11 +847,13 @@ if db_choice == "Lunar Regolith Database":
         "Angle of internal friction (degree)",
         "Cohesion (kPa)",
         "Bearing capacity (kPa)", 
+        "Static bearing pressure (kPa)",
         "Normal stress range (kPa)",
         "Void ratio",
         "Density of grains (g/cm^3)",
         "Compressibility Coefficient",
         "Depth (cm)",
+        "Specific gravity",
         "Porosity (%)",
         "Force applied (N)"
     ]            
@@ -774,12 +884,7 @@ if db_choice == "Lunar Regolith Database":
     if test_location_filter:
         filtered_plot_df = filtered_plot_df[filtered_plot_df["Test location"].isin(test_location_filter)]
 
-    # --- Numeric filters (keep NaN rows visible) ---
-    def filter_numeric_range(df, col_min, col_max, min_val, max_val):
-        return df[
-            ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
-            ((df[col_min].le(max_val)) | (df[col_min].isna()))
-        ]
+    # --- Numeric filters ---
     
     if year_range and isinstance(year_range, tuple) and (year_range != (year_min, year_max)):
         filtered_plot_df = filtered_plot_df[
@@ -816,6 +921,13 @@ if db_choice == "Lunar Regolith Database":
             sbc_range[0], sbc_range[1]
         )
 
+    if static_bearing_range and (static_bearing_range != (round(staticbc_min, 2), round(staticbc_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Static bearing pressure (kPa)", "max_Static bearing pressure (kPa)",
+            static_bearing_range[0], static_bearing_range[1]
+        )
+
     if nf_range and (nf_range != (round(nf_min, 2), round(nf_max, 2))):
         filtered_plot_df = filter_numeric_range(
             filtered_plot_df,
@@ -849,6 +961,13 @@ if db_choice == "Lunar Regolith Database":
             filtered_plot_df,
             "min_Depth (cm)", "max_Depth (cm)",
             depth_range[0], depth_range[1]
+        )
+
+    if specific_gravity_range and (specific_gravity_range != (round(sg_min, 2), round(sg_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Specific gravity", "max_Specific gravity",
+            specific_gravity_range[0], specific_gravity_range[1]
         )
 
     if por_range and (por_range != (round(por_min, 2), round(por_max, 2))):
@@ -1187,6 +1306,7 @@ if db_choice == "Lunar Regolith Database":
 
 # ------------------ Moon Map --------------
 
+    st.subheader("Mission Location Representation on the Moon")
     def parse_location(loc_str):
         if pd.isna(loc_str):
             return None, None
@@ -1299,14 +1419,14 @@ if db_choice == "Lunar Regolith Database":
     )
 
     fig.update_layout(
-        title=dict(
-            text=f"Mission Location Representation on the Moon (Filtered by {map_legend_column})", 
-            x=0,
-            xanchor='left',
-            y=0.9,
-            yanchor='top',
-            font=dict(size=20)
-        ),
+        #title=dict(
+        #    text=f"Mission Location Representation on the Moon (Filtered by {map_legend_column})", 
+        #    x=0,
+        #    xanchor='left',
+        #    y=0.9,
+        #    yanchor='top',
+        #    font=dict(size=20)
+        #),
         xaxis=dict(
             title="Longitude (°)",
             range=[-180, 180],
@@ -1892,6 +2012,351 @@ elif db_choice == "Lunar Regolith Simulants Database":
      # --- Display plot ---
     config = {"displayModeBar": False, "scrollZoom": True}
     st.plotly_chart(fig, width='stretch', config=config)
+
+
+
+
+
+
+#----------------------------------------------------------------------------------------------------------------------------------
+#-------- Lunar Samples Section --------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------------------
+elif db_choice == "Lunar Samples Database":
+
+    st.title("Lunar Samples Database")
+
+    samples_PSD_db_df.columns = samples_PSD_db_df.columns.str.strip()
+    samples_db_df.columns = samples_db_df.columns.str.strip()
+
+    # Add mission data from regolith dataset
+    mission_meta_df = lunar_db_df[["Mission", "Location", "Terrain", "Year", "Type of mission"]].dropna(subset=["Mission"]).drop_duplicates(subset=["Mission"])
+
+    samples_db_df = samples_db_df.merge(mission_meta_df, on="Mission", how="left")
+    samples_PSD_db_df = samples_PSD_db_df.merge(mission_meta_df, on="Mission", how="left")
+
+
+    # --- Columns that contain ranges ---
+    range_columns = [ "depth (cm)" ]
+
+    samples_PSD_db_df.columns = samples_PSD_db_df.columns.str.strip()
+
+    # --- Numeric columns ---
+    for col in range_columns:
+        if col in samples_PSD_db_df.columns:
+            samples_PSD_db_df[[f"min_{col}", f"max_{col}"]] = samples_PSD_db_df[col].apply(
+                lambda x: pd.Series(extract_range(x))
+            )
+            samples_PSD_db_df[f"avg_{col}"] = samples_PSD_db_df[
+                [f"min_{col}", f"max_{col}"]
+            ].mean(axis=1)
+
+    samples_db_df["Mission Group"] = samples_db_df["Mission"].apply(categorize_mission)
+    samples_PSD_db_df["Mission Group"] = samples_PSD_db_df["Mission"].apply(categorize_mission)
+
+    numeric_cols = ["depth (cm)", "Sample", "Sieve size (µm)", "weight %", "weight (g)"]
+    for col in numeric_cols:
+        if col in samples_PSD_db_df.columns:
+            samples_PSD_db_df[col] = pd.to_numeric(samples_PSD_db_df[col], errors="coerce")
+        if col in samples_db_df.columns:
+            samples_db_df[col] = pd.to_numeric(samples_db_df[col], errors="coerce")
+
+
+# ------- Filters ----------------------
+    st.sidebar.header("Filter Samples Data")
+    
+    # Mission Filter
+    missions = samples_PSD_db_df["Mission"].dropna().unique().tolist()
+    selected_missions = st.sidebar.multiselect("Select Mission(s):", options=missions)
+
+    if selected_missions:
+        filtered_psd_df = samples_PSD_db_df[samples_PSD_db_df["Mission"].isin(selected_missions)]
+        filtered_samples_df = samples_db_df[samples_db_df["Mission"].isin(selected_missions)]
+    else:
+        filtered_psd_df = samples_PSD_db_df.copy()
+        filtered_samples_df = samples_db_df.copy()
+
+    # Sample Filter 
+    samples = filtered_psd_df["Sample"].dropna().unique().tolist()
+    selected_samples = st.sidebar.multiselect("Select Sample(s):", options=samples)
+
+    if selected_samples:
+        filtered_psd_df = filtered_psd_df[filtered_psd_df["Sample"].isin(selected_samples)]
+        filtered_samples_df = filtered_samples_df[filtered_samples_df["Sample"].isin(selected_samples)]
+
+    if "Subsample" in filtered_psd_df.columns:
+        subsamples = filtered_psd_df["Subsample"].dropna().unique().tolist()
+        selected_subsamples = st.sidebar.multiselect("Select Subsample(s):", options=subsamples)
+        if selected_subsamples:
+            filtered_psd_df = filtered_psd_df[filtered_psd_df["Subsample"].isin(selected_subsamples)]
+
+    # Terrain Filter
+    if "Terrain" in filtered_psd_df.columns:
+        terrains = filtered_psd_df["Terrain"].dropna().unique().tolist()
+        selected_terrains = st.sidebar.multiselect("Select Terrain(s):", options=terrains)
+
+        if selected_terrains:
+            filtered_psd_df = filtered_psd_df[filtered_psd_df["Terrain"].isin(selected_terrains)]
+            if "Terrain" in filtered_samples_df.columns:
+                filtered_samples_df = filtered_samples_df[filtered_samples_df["Terrain"].isin(selected_terrains)]
+
+    # Depth Slider 
+    if "min_depth (cm)" in filtered_psd_df.columns and not filtered_psd_df["min_depth (cm)"].dropna().empty:
+        min_limit = float(filtered_psd_df["min_depth (cm)"].min())
+        max_limit = float(filtered_psd_df["max_depth (cm)"].max())
+
+        st.sidebar.markdown("---")
+        depth_range = st.sidebar.slider(
+            "Select Depth Range (cm):",
+            min_value=min_limit,
+            max_value=max_limit,
+            value=(min_limit, max_limit)
+        )
+
+        if depth_range[0] > min_limit or depth_range[1] < max_limit:
+            filtered_psd_df = filtered_psd_df[
+                (filtered_psd_df["min_depth (cm)"] >= depth_range[0]) & 
+                (filtered_psd_df["max_depth (cm)"] <= depth_range[1])
+            ]
+
+            remaining_samples = filtered_psd_df["Sample"].unique()
+            if "Sample" in filtered_samples_df.columns:
+                filtered_samples_df = filtered_samples_df[filtered_samples_df["Sample"].isin(remaining_samples)]
+
+    st.subheader("Lunar Samples")
+    st.dataframe(filtered_samples_df)
+
+    st.subheader("Particle Size Distribution Data")
+
+    summary_cols = ["Mission", "Sample", "Subsample", "depth (cm)", "D50 (µm)","Source"]
+    
+    existing_summary_cols = [c for c in summary_cols if c in filtered_psd_df.columns]
+    
+    psd_summary_df = filtered_psd_df[existing_summary_cols].drop_duplicates(subset=["Subsample"])
+    
+    st.dataframe(psd_summary_df)
+    st.markdown("Select subsamples in the plotting section to view particle size distribution details and plots.")
+
+ #- ---- PSD plotting ------------
+
+    st.write("---")
+    st.subheader("Plot Samples Data")
+    
+    plot_mode = st.radio("Select Analysis Type:", ["Cumulative PSD Curve", "Parameter Scatter Plot"], horizontal=True)
+
+    if plot_mode == "Cumulative PSD Curve":
+            available_subs = filtered_psd_df["Subsample"].dropna().unique().tolist()
+            selected_plot_subs = st.multiselect("Select Subsample(s):", available_subs)
+
+            col_leg1, col_leg2 = st.columns(2)
+            with col_leg1:
+                legend_color = st.selectbox(
+                    "Color Legend (Primary):", 
+                    options=["Subsample", "Mission", "Terrain", "Type of mission", "depth (cm)", "D50 (µm)"], 
+                    index=0
+                )
+            with col_leg2:
+                legend_dash = st.selectbox(
+                    "Line Style Legend (Secondary):", 
+                    options=["None", "Mission", "Terrain", "Sample", "depth (cm)"], 
+                    index=0
+                )
+
+            if selected_plot_subs:
+                sub_df = filtered_psd_df[filtered_psd_df["Subsample"].isin(selected_plot_subs)].copy()
+                sub_df = sub_df.sort_values(by=["Subsample", "Sieve size (µm)"], ascending=[True, False])
+                sub_df["Cumulative Weight %"] = sub_df.groupby("Subsample")["weight %"].transform(pd.Series.cumsum)
+
+                dash_val = legend_dash if legend_dash != "None" else None
+
+                fig = px.line(
+                    sub_df, 
+                    x="Sieve size (µm)", 
+                    y="Cumulative Weight %", 
+                    color=legend_color,
+                    line_dash=dash_val,
+                    line_group="Subsample", 
+                    markers=True, 
+                    log_x=True,
+                    title="Comparative PSD: Multi-Variable Legend",
+                    hover_data=["Subsample", "Mission", "depth (cm)"]
+                )
+
+                fig.update_xaxes(autorange="reversed")
+                st.plotly_chart(fig, use_container_width=True)
+
+                with st.expander("View Calculation Details"):
+                   st.write("Below is the cumulative breakdown for the selected samples:")
+
+                   details_df = sub_df.pivot_table(
+                       index="Sieve size (µm)", 
+                       columns="Subsample", 
+                       values="Cumulative Weight %"
+                   ).sort_index(ascending=False)
+
+                   st.dataframe(details_df, use_container_width=True)
+
+                   st.info("💡 Values represent the Cumulative Weight Retained (%) for each sieve size.")
+
+    # Scatter plot
+    else:
+        col1, col2 = st.columns(2)
+        axis_options = {"Average Depth (cm)": "avg_depth (cm)", "D50 (µm)": "D50 (µm)"}
+        
+        with col1:
+            x_label = st.selectbox("X-Axis:", options=list(axis_options.keys()), index=0)
+        with col2:
+            y_label = st.selectbox("Y-Axis:", options=list(axis_options.keys()), index=1)
+        
+        color_by = st.selectbox(
+            "Color Points By:", 
+            options=["Mission", "Terrain", "Type of mission", "Sample", "Subsample"],
+            index=1 
+        )
+
+        scatter_df = filtered_psd_df.drop_duplicates(subset=["Subsample"]).copy()
+
+        fig = px.scatter(
+            scatter_df, 
+            x=axis_options[x_label], 
+            y=axis_options[y_label], 
+            color=color_by,
+            hover_data=["Subsample", "depth (cm)"],
+            labels={axis_options[x_label]: x_label, axis_options[y_label]: y_label},
+            title=f"{y_label} vs {x_label}"
+        )
+        
+
+        if axis_options[y_label] == "avg_depth":
+            fig.update_yaxes(autorange="reversed")
+        
+        st.plotly_chart(fig, use_container_width=True)
+
+
+#---------- General Interpretation Section -------------
+#elif db_choice == "Lunar Regolith General Interpretations":
+#    st.title("Lunar Regolith General Interpretations")
+#    st.markdown("""Work in progress""")
+#    def extract_range(value):
+#        if pd.isna(value):
+#            return (np.nan, np.nan)
+#        
+#        if isinstance(value, (int, float)):
+#            return (float(value), float(value))
+#
+#        match = re.findall(r"[-+]?\d*\.?\d+", str(value))
+#
+#        if len(match) == 0:
+#            return (np.nan, np.nan)
+#
+#        try:
+#            numbers = [float(n) for n in match]
+#        except ValueError:
+#            return (np.nan, np.nan)
+#
+#        if len(numbers) == 1:
+#            val = numbers[0]
+#            return (val, val)
+#        else:
+#            return (min(numbers), max(numbers))
+#
+#    # --- Columns that may contain ranges ---
+#    range_columns = [
+#        "Bulk density (g/cm^3)",
+#        "Angle of internal friction (degree)",
+#        "Cohesion (kPa)",
+#        "Bearing capacity (kPa)", 
+#        "Normal stress range (kPa)", 
+#        "Void ratio", 
+#        "Density of grains (g/cm^3)", 
+#        "Compressibility Coefficient", 
+#        "Depth (cm)", 
+#        "Porosity (%)", 
+#        "Force applied (N)"
+#    ]
+#
+
+
+
+#------------------ Detailed Mission Pages Section ---------------------------
+elif db_choice == "Detailed Mission Pages":
+    st.title("Detailed Lunar Mission Pages")
+
+    BASE_DIR = Path(__file__).resolve().parent
+    MISSION_DIR = BASE_DIR / "mission_pages"
+
+    if not MISSION_DIR.exists():
+        st.error(f"Could not find mission directory: {MISSION_DIR}")
+    else:
+        # 1. Categorize missions into groups
+        mission_groups = {
+            "Apollo": {},
+            "Luna": {},
+            "Surveyor": {},
+            "Chang'e": {},
+            "Chandrayaan": {},
+            "Other": {}
+        }
+
+        for path in MISSION_DIR.glob("*.py"):
+            if path.name.startswith("__"): continue
+            
+            raw_name = path.stem.lower()
+            mission_name = pretty_mission_name(raw_name) # Assuming this helper exists
+            
+            if mission_name in ["Mission Page Template", "Mission"]: continue
+
+            # Sort into the correct dictionary key
+            if "apollo" in raw_name:
+                mission_groups["Apollo"][mission_name] = path
+            elif "luna" in raw_name:
+                mission_groups["Luna"][mission_name] = path
+            elif "surveyor" in raw_name:
+                mission_groups["Surveyor"][mission_name] = path
+            elif "chang" in raw_name:
+                mission_groups["Chang'e"][mission_name] = path
+            elif "chandrayaan" in raw_name:
+                mission_groups["Chandrayaan"][mission_name] = path
+            else:
+                mission_groups["Other"][mission_name] = path
+
+        # 2. Main Page Selection UI
+        st.write("### Explore Mission Data")
+        
+        # Create two columns for a clean look
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            group_choice = st.selectbox(
+                "Select a Space Program:",
+                options=list(mission_groups.keys())
+            )
+
+        with col2:
+            # Filter specific missions based on the group choice
+            specific_missions = mission_groups[group_choice]
+            mission_choice = st.selectbox(
+                "Select a Specific Mission:",
+                options=[""] + sorted(specific_missions.keys()),
+                format_func=lambda x: f"Select {group_choice} mission..." if x == "" else x
+            )
+
+        # 3. Load and display selected mission page
+        if mission_choice:
+            st.divider()
+            mission_file = specific_missions[mission_choice]
+
+            module_name = f"mission_{mission_file.stem}"
+            spec = importlib.util.spec_from_file_location(module_name, mission_file)
+            mission_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mission_module)
+            
+            if hasattr(mission_module, "show_mission"):
+                mission_module.show_mission(lunar_db_df)
+            else:
+                st.warning("No show_mission() function found.")
+        else:
+            st.info("Please select a specific mission from the dropdown menus above.")
+
 
 
 
@@ -2499,191 +2964,6 @@ elif db_choice == "Combined Data":
 
 
 
-
-#---------- General Interpretation Section -------------
-#elif db_choice == "Lunar Regolith General Interpretations":
-#    st.title("Lunar Regolith General Interpretations")
-#    st.markdown("""Work in progress""")
-#    def extract_range(value):
-#        if pd.isna(value):
-#            return (np.nan, np.nan)
-#        
-#        if isinstance(value, (int, float)):
-#            return (float(value), float(value))
-#
-#        match = re.findall(r"[-+]?\d*\.?\d+", str(value))
-#
-#        if len(match) == 0:
-#            return (np.nan, np.nan)
-#
-#        try:
-#            numbers = [float(n) for n in match]
-#        except ValueError:
-#            return (np.nan, np.nan)
-#
-#        if len(numbers) == 1:
-#            val = numbers[0]
-#            return (val, val)
-#        else:
-#            return (min(numbers), max(numbers))
-#
-#    # --- Columns that may contain ranges ---
-#    range_columns = [
-#        "Bulk density (g/cm^3)",
-#        "Angle of internal friction (degree)",
-#        "Cohesion (kPa)",
-#        "Bearing capacity (kPa)", 
-#        "Normal stress range (kPa)", 
-#        "Void ratio", 
-#        "Density of grains (g/cm^3)", 
-#        "Compressibility Coefficient", 
-#        "Depth (cm)", 
-#        "Porosity (%)", 
-#        "Force applied (N)"
-#    ]
-#
-#------------------ Detailed Mission Pages Section ---------------------------
-elif db_choice == "Detailed Mission Pages":
-    st.title("Detailed Lunar Mission Pages")
-
-    BASE_DIR = Path(__file__).resolve().parent
-    MISSION_DIR = BASE_DIR / "mission_pages"
-
-    if not MISSION_DIR.exists():
-        st.error(f"Could not find mission directory: {MISSION_DIR}")
-    else:
-        # 1. Categorize missions into groups
-        mission_groups = {
-            "Apollo": {},
-            "Luna": {},
-            "Surveyor": {},
-            "Chang'e": {},
-            "Chandrayaan": {},
-            "Other": {}
-        }
-
-        for path in MISSION_DIR.glob("*.py"):
-            if path.name.startswith("__"): continue
-            
-            raw_name = path.stem.lower()
-            mission_name = pretty_mission_name(raw_name) # Assuming this helper exists
-            
-            if mission_name in ["Mission Page Template", "Mission"]: continue
-
-            # Sort into the correct dictionary key
-            if "apollo" in raw_name:
-                mission_groups["Apollo"][mission_name] = path
-            elif "luna" in raw_name:
-                mission_groups["Luna"][mission_name] = path
-            elif "surveyor" in raw_name:
-                mission_groups["Surveyor"][mission_name] = path
-            elif "chang" in raw_name:
-                mission_groups["Chang'e"][mission_name] = path
-            elif "chandrayaan" in raw_name:
-                mission_groups["Chandrayaan"][mission_name] = path
-            else:
-                mission_groups["Other"][mission_name] = path
-
-        # 2. Main Page Selection UI
-        st.write("### Explore Mission Data")
-        
-        # Create two columns for a clean look
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            group_choice = st.selectbox(
-                "Select a Space Program:",
-                options=list(mission_groups.keys())
-            )
-
-        with col2:
-            # Filter specific missions based on the group choice
-            specific_missions = mission_groups[group_choice]
-            mission_choice = st.selectbox(
-                "Select a Specific Mission:",
-                options=[""] + sorted(specific_missions.keys()),
-                format_func=lambda x: f"Select {group_choice} mission..." if x == "" else x
-            )
-
-        # 3. Load and display selected mission page
-        if mission_choice:
-            st.divider()
-            mission_file = specific_missions[mission_choice]
-
-            module_name = f"mission_{mission_file.stem}"
-            spec = importlib.util.spec_from_file_location(module_name, mission_file)
-            mission_module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(mission_module)
-            
-            if hasattr(mission_module, "show_mission"):
-                mission_module.show_mission(lunar_db_df)
-            else:
-                st.warning("No show_mission() function found.")
-        else:
-            st.info("Please select a specific mission from the dropdown menus above.")
-
-#elif db_choice == "Detailed Mission Pages":
-#    st.title("Detailed Lunar Mission Pages")
-#
-#    BASE_DIR = Path(__file__).resolve().parent
-#    MISSION_DIR = BASE_DIR / "mission_pages"
-#
-#    if not MISSION_DIR.exists():
-#        st.error(f"Could not find mission directory: {MISSION_DIR}")
-#    else:
-#        available_missions = {}
-#        for path in MISSION_DIR.glob("*.py"):
-#            if path.name.startswith("__"):
-#                continue
-#                
-#            raw_name = path.stem.lower()
-#                
-#            is_mission_page = (
-#                    "apollo" in raw_name or 
-#                    "luna" in raw_name or 
-#                    "surveyor" in raw_name or 
-#                    "chang" in raw_name or
-#                    "chandrayaan" in raw_name
-#                )
-#            if not is_mission_page:
-#                continue
-#
-#            clean_name = raw_name.replace("_", " ").replace("-", " ")
-#            mission_name = pretty_mission_name(raw_name)
-#
-#            if mission_name in ["Mission Page Template", "Mission"]:
-#                continue
-#
-#                    
-#            available_missions[mission_name] = path
-#
-#        # --- Sidebar selection ---
-#        st.sidebar.header("Mission Selection")
-#
-#        mission_choice = st.sidebar.selectbox(
-#            "Select a mission to view details:",
-#            options=[""] + sorted(available_missions.keys()), 
-#            format_func=lambda x: "Select a mission" if x == "" else x
-#        )
-#
-#        # --- Load and display selected mission page ---
-#        if mission_choice:
-#            st.divider()
-#            
-#            mission_file = available_missions[mission_choice]
-#
-#            module_name = f"mission_{mission_file.stem}"
-#            
-#            spec = importlib.util.spec_from_file_location(module_name, mission_file)
-#            mission_module = importlib.util.module_from_spec(spec)
-#            spec.loader.exec_module(mission_module)
-#            
-#            if hasattr(mission_module, "show_mission"):
-#                mission_module.show_mission(lunar_db_df)
-#            else:
-#                st.warning("No show_mission() function found in this mission script.")
-#        else:
-#            st.info("Select a mission from the sidebar to display its detailed page.")
 
 # ------------------- Footer --------------------
 import requests

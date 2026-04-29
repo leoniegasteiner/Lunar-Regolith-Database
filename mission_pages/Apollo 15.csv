@@ -1,0 +1,451 @@
+sample ID;serial number ;return container;Container;sample type;weight (g)
+15001;27;NA;drill stem bottom;NA;232.8
+15002;10;NA;drill stem section ;NA;210.1
+15003;20;NA;drill stem section ;NA;223
+15004;11;SRC 2;drill stem section ;NA;210.6
+15005;23;SRC 2;drill stem section ;NA;239.1 
+15006;22;SRC 2;drill stem top;NA;227.9
+15007;2010;SRC 1;drive tube bottom ;NA;768.2
+15008;2003;SRC 1;drive tube top ;NA;510.2
+15009;2007;SRC 2;drive tube ;NA;622
+15010;2014;SRC 2;drive tube bottom ;NA;740.4
+15011;2009;SRC 2;drive tube top ;NA;653.6
+15012;NA;SRC 2;SESC 1;NA;312.2
+15013;NA;SRC 2;SESC  ;NA;296.2
+15014;NA;SRC 2;SESC 2;NA;333.2
+15015;NA;SRC 2;SCB 4;glass coated breccia;4770.2
+15016;NA;SRC 2;SCB 4;porphyritic coated basalt;923.7
+15017;NA;SRC 2;DB 162;glass shell;9.8
+15018;NA;SRC 2;DB 162;glass object;5.7
+15019;NA;SRC 2;DB 162;glassy microbreccia;1.2
+15020;NA;contingency sample bag ;SCB 4;unsieved fines ;88.7
+15021;NA;contingency sample bag ;SCB 4;<1mm fines;500.2
+15022;NA;contingency sample bag ;SCB 4;1-2mm fines;10
+15023;NA;contingency sample bag ;SCB 4;2-4mm fines;5
+15024;NA;contingency sample bag ;SCB 4;4-10mm fines;3.6
+15025;NA;contingency sample bag ;SCB 4;coherent breccia;77.3
+15026;NA;contingency sample bag ;SCB 4;glass coated microbreccia;1.1
+15027;NA;SRC 2;DB 162;breccia;51
+15028;NA;SRC 2;DB 162;glassy breccia;59.4
+15030;NA;SRC 2;DB 252;unsieved fines ;75.3
+15031;NA;SRC 2;DB 252;<1mm fines;207.8
+15032;NA;SRC 2;DB 252;1-2mm fines ;7
+15033;NA;SRC 2;DB 252;2-4mm fines;6.6
+15034;NA;SRC 2;DB 252;4-10mm fines;7
+15040;NA;SRC 2;DB 253;unsieved fines ;113.4
+15041;NA;SRC 2;DB 253;<1mm fines;269.6
+15042;NA;SRC 2;DB 253;1-2mm fines;5.1
+15043;NA;SRC 2;DB 253;2-4mm fines;2.8
+15044;NA;SRC 2;DB 253;4-10mm fines;1.5
+15058;NA;SRC 2;SCB 6;porphyritic basalt;2672.5
+15059;NA;SRC 2;SCB 6;glass coated breccia;1149.2
+15065;NA;SRC 1;DB 156;gabbro;1475.5
+15070;NA;SRC 1;DB 157;unsieved fines ;51.3
+15071;NA;SRC 1;DB 157;<1mm fines;100.7
+15072;NA;SRC 1;DB 157;1-2mm fines;3
+15073;NA;SRC 1;DB 157;2-4mm fines;1.4
+15074;NA;SRC 1;DB 157;4-10mm fines;1.3
+15075;NA;SRC 1;DB 157;gabbro;809.3
+15076;NA;SRC 1;DB 157;gabbro;400.5
+15080;NA;SRC 1;DB 158;unsieved fines ;73.5
+15081;NA;SRC 1;DB 158;<1mm fines;106.9
+15082;NA;SRC 1;DB 158;1-2mm fines;2
+15083;NA;SRC 1;DB 158;2-4mm fines;1.8
+15084;NA;SRC 1;DB 158;4-10mm fines;1.1
+15085;NA;SRC 1;DB 158;basalt ;471.3
+15086;NA;SRC 1;DB 158;breccia;216.5
+15087;NA;SRC 1;DB 158;gabbro;5.7
+15088;NA;SRC 1;DB 158;breccia;1.8
+15090;NA;SRC 1;DB 159;unsieved fines ;39.3
+15091;NA;SRC 1;DB 159;<1mm fines;162.9
+15092;NA;SRC 1;DB 159;1-2mm fines;2.7
+15093;NA;SRC 1;DB 159;2-4mm fines;0.6
+15095;NA;SRC 1;DB 159;glass coated microbreccia;25.5
+15100;NA;SRC 1;DB 187;unsieved fines ;281
+15101;NA;SRC 1;DB 187;<1mm fines;637.6
+15102;NA;SRC 1;DB 187;1-2mm fines;12.2
+15103;NA;SRC 1;DB 187;2-4mm fines;4.1
+15104;NA;SRC 1;DB 187;4-10mm fines;1.5
+15105;NA;SRC 1;DB 187;basalt ;5.6
+15115;NA;SRC 1;DB 186;porphyritic basalt ;4
+15116;NA;SRC 1;DB 186;gabbro;7.2
+15117;NA;SRC 1;DB 186;porphyritic basalt;23.3
+15118;NA;SRC 1;DB 186;porphyritic basalt;27.6
+15119;NA;SRC 1;DB 186;basalt with adhering breccia;14.1
+15125;NA;SRC 1;DB 186;basalt;6.5
+15135;NA;SRC 1;DB 186;glassy microbreccia;1.6
+15145;NA;SRC 1;DB 186;breccia;15.1
+15146;NA;SRC 1;DB 186;breccia;1
+15147;NA;SRC 1;DB 186;soil breccia;3.7
+15148;NA;SRC 1;DB 186;soil breccia;3
+15200;NA;SRC 1;DB 160;unsieved fines ;7.7
+15201;NA;SRC 1;DB 160;<1mm fines;18.3
+15202;NA;SRC 1;DB 160;1-2mm fines;0.4
+15203;NA;SRC 1;DB 160;2-4mm fines;0.2
+15204;NA;SRC 1;DB 160;4-10mm fines;0.1
+15205;NA;SRC 1;DB 161;coarse breccia;337.3
+15206;NA;SRC 1;DB 160;glassy breccia ;92
+15210;NA;SRC 1;DB 180;unsieved fines ;221.2
+15211;NA;SRC 1;DB 180;<1mm fines;163.5
+15212;NA;SRC 1;DB 180;1-2mm fines;3.6
+15213;NA;SRC 1;DB 180;2-4mm fines;2.4
+15214;NA;SRC 1;DB 180;4-10mm fines;0.2
+15220;NA;SRC 1;DB 181;unsieved fines ;160.5
+15221;NA;SRC 1;DB 181;<1mm fines;290
+15222;NA;SRC 1;DB 181;1-2mm fines;2.4
+15223;NA;SRC 1;DB 181;2-4mm fines;5.8
+15224;NA;SRC 1;DB 181;4-10mm fines;7
+15230;NA;SRC 1;DB 182;unsieved fines ;99.1
+15231;NA;SRC 1;DB 182;<1mm fines;233.9
+15232;NA;SRC 1;DB 182;1-2mm fines;5.2
+15233;NA;SRC 1;DB 182;2-4mm fines;3.8
+15234;NA;SRC 1;DB 182;4-10mm fines;1.8
+15240;NA;SRC 2;DB 163;unsieved fines ;67.1
+15241;NA;SRC 2;DB 163;<1mm fines;197.4
+15242;NA;SRC 2;DB 163;1-2mm fines;18.9
+15243;NA;SRC 2;DB 163;2-4mm fines;31.8
+15244;NA;SRC 2;DB 163;4-10mm fines;32.6
+15245;NA;SRC 2;DB 163;glass coated breccia;115.5
+15250;NA;SRC 2;DB 164;unsieved fines ;207
+15251;NA;SRC 2;DB 164;<1mm fines;380.9
+15252;NA;SRC 2;DB 164;1-2mm fines;8.3
+15253;NA;SRC 2;DB 164;2-4mm fines;4
+15254;NA;SRC 2;DB 164;4-10mm fines;1.2
+15255;NA;SRC 2;DB 190;glass coated breccia;240.4
+15256;NA;SRC 2;DB 190;basalt;201
+15257;NA;SRC 2;DB 190;microbreccia;22.5
+15258;NA;SRC 2;DB 192;microbreccia;0.7
+15260;NA;SRC 2;DB 166;unsieved fines ;172.2
+15261;NA;SRC 2;DB 166;<1mm fines;416.6
+15262;NA;SRC 2;DB 166;1-2mm fines;9.1
+15263;NA;SRC 2;DB 166;2-4mm fines;6.7
+15264;NA;SRC 2;DB 166;4-10mm fines;5.9
+15265;NA;SRC 2;DB 193;fine breccia;314.1
+15266;NA;SRC 2;DB 193;fine breccia;271.4
+15267;NA;SRC 2;DB 193;microbreccia;1.8
+15268;NA;SRC 2;DB 192;microbreccia;11
+15269;NA;SRC 2;DB 192;glassy microbreccia;6
+15270;NA;SRC 2;DB 167;unsieved fines ;319
+15271;NA;SRC 2;DB 167;<1mm fines;798.3
+15272;NA;SRC 2;DB 167;1-2mm fines;20.7
+15273;NA;SRC 2;DB 167;2-4mm fines;13.7
+15274;NA;SRC 2;DB 167;4-10mm fines;4.4
+15281;NA;SRC 2;SCB 3;<1mm fines;107
+15282;NA;SRC 2;SCB 3;1-2mm fines;9.7
+15283;NA;SRC 2;SCB 3;2-4mm fines;13.3
+15284;NA;SRC 2;SCB 3;4-10mm fines;38.2
+15285;NA;SRC 2;DB 192;breccia;264.2
+15286;NA;SRC 2;DB 192;vesicular basalt glass and microbreccia;34.6
+15287;NA;SRC 2;DB 192;soil breccia;44.9
+15288;NA;SRC 2;DB 192;glassy breccia;70.5
+15289;NA;SRC 2;DB 192;breccia;24.1
+15290;NA;SRC 2;DB 188;unsieved fines ;55
+15291;NA;SRC 2;DB 188;<1mm fines;169
+15292;NA;SRC 2;DB 188;1-2mm fines;5.4
+15293;NA;SRC 2;DB 188;2-4mm fines;6.7
+15294;NA;SRC 2;DB 188;4-10mm fines;10.2
+15295;NA;SRC 2;DB 188;breccia;947.3
+15297;NA;SRC 2;SCB 3;breccia chips ;39.4
+15298;NA;SRC 2;SCB 3;microbreccia;1731.4
+15299;NA;SRC 2;SCB 3;breccia;1691.7
+15300;NA;SRC 2;DB 173;unsieved fines ;390.7
+15301;NA;SRC 2;DB 173;<1mm fines;810.2
+15302;NA;SRC 2;DB 173;1-2mm fines;23.2
+15303;NA;SRC 2;DB 173;2-4mm fines;12.7
+15304;NA;SRC 2;DB 173;4-10mm fines;7.3
+15305;NA;SRC 2;DB 173;<10mm green soil conc.;2.9
+15306;NA;SRC 2;DB 173;breccia;134.2
+15307;NA;SRC 2;DB 173;hollow glass sphere;1.3
+15308;NA;SRC 2;DB 173;breccia;1.7
+15310;NA;SRC 2;DB 172;unsieved fines ;140.6
+15311;NA;SRC 2;DB 172;<1mm fines;295
+15312;NA;SRC 2;DB 172;1-2mm fines;10.1
+15313;NA;SRC 2;DB 172;2-4mm fines;9.8
+15314;NA;SRC 2;DB 172;4-10mm fines;8.4
+15315;NA;SRC 2;DB 172;soil breccia containing clasts of brown pyroxene basalt;35.6
+15316;NA;SRC 2;DB 172;soil breccia containing clasts of brown pyroxene basalt;6.1
+15317;NA;SRC 2;DB 172;soil breccia containing clasts of brown pyroxene basalt;0.6
+15318;NA;SRC 2;DB 172;soil breccia containing clasts of brown pyroxene basalt;5.4
+15319;NA;SRC 2;DB 172;soil breccia containing clasts of brown pyroxene basalt;8
+15320;NA;SRC 2;DB 172;soil breccia containing clasts of brown pyroxene basalt;4.7
+15321;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;0.3
+15322;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;8.4
+15323;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;4.4
+15324;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;32.3
+15325;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;57.8
+15326;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;2.5
+15327;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;12.4
+15328;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;0.3
+15329;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;2.2
+15330;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;57.8
+15331;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;2.6
+15332;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;2.3
+15333;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;0.3
+15334;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;7.5
+15335;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;6
+15336;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;0.2
+15337;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;4.3
+15338;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;11.1
+15339;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;0.4
+15340;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;0.9
+15341;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;1.6
+15342;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;7.5
+15343;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;6.9
+15344;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;7.9
+15345;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;12.3
+15346;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;3.1
+15347;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;3.2
+15348;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;0.3
+15349;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;2.3
+15350;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;2.9
+15351;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;4.2
+15352;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;2.9
+15353;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;10.6
+15354;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;0.3
+15355;NA;SRC 2;DB 172;soil breccia lacking clasts of brown pyroxene basalt;5.2
+15356;NA;SRC 2;DB 172;tough microbreccia;2
+15357;NA;SRC 2;DB 172;tough microbreccia;11.8
+15358;NA;SRC 2;DB 172;tough microbreccia;14.6
+15359;NA;SRC 2;DB 172;tough microbreccia;4.2
+15360;NA;SRC 2;DB 172;tough microbreccia;9.3
+15361;NA;SRC 2;DB 172;pale green microcrystalline rock ;0.9
+15362;NA;SRC 2;DB 172;anorthosite ;4.2
+15363;NA;SRC 2;DB 172;anorthosite ;0.5
+15364;NA;SRC 2;DB 172;anorthosite ;1.5
+15365;NA;SRC 2;DB 172;green glass microbreccia;2.9
+15366;NA;SRC 2;DB 172;green glass microbreccia;3.3
+15367;NA;SRC 2;DB 172;green glass microbreccia;1.1
+15368;NA;SRC 2;DB 172;green glass microbreccia;0.4
+15369;NA;SRC 2;DB 172;green glass microbreccia;2.5
+15370;NA;SRC 2;DB 172;green glass microbreccia;2.9
+15371;NA;SRC 2;DB 172;green glass microbreccia;0.5
+15372;NA;SRC 2;DB 172;green glass microbreccia;0.8
+15373;NA;SRC 2;DB 172;green glass microbreccia;0.6
+15374;NA;SRC 2;DB 172;green glass microbreccia;1
+15375;NA;SRC 2;DB 172;green glass microbreccia;0.4
+15376;NA;SRC 2;DB 172;green glass microbreccia;1
+15377;NA;SRC 2;DB 172;green glass microbreccia;0.5
+15378;NA;SRC 2;DB 172;fine non-mare basalt;3.3
+15379;NA;SRC 2;DB 172;fine non-mare basalt;64.3
+15380;NA;SRC 2;DB 172;fine non-mare basalt;5.2
+15381;NA;SRC 2;DB 172;fine non-mare basalt;0.3
+15382;NA;SRC 2;DB 172;fine non-mare basalt;3.2
+15383;NA;SRC 2;DB 172;fine non-mare basalt;1.4
+15384;NA;SRC 2;DB 172;fine non-mare basalt;1.4
+15385;NA;SRC 2;DB 172;coarse mare basalt;8.7
+15386;NA;SRC 2;DB 172;coarse mare basalt;7.5
+15387;NA;SRC 2;DB 172;coarse mare basalt;2
+15388;NA;SRC 2;DB 172;coarse mare basalt;9
+15389;NA;SRC 2;DB 172;glass;2.8
+15390;NA;SRC 2;DB 172;glass;3.5
+15391;NA;SRC 2;DB 172;glass;0.3
+15392;NA;SRC 2;DB 172;glass;0.4
+15400;NA;SRC 2;DB 168;unsieved fines ;47.5
+15401;NA;SRC 2;DB 168;<1mm fines;86.4
+15402;NA;SRC 2;DB 168;1-2mm fines;4.8
+15403;NA;SRC 2;DB 168;2-4mm fines;6.1
+15404;NA;SRC 2;DB 168;4-10mm fines;7.9
+15405;NA;SRC 2;DB 168;recrystallized breccia;513.1
+15410;NA;SRC 2;DB 194;unsieved fines ;56.2
+15411;NA;SRC 2;DB 194;<1mm fines;103.3
+15412;NA;SRC 2;DB 194;1-2mm fines;7.1
+15413;NA;SRC 2;DB 194;2-4mm fines;6.7
+15414;NA;SRC 2;DB 194;4-10mm fines;4
+15415;NA;SRC 2;DB 196;anorthosite ;269.4
+15417;NA;SRC 2;DB 194;breccia;1.3
+15418;NA;SRC 2;DB 194;vitreous breccia;1140.7
+15419;NA;SRC 2;DB 194;breccia with glass;17.7
+15421;NA;SRC 2;DB 195;<1mm fines;254.7
+15422;NA;SRC 2;DB 195;1-2mm fines;15.9
+15423;NA;SRC 2;DB 195;2-4mm fines;18.3
+15424;NA;SRC 2;DB 195;4-10mm fines;19.5
+15425;NA;SRC 2;DB 195;green and gray clods;136.3
+15426;NA;SRC 2;DB 195;green and gray clods;223.6
+15427;NA;SRC 2;DB 195;green and gray clods;115.9
+15431;NA;SRC 2;DB 170;<1mm fines;475.7
+15432;NA;SRC 2;DB 170;1-2mm fines;39.7
+15433;NA;SRC 2;DB 170;2-4mm fines;31.2
+15434;NA;SRC 2;DB 170;4-10mm fines;51.6
+15435;NA;SRC 2;DB 170;gray clods;206.8
+15445;NA;SRC 2;DB 171;breccia with white clasts ;287.2
+15455;NA;SRC 2;DB 198;black and white breccia;937.2
+15459;NA;SRC 2;SCB 6;breccia with large clasts ;5854
+15465;NA;SRC 2;DB 199;glass coated breccia;376
+15466;NA;SRC 2;DB 199;dark glass with clasts ;119.2
+15467;NA;SRC 2;DB 199;microbreccia;1.1
+15468;NA;SRC 2;DB 199;glass and breccia;1.3
+15470;NA;SRC 2;DB 203;unsieved fines ;82.2
+15471;NA;SRC 2;DB 203;<1mm fines;153
+15472;NA;SRC 2;DB 203;1-2mm fines;6.1
+15473;NA;SRC 2;DB 203;2-4mm fines;4.5
+15474;NA;SRC 2;DB 203;4-10mm fines;4.7
+15475;NA;SRC 2;DB 203;basalt ;406.8
+15476;NA;SRC 2;DB 203;basalt ;266.3
+15485;NA;SRC 2;DB 204;basalt;104.9
+15486;NA;SRC 2;DB 204;basalt with gray coatings ;46.8
+15495;NA;SRC 2;DB 174;gabbro;908.9
+15498;NA;SRC 2;SCB 6;recrystallized breccia;2339.8
+15499;NA;SRC 2;SCB 5;vesicular basalt  ;2024
+15500;NA;SRC 2;DB 255;unsieved fines ;24.8
+15501;NA;SRC 2;DB 255;<1mm fines;103
+15502;NA;SRC 2;DB 255;1-2mm fines;4.4
+15503;NA;SRC 2;DB 255;2-4mm fines;3.8
+15504;NA;SRC 2;DB 255;4-10mm fines;4.1
+15505;NA;SRC 2;DB 255;glass coated breccia ;1147.4
+15506;NA;SRC 2;DB 255;glass coated microbreccia;22.9
+15507;NA;SRC 2;DB 255;vesicular glass ellipsoid;3.9
+15508;NA;SRC 2;DB 255;glass coated microbreccia;1.4
+15510;NA;SRC 2;DB 273;unsieved fines ;72.3
+15511;NA;SRC 2;DB 273;<1mm fines;193.1
+15512;NA;SRC 2;DB 273;1-2mm fines;4.9
+15513;NA;SRC 2;DB 273;2-4mm fines;4.4
+15514;NA;SRC 2;DB 273;4-10mm fines;1.1
+15515;NA;SRC 2;DB 273;brown gray clods;144.7
+15528;NA;SRC 2;DB 274;breccia;4.7
+15529;NA;SRC 2;DB 274;vesicular basalt ;1531
+15530;NA;SRC 2;DB 275;unsieved fines ;138
+15531;NA;SRC 2;DB 275;<1mm fines;136
+15532;NA;SRC 2;DB 275;1-2mm fines;6.3
+15533;NA;SRC 2;DB 275;2-4mm fines;5.4
+15534;NA;SRC 2;DB 275;4-10mm fines;6
+15535;NA;SRC 2;DB 275;porphyritic olivine basalt;404.4
+15536;NA;SRC 2;DB 275;basalt;317.2
+15537;NA;SRC 2;DB 275;coarse grained basalt ;1.9
+15538;NA;SRC 2;DB 275;olivine microgabbro;2.6
+15545;NA;SRC 2;DB 278;basalt;746.6
+15546;NA;SRC 2;DB 278;basalt;27.8
+15547;NA;SRC 2;DB 278;vuggy basalt;20.1
+15548;NA;SRC 2;DB 278;basalt;3.3
+15555;NA;Sample return bag;loose rock;vuggy basalt;9613.7
+15556;NA;SRC 2;SCB 2;vesicular basalt;1542.3
+15557;NA;SRC 2;SCB 2;basalt;2518
+15558;NA;SRC 2;SCB 2;breccia;1333.3
+15561;NA;SRC 2;SCB 2;<1mm SCB 2 residue ;112.5
+15562;NA;SRC 2;SCB 2;1-2mm SCB 2 residue ;20.6
+15563;NA;SRC 2;SCB 2;2-4mm SCB 2 residue;30.4
+15564;NA;SRC 2;SCB 2;4-10mm SCB 2 residue ;50
+15565;NA;SRC 2;SCB 2;breccia fragments ;822.6
+15595;NA;SRC 2;DB 281;porphyritic basalt;237.6
+15596;NA;SRC 2;DB 281;basalt;224.8
+15597;NA;SRC 2;DB 281;basalt;145.7
+15598;NA;SRC 2;DB 281;basalt;135.7
+15600;NA;SRC 2;DB 283;reserve fines;449.1
+15601;NA;SRC 2;DB 283;<1mm fines;802
+15602;NA;SRC 2;DB 283;1-2mm fines;32.9
+15603;NA;SRC 2;DB 283;2-4mm fines;25.5
+15604;NA;SRC 2;DB 283;4-10mm fines;21.5
+15605;NA;SRC 2;DB 283;basalt;6.1
+15606;NA;SRC 2;DB 283;vesicular basalt;10.1
+15607;NA;SRC 2;DB 283;coarse grained basalt ;14.8
+15608;NA;SRC 2;DB 283;microporphyritic basalt;1.2
+15609;NA;SRC 2;DB 283;basalt;1.1
+15610;NA;SRC 2;DB 283;basalt with clinopyroxene;1.5
+15612;NA;SRC 2;DB 282;vesicular olivine basalt;5.9
+15613;NA;SRC 2;DB 282;vesicular olivine basalt;1
+15614;NA;SRC 2;DB 282;vesicular olivine basalt;9.7
+15615;NA;SRC 2;DB 282;vesicular olivine basalt;1.7
+15616;NA;SRC 2;DB 282;vesicular olivine basalt;8
+15617;NA;SRC 2;DB 282;vesicular olivine basalt;3.1
+15618;NA;SRC 2;DB 282;vesicular olivine basalt;0.8
+15619;NA;SRC 2;DB 282;vesicular olivine basalt;0.6
+15620;NA;SRC 2;DB 282;vesicular olivine basalt;6.6
+15621;NA;SRC 2;DB 282;vesicular olivine basalt;1.6
+15622;NA;SRC 2;DB 282;vesicular olivine basalt;29.5
+15623;NA;SRC 2;DB 282;vesicular olivine basalt;3
+15624;NA;SRC 2;DB 282;vesicular olivine basalt;0.2
+15625;NA;SRC 2;DB 282;vesicular olivine basalt;0.5
+15626;NA;SRC 2;DB 282;vesicular olivine basalt;0.6
+15627;NA;SRC 2;DB 282;vesicular olivine basalt;0.4
+15628;NA;SRC 2;DB 282;vesicular olivine basalt;0.4
+15629;NA;SRC 2;DB 282;vesicular olivine basalt;0.4
+15630;NA;SRC 2;DB 282;vesicular olivine basalt;23.2
+15632;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;2.3
+15633;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;7.4
+15634;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;5.2
+15635;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;0.5
+15636;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;336.7
+15637;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;0.9
+15638;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;3.6
+15639;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;7
+15640;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;0.5
+15641;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;6.9
+15642;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;1.9
+15643;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;17.9
+15644;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;0.4
+15645;NA;SRC 2;DB 282;porphyritic basalt with clinopyroxene;0.5
+15647;NA;SRC 2;DB 282;fine subophitic basalt;48.1
+15648;NA;SRC 2;DB 282;fine subophitic basalt;9.1
+15649;NA;SRC 2;DB 282;fine subophitic basalt;6.2
+15650;NA;SRC 2;DB 282;fine subophitic basalt;3.4
+15651;NA;SRC 2;DB 282;fine subophitic basalt;1.6
+15652;NA;SRC 2;DB 282;fine subophitic basalt;0.7
+15653;NA;SRC 2;DB 282;fine subophitic basalt;0.4
+15654;NA;SRC 2;DB 282;fine subophitic basalt;0.2
+15655;NA;SRC 2;DB 282;fine subophitic basalt;0.4
+15656;NA;SRC 2;DB 282;fine subophitic basalt;0.2
+15658;NA;SRC 2;DB 282;pyroxene phyric basalt;11.6
+15659;NA;SRC 2;DB 282;pyroxene phyric basalt;12.6
+15660;NA;SRC 2;DB 282;pyroxene phyric basalt;8.9
+15661;NA;SRC 2;DB 282;pyroxene phyric basalt;5.9
+15662;NA;SRC 2;DB 282;pyroxene phyric basalt;4.9
+15663;NA;SRC 2;DB 282;pyroxene phyric basalt;10.3
+15664;NA;SRC 2;DB 282;pyroxene phyric basalt;7.4
+15665;NA;SRC 2;DB 282;olivine phyric basalt;10.2
+15666;NA;SRC 2;DB 282;pigeonite phyric basalt;3.9
+15667;NA;SRC 2;DB 282;pigeonite phyric basalt;1.1
+15668;NA;SRC 2;DB 282;olivine phyric basalt;15.1
+15669;NA;SRC 2;DB 282;olivine phyric basalt;4.4
+15670;NA;SRC 2;DB 282;pyroxene phyric basalt;2
+15671;NA;SRC 2;DB 282;vesicular subophitic basalt ;6.1
+15672;NA;SRC 2;DB 282;vesicular subophitic basalt ;21.4
+15673;NA;SRC 2;DB 282;vesicular subophitic basalt ;5.9
+15674;NA;SRC 2;DB 282;fine porphyritic basalt;35.7
+15675;NA;SRC 2;DB 282;fine porphyritic basalt;34.5
+15676;NA;SRC 2;DB 282;fine porphyritic basalt;25.3
+15677;NA;SRC 2;DB 282;fine porphyritic basalt;6.4
+15678;NA;SRC 2;DB 282;fine porphyritic basalt;7.5
+15679;NA;SRC 2;DB 282;fine porphyritic basalt;0.7
+15680;NA;SRC 2;DB 282;fine porphyritic basalt;0.3
+15681;NA;SRC 2;DB 282;fine porphyritic basalt;0.3
+15682;NA;SRC 2;DB 282;plumose porphyritic basalt ;50.6
+15683;NA;SRC 2;DB 282;fine porphyritic basalt;22
+15684;NA;SRC 2;DB 282;glass cemented breccia fragments ;1.4
+15685;NA;SRC 2;DB 282;glass cemented breccia fragments ;0.8
+15686;NA;SRC 2;DB 282;glass cemented breccia fragments ;0.9
+15687;NA;SRC 2;DB 282;glass cemented breccia fragments ;1.4
+15688;NA;SRC 2;DB 282;glass cemented breccia fragments ;5.3
+15689;NA;SRC 2;DB 282;breccia with sugary clasts ;2.8
+15901;NA;SCB1;DB156;DB residue;13.6
+15902;NA;SCB1;DB157;DB residue;4.5
+15903;NA;SCB1;DB158;DB residue;2.7
+15904;NA;SCB1;DB159;DB residue;1.2
+15906;NA;SCB1;DB160;DB residue;2.8
+15907;NA;SCB1;DB181;DB residue;5.3
+15908;NA;SCB1;DB161;DB residue;1.2
+15909;NA;SCB1;DB182;DB residue;1.7
+15910;NA;SCB1;DB186;DB residue;4.9
+15911;NA;SCB1;DB187;DB residue;4.8
+15912;NA;SCB5;DB162;DB residue;8.1
+15916;NA;SCB5;DB190;DB residue;3.2
+15917;NA;SCB5;DB192;DB residue;26.6
+15918;NA;SCB5;DB193;DB residue;14.5
+15924;NA;SCB3;DB196;DB residue;2.7
+15925;NA;SCB5;DB170;DB residue;0.8
+15926;NA;SCB5;DB198;DB residue;12.4
+15927;NA;SCB5;DB199;DB residue;20.1
+15931;NA;SCB5;DB203;DB residue;1.7
+15932;NA;SCB5;DB174;DB residue;20.5
+15933;NA;SCB5;DB204;DB residue;15.9
+15936;NA;SCB7;DB273;DB residue;6.7
+15937;NA;SCB7;DB255;DB residue;1.7
+15938;NA;SCB2;DB274;DB residue;16.6
+15939;NA;SCB7;DB275;DB residue;4.2
+15940;NA;SCB7;DB278;DB residue;3.5
+15941;NA;SCB7;DB281;DB residue;10
+15942;NA;SCB7;DB282;DB residue;58.8
+15943;NA;SCB7;DB283;DB residue;1.7
+15951;NA;SCB1;NA;SCB residue ;30
+15954;NA;SCB4;NA;SCB residue ;89.3
+15955;NA;SCB5;NA;SCB residue ;8.6
+15956;NA;SCB6;NA;SCB residue ;98.5
+15957;NA;SCB7;NA;SCB residue ;75.5
