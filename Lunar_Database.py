@@ -2053,7 +2053,7 @@ elif db_choice == "Lunar Samples Database":
     samples_db_df["Mission Group"] = samples_db_df["Mission"].apply(categorize_mission)
     samples_PSD_db_df["Mission Group"] = samples_PSD_db_df["Mission"].apply(categorize_mission)
 
-    numeric_cols = ["depth (cm)", "Sample", "Sieve size (µm)", "weight %", "weight (g)"]
+    numeric_cols = ["Sample", "Sieve size (µm)", "weight %", "weight (g)"]
     for col in numeric_cols:
         if col in samples_PSD_db_df.columns:
             samples_PSD_db_df[col] = pd.to_numeric(samples_PSD_db_df[col], errors="coerce")
@@ -2144,25 +2144,57 @@ elif db_choice == "Lunar Samples Database":
     plot_mode = st.radio("Select Analysis Type:", ["Cumulative PSD Curve", "Parameter Scatter Plot"], horizontal=True)
 
     if plot_mode == "Cumulative PSD Curve":
-            available_subs = filtered_psd_df["Subsample"].dropna().unique().tolist()
-            selected_plot_subs = st.multiselect("Select Subsample(s):", available_subs)
+        col_leg1, col_leg2 = st.columns(2)
+        with col_leg1:
+            legend_color = st.selectbox(
+                "Color Legend (Primary):", 
+                options=["Subsample", "Mission", "Terrain", "Type of mission", "depth (cm)", "D50 (µm)"], 
+                index=0
+            )
+        with col_leg2:
+            legend_dash = st.selectbox(
+                "Line Style Legend (Secondary):", 
+                options=["None", "Mission", "Terrain", "Sample", "depth (cm)"], 
+                index=0
+            )
 
-            col_leg1, col_leg2 = st.columns(2)
-            with col_leg1:
-                legend_color = st.selectbox(
-                    "Color Legend (Primary):", 
-                    options=["Subsample", "Mission", "Terrain", "Type of mission", "depth (cm)", "D50 (µm)"], 
-                    index=0
-                )
-            with col_leg2:
-                legend_dash = st.selectbox(
-                    "Line Style Legend (Secondary):", 
-                    options=["None", "Mission", "Terrain", "Sample", "depth (cm)"], 
-                    index=0
-                )
+        st.markdown("**Refine PSD Curve Data:**")
+        filter_col1, filter_col2 = st.columns(2)
+        
+        with filter_col1:
+            available_samples = filtered_psd_df["Sample"].dropna().unique().tolist()
+            local_sample_filter = st.multiselect(
+                "Isolate Specific Sample(s):", 
+                options=available_samples,
+                help="Select one or more parent samples."
+            )
+            
+        with filter_col2:
+            if local_sample_filter:
+                sub_options = filtered_psd_df[filtered_psd_df["Sample"].isin(local_sample_filter)]["Subsample"].dropna().unique().tolist()
+            else:
+                sub_options = filtered_psd_df["Subsample"].dropna().unique().tolist()
+                
+            local_subsample_filter = st.multiselect(
+                "Isolate Specific Subsample(s):", 
+                options=sub_options,
+                help="Select specific depth slices."
+            )
 
-            if selected_plot_subs:
-                sub_df = filtered_psd_df[filtered_psd_df["Subsample"].isin(selected_plot_subs)].copy()
+        if not local_sample_filter and not local_subsample_filter:
+            st.info("Please select at least one Sample or Subsample above to generate the PSD plot.")
+        else:
+            sub_df = filtered_psd_df.copy()
+            if local_sample_filter:
+                sub_df = sub_df[sub_df["Sample"].isin(local_sample_filter)]
+            if local_subsample_filter:
+                sub_df = sub_df[sub_df["Subsample"].isin(local_subsample_filter)]
+
+            selected_count = len(sub_df["Subsample"].unique())
+            st.caption(f"Plotting **{selected_count}** specific subsample(s).")
+
+            # Plotting
+            if not sub_df.empty:
                 sub_df = sub_df.sort_values(by=["Subsample", "Sieve size (µm)"], ascending=[True, False])
                 sub_df["Cumulative Weight %"] = sub_df.groupby("Subsample")["weight %"].transform(pd.Series.cumsum)
 
@@ -2184,18 +2216,18 @@ elif db_choice == "Lunar Samples Database":
                 fig.update_xaxes(autorange="reversed")
                 st.plotly_chart(fig, use_container_width=True)
 
-                with st.expander("View Calculation Details"):
-                   st.write("Below is the cumulative breakdown for the selected samples:")
-
-                   details_df = sub_df.pivot_table(
-                       index="Sieve size (µm)", 
-                       columns="Subsample", 
-                       values="Cumulative Weight %"
-                   ).sort_index(ascending=False)
-
-                   st.dataframe(details_df, use_container_width=True)
-
-                   st.info("💡 Values represent the Cumulative Weight Retained (%) for each sieve size.")
+                with st.expander("🔍 View Calculation Details"):
+                    st.write("Below is the cumulative breakdown for the selected samples:")
+                    details_df = sub_df.pivot_table(
+                        index="Sieve size (µm)", 
+                        columns="Subsample", 
+                        values="Cumulative Weight %"
+                    ).sort_index(ascending=False)
+                    
+                    st.dataframe(details_df, use_container_width=True)
+                    st.info("💡 Values represent the Cumulative Weight Retained (%) for each sieve size.")
+            else:
+                st.warning("No data available to plot based on the current filters.")
 
     # Scatter plot
     else:
@@ -2213,20 +2245,53 @@ elif db_choice == "Lunar Samples Database":
             index=1 
         )
 
+        st.markdown("**Refine Scatter Plot Data:**")
+        filter_col1, filter_col2 = st.columns(2)
+        
+        with filter_col1:
+            available_samples = filtered_psd_df["Sample"].dropna().unique().tolist()
+            local_sample_filter = st.multiselect(
+                "Isolate Specific Sample(s):", 
+                options=available_samples,
+                help="Leave blank to plot all samples currently active in the sidebar."
+            )
+            
+        with filter_col2:
+            if local_sample_filter:
+                sub_options = filtered_psd_df[filtered_psd_df["Sample"].isin(local_sample_filter)]["Subsample"].dropna().unique().tolist()
+            else:
+                sub_options = filtered_psd_df["Subsample"].dropna().unique().tolist()
+                
+            local_subsample_filter = st.multiselect(
+                "Isolate Specific Subsample(s):", 
+                options=sub_options,
+                help="Leave blank to plot all available subsamples."
+            )
+
         scatter_df = filtered_psd_df.drop_duplicates(subset=["Subsample"]).copy()
 
+        if local_sample_filter:
+            scatter_df = scatter_df[scatter_df["Sample"].isin(local_sample_filter)]
+        if local_subsample_filter:
+            scatter_df = scatter_df[scatter_df["Subsample"].isin(local_subsample_filter)]
+
+        if not local_sample_filter and not local_subsample_filter:
+            st.caption("Currently plotting **ALL** data selected in the global sidebar.")
+        else:
+            st.caption(f"Plotting **{len(scatter_df)}** specific subsample(s).")
+
+        # --- Plotting ---
         fig = px.scatter(
             scatter_df, 
             x=axis_options[x_label], 
             y=axis_options[y_label], 
             color=color_by,
-            hover_data=["Subsample", "depth (cm)"],
+            hover_data=["Subsample", "depth (cm)", "Terrain", "Location", "Year"],
             labels={axis_options[x_label]: x_label, axis_options[y_label]: y_label},
             title=f"{y_label} vs {x_label}"
         )
         
-
-        if axis_options[y_label] == "avg_depth":
+        if axis_options[y_label] == "avg_depth (cm)":
             fig.update_yaxes(autorange="reversed")
         
         st.plotly_chart(fig, use_container_width=True)
