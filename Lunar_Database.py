@@ -884,6 +884,7 @@ if db_choice == "Lunar Regolith Database":
         unsafe_allow_html=True
     )
 
+    st.info("Select table columns to display additional parameters")
 
 
     # --- Plotting Section & Display ---
@@ -2223,7 +2224,7 @@ elif db_choice == "Lunar Samples Database":
     psd_summary_df = filtered_psd_df[existing_summary_cols].drop_duplicates(subset=["Subsample"])
     
     st.dataframe(psd_summary_df)
-    st.markdown("Select subsamples in the plotting section to view particle size distribution details and plots.")
+    st.info("Select subsamples in the plotting section to view particle size distribution details and plots.")
 
  #- ---- PSD plotting ------------
 
