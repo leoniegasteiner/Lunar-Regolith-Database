@@ -81,11 +81,13 @@ def load_database_data():
     header=0,
     skip_blank_lines=False,
     )
-    df.columns =  ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Cone penetration resistance (kPa)", "Force applied (N)", "Source","Year of publication", "DOI / URL","Comments"]
+    df.columns =  ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Testing environment", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Cone penetration resistance (kPa)", "Force applied (N)", "Sample ID", "Contact area (cm^2)", "Source","Year of publication", "DOI / URL","Comments"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
     return df
 
 lunar_db_df = load_database_data()
+
+
 
 
 #Simulants Data Loading
@@ -251,7 +253,9 @@ if db_choice == "Lunar Regolith Database":
         "Specific gravity",
         "Porosity (%)", 
         "Cone penetration resistance (kPa)", 
-        "Force applied (N)"
+        "Force applied (N)", 
+        "Contact area (cm^2)",
+        "Sample ID"
     ]
 
     # --- Numeric columns ---
@@ -273,6 +277,7 @@ if db_choice == "Lunar Regolith Database":
         st.session_state["mission_type_filter"] = []
         st.session_state["mission_group_filter"] = []
         st.session_state["test_location_filter"] = []
+        st.session_state["testing_environment_filter"] = []
         st.session_state["year_range"] = (year_min, year_max)
         st.session_state["density_range"] = (round(dens_min, 2), round(dens_max, 2))
         st.session_state["cohesion_range"] = (round(coh_min, 1), round(coh_max, 1))
@@ -287,6 +292,8 @@ if db_choice == "Lunar Regolith Database":
         st.session_state["specific_gravity_range"] = (round(sg_min, 2), round(sg_max, 2))
         st.session_state["por_range"] = (round(por_min, 1), round(por_max, 1))
         st.session_state["fa_range"] = (round(fa_min, 1), round(fa_max, 1))
+        st.session_state["Contact area"] = (round(ca_min, 1), round(ca_max, 1))
+        st.session_state["Sample ID"] = (round(sample_min, 1), round(sample_max, 1))
         st.session_state["selected_columns"] = [
             col for col in default_columns if col in lunar_db_df.columns
         ]
@@ -320,6 +327,13 @@ if db_choice == "Lunar Regolith Database":
                 "Select Test Location", 
                 options=["In-Situ", "On Earth", "Remote", "Other"],
                 key="test_location_filter"
+            )
+
+            st.markdown("### Testing environment")
+            testing_environment_filter = st.multiselect(
+                "Select testing environment", 
+                options=["Vacuum", "Air", "Nitrogen"],
+                key = "testing_environment_filter"
             )
 
         # --- Numeric Range Filters ---
@@ -579,6 +593,42 @@ if db_choice == "Lunar Regolith Database":
             else:
                 fa_range = None
 
+            st.markdown("### Contact area")
+            if "min_Contact area (cm^2)" in lunar_db_df.columns:
+                ca_min = float(lunar_db_df["min_Contact area (cm^2)"].min(skipna=True))
+                ca_max = float(lunar_db_df["max_Contact area (cm^2)"].max(skipna=True))
+
+                if "fa_range" not in st.session_state:
+                    st.session_state["ca_range"] = (round(ca_min, 1), round(ca_max, 1))
+
+                ca_range = st.slider(
+                   "Select Contact area Range",
+                   min_value=round(ca_min, 1),
+                   max_value=round(ca_max, 1),
+                   value=(round(ca_min, 1), round(ca_max, 1)),
+                   key="ca_range"
+               )
+            else:
+                ca_range = None
+
+            st.markdown("### Sample ID")
+            if "min_Sample ID" in lunar_db_df.columns:
+                sample_min = float(lunar_db_df["min_Sample ID"].min(skipna=True))
+                sample_max = float(lunar_db_df["max_Sample ID"].max(skipna=True))
+
+                if "fa_range" not in st.session_state:
+                    st.session_state["sample_range"] = (round(sample_min, 1), round(sample_max, 1))
+
+                sample_range = st.slider(
+                   "Select Sample ID Range",
+                   min_value=round(sample_min, 1),
+                   max_value=round(sample_max, 1),
+                   value=(round(sample_min, 1), round(sample_max, 1)),
+                   key="sample_range"
+               )
+            else:
+                sample_range = None
+
         # --- Column Selection ---
         with st.expander("Select Table Columns", expanded=False):
             st.divider()
@@ -589,7 +639,7 @@ if db_choice == "Lunar Regolith Database":
         "Bulk density (g/cm^3)",
         "Angle of internal friction (degree)", 
         "Cohesion (kPa)", 
-        "Bearing capacity (kPa)", "Depth (cm)", 
+        "Bearing capacity (kPa)", "Depth (cm)", "Sample ID",
         "Source","Year of publication", "DOI / URL", "Comments"]        
 
             def select_all_columns():
@@ -644,6 +694,8 @@ if db_choice == "Lunar Regolith Database":
     "Specific gravity",
     "Porosity (%)",
     "Force applied (N)",
+    "Contact area (cm^2)", 
+    "Sample ID", 
     "Year"
     ]
 
@@ -670,6 +722,10 @@ if db_choice == "Lunar Regolith Database":
     # Test location filter
     if test_location_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Test location"].isin(test_location_filter)]
+    
+    # Testing environment filter
+    if testing_environment_filter: 
+        filtered_db_df = filtered_db_df[filtered_db_df["Testing environment"].isin(testing_environment_filter)]
 
     # Year of publication filter (only if slider active)
     if year_range and isinstance(year_range, tuple) and (year_range != (year_min, year_max)):
@@ -773,8 +829,21 @@ if db_choice == "Lunar Regolith Database":
             "min_Force applied (N)", "max_Force applied (N)",
             fa_range[0], fa_range[1]
         )
-    
 
+    if ca_range and (ca_range != (round(ca_min, 2), round(ca_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Contact area (cm^2)", "max_Contact area (cm^2)",
+            ca_range[0], ca_range[1]
+        )
+
+    if sample_range and (sample_range != (round(sample_min, 2), round(sample_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Sample ID", "max_Sample ID",
+            sample_range[0], sample_range[1]
+        )
+    
 
     # --- Prepare display dataframe with ranges as original strings ---
     display_df = filtered_db_df.copy()
@@ -793,7 +862,9 @@ if db_choice == "Lunar Regolith Database":
         "Depth (cm)",
         "Specific gravity",
         "Porosity (%)",
-        "Force applied (N)"
+        "Force applied (N)", 
+        "Contact area (cm^2)", 
+        "Sample ID"
     ]
 
     for col in numeric_range_cols:
@@ -813,6 +884,7 @@ if db_choice == "Lunar Regolith Database":
         unsafe_allow_html=True
     )
 
+    st.info("Select table columns to display additional parameters")
 
 
     # --- Plotting Section & Display ---
@@ -820,13 +892,17 @@ if db_choice == "Lunar Regolith Database":
 
     # Select axes
     x_axis = st.selectbox("X-axis (categorical & numeric)", options=[
-        "Mission", "Location", "Terrain", "Test", "Type of mission", 
+        "Mission", "Location", "Terrain", "Test", "Type of mission", "Testing environment",
         "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
-        "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Force applied (N)", "Year of publication"
+        "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", 
+        "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", 
+        "Force applied (N)", "Contact area (cm^2)", "Sample ID", "Year of publication"
     ])
     y_axis = st.selectbox("Y-axis (numeric)", options=[
         "Bulk density (g/cm^3)", "Angle of internal friction (degree)", 
-        "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Force applied (N)", "Year of publication"
+        "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", 
+        "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", 
+        "Force applied (N)", "Contact area (cm^2)", "Year of publication"
     ])
     plot_mode = st.radio("Select value type to plot", ["Range", "Average", "Minimum", "Maximum"], horizontal=True)
 
@@ -835,7 +911,8 @@ if db_choice == "Lunar Regolith Database":
     "Terrain", 
     "Type of mission", 
     "Test location",
-    "Test"
+    "Test", 
+    "Testing environment"
     ], index=0)
 
     lunar_db_df["Mission Group"] = lunar_db_df["Mission"].apply(categorize_mission)
@@ -855,7 +932,8 @@ if db_choice == "Lunar Regolith Database":
         "Depth (cm)",
         "Specific gravity",
         "Porosity (%)",
-        "Force applied (N)"
+        "Force applied (N)", 
+        "Contatct area (cm^2)"
     ]            
 
     # Apply to lunar dataset once
@@ -883,6 +961,8 @@ if db_choice == "Lunar Regolith Database":
         filtered_plot_df = filtered_plot_df[filtered_plot_df["Type of mission"].isin(mission_type_filter)]
     if test_location_filter:
         filtered_plot_df = filtered_plot_df[filtered_plot_df["Test location"].isin(test_location_filter)]
+    if testing_environment_filter: 
+        filtered_plot_df = filtered_plot_df[filtered_plot_df["Testing environment"].isin(testing_environment_filter)]
 
     # --- Numeric filters ---
     
@@ -984,6 +1064,13 @@ if db_choice == "Lunar Regolith Database":
             fa_range[0], fa_range[1]
         )
 
+    if ca_range and (ca_range != (round(ca_min, 2), round(ca_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Contact area (cm^2)", "max_Contact area (cm^2)",
+            ca_range[0], ca_range[1]
+        )
+
 
     # Define colors and markers
 
@@ -1016,7 +1103,10 @@ if db_choice == "Lunar Regolith Database":
                 color_map[test] = default_colors[i % len(default_colors)]
                 marker_shapes[test] = "circle"  # Default shape
             return color_map, marker_shapes
+        if column == "Testing environment":
+            return {"Vacuum": "#1f77b4", "Air": "#ff7f0e", "Nitrogen": "#2ca02c"}, {"Vacuum": "circle", "Air": "square", "Nitrogen": "diamond"}
         return mission_color_map, mission_marker_shapes
+
 
     color_map, marker_shapes = get_plot_maps(legend_column)
 
@@ -2053,7 +2143,7 @@ elif db_choice == "Lunar Samples Database":
     samples_db_df["Mission Group"] = samples_db_df["Mission"].apply(categorize_mission)
     samples_PSD_db_df["Mission Group"] = samples_PSD_db_df["Mission"].apply(categorize_mission)
 
-    numeric_cols = ["depth (cm)", "Sample", "Sieve size (µm)", "weight %", "weight (g)"]
+    numeric_cols = ["Sample", "Sieve size (µm)", "weight %", "weight (g)"]
     for col in numeric_cols:
         if col in samples_PSD_db_df.columns:
             samples_PSD_db_df[col] = pd.to_numeric(samples_PSD_db_df[col], errors="coerce")
@@ -2134,7 +2224,7 @@ elif db_choice == "Lunar Samples Database":
     psd_summary_df = filtered_psd_df[existing_summary_cols].drop_duplicates(subset=["Subsample"])
     
     st.dataframe(psd_summary_df)
-    st.markdown("Select subsamples in the plotting section to view particle size distribution details and plots.")
+    st.info("Select subsamples in the plotting section to view particle size distribution details and plots.")
 
  #- ---- PSD plotting ------------
 
@@ -2144,25 +2234,57 @@ elif db_choice == "Lunar Samples Database":
     plot_mode = st.radio("Select Analysis Type:", ["Cumulative PSD Curve", "Parameter Scatter Plot"], horizontal=True)
 
     if plot_mode == "Cumulative PSD Curve":
-            available_subs = filtered_psd_df["Subsample"].dropna().unique().tolist()
-            selected_plot_subs = st.multiselect("Select Subsample(s):", available_subs)
+        col_leg1, col_leg2 = st.columns(2)
+        with col_leg1:
+            legend_color = st.selectbox(
+                "Color Legend (Primary):", 
+                options=["Subsample", "Mission", "Terrain", "Type of mission", "depth (cm)", "D50 (µm)"], 
+                index=0
+            )
+        with col_leg2:
+            legend_dash = st.selectbox(
+                "Line Style Legend (Secondary):", 
+                options=["None", "Mission", "Terrain", "Sample", "depth (cm)"], 
+                index=0
+            )
 
-            col_leg1, col_leg2 = st.columns(2)
-            with col_leg1:
-                legend_color = st.selectbox(
-                    "Color Legend (Primary):", 
-                    options=["Subsample", "Mission", "Terrain", "Type of mission", "depth (cm)", "D50 (µm)"], 
-                    index=0
-                )
-            with col_leg2:
-                legend_dash = st.selectbox(
-                    "Line Style Legend (Secondary):", 
-                    options=["None", "Mission", "Terrain", "Sample", "depth (cm)"], 
-                    index=0
-                )
+        st.markdown("**Refine PSD Curve Data:**")
+        filter_col1, filter_col2 = st.columns(2)
+        
+        with filter_col1:
+            available_samples = filtered_psd_df["Sample"].dropna().unique().tolist()
+            local_sample_filter = st.multiselect(
+                "Isolate Specific Sample(s):", 
+                options=available_samples,
+                help="Select one or more parent samples."
+            )
+            
+        with filter_col2:
+            if local_sample_filter:
+                sub_options = filtered_psd_df[filtered_psd_df["Sample"].isin(local_sample_filter)]["Subsample"].dropna().unique().tolist()
+            else:
+                sub_options = filtered_psd_df["Subsample"].dropna().unique().tolist()
+                
+            local_subsample_filter = st.multiselect(
+                "Isolate Specific Subsample(s):", 
+                options=sub_options,
+                help="Select specific depth slices."
+            )
 
-            if selected_plot_subs:
-                sub_df = filtered_psd_df[filtered_psd_df["Subsample"].isin(selected_plot_subs)].copy()
+        if not local_sample_filter and not local_subsample_filter:
+            st.info("Please select at least one Sample or Subsample above to generate the PSD plot.")
+        else:
+            sub_df = filtered_psd_df.copy()
+            if local_sample_filter:
+                sub_df = sub_df[sub_df["Sample"].isin(local_sample_filter)]
+            if local_subsample_filter:
+                sub_df = sub_df[sub_df["Subsample"].isin(local_subsample_filter)]
+
+            selected_count = len(sub_df["Subsample"].unique())
+            st.caption(f"Plotting **{selected_count}** specific subsample(s).")
+
+            # Plotting
+            if not sub_df.empty:
                 sub_df = sub_df.sort_values(by=["Subsample", "Sieve size (µm)"], ascending=[True, False])
                 sub_df["Cumulative Weight %"] = sub_df.groupby("Subsample")["weight %"].transform(pd.Series.cumsum)
 
@@ -2184,18 +2306,18 @@ elif db_choice == "Lunar Samples Database":
                 fig.update_xaxes(autorange="reversed")
                 st.plotly_chart(fig, use_container_width=True)
 
-                with st.expander("View Calculation Details"):
-                   st.write("Below is the cumulative breakdown for the selected samples:")
-
-                   details_df = sub_df.pivot_table(
-                       index="Sieve size (µm)", 
-                       columns="Subsample", 
-                       values="Cumulative Weight %"
-                   ).sort_index(ascending=False)
-
-                   st.dataframe(details_df, use_container_width=True)
-
-                   st.info("💡 Values represent the Cumulative Weight Retained (%) for each sieve size.")
+                with st.expander("🔍 View Calculation Details"):
+                    st.write("Below is the cumulative breakdown for the selected samples:")
+                    details_df = sub_df.pivot_table(
+                        index="Sieve size (µm)", 
+                        columns="Subsample", 
+                        values="Cumulative Weight %"
+                    ).sort_index(ascending=False)
+                    
+                    st.dataframe(details_df, use_container_width=True)
+                    st.info("💡 Values represent the Cumulative Weight Retained (%) for each sieve size.")
+            else:
+                st.warning("No data available to plot based on the current filters.")
 
     # Scatter plot
     else:
@@ -2213,20 +2335,53 @@ elif db_choice == "Lunar Samples Database":
             index=1 
         )
 
+        st.markdown("**Refine Scatter Plot Data:**")
+        filter_col1, filter_col2 = st.columns(2)
+        
+        with filter_col1:
+            available_samples = filtered_psd_df["Sample"].dropna().unique().tolist()
+            local_sample_filter = st.multiselect(
+                "Isolate Specific Sample(s):", 
+                options=available_samples,
+                help="Leave blank to plot all samples currently active in the sidebar."
+            )
+            
+        with filter_col2:
+            if local_sample_filter:
+                sub_options = filtered_psd_df[filtered_psd_df["Sample"].isin(local_sample_filter)]["Subsample"].dropna().unique().tolist()
+            else:
+                sub_options = filtered_psd_df["Subsample"].dropna().unique().tolist()
+                
+            local_subsample_filter = st.multiselect(
+                "Isolate Specific Subsample(s):", 
+                options=sub_options,
+                help="Leave blank to plot all available subsamples."
+            )
+
         scatter_df = filtered_psd_df.drop_duplicates(subset=["Subsample"]).copy()
 
+        if local_sample_filter:
+            scatter_df = scatter_df[scatter_df["Sample"].isin(local_sample_filter)]
+        if local_subsample_filter:
+            scatter_df = scatter_df[scatter_df["Subsample"].isin(local_subsample_filter)]
+
+        if not local_sample_filter and not local_subsample_filter:
+            st.caption("Currently plotting **ALL** data selected in the global sidebar.")
+        else:
+            st.caption(f"Plotting **{len(scatter_df)}** specific subsample(s).")
+
+        # --- Plotting ---
         fig = px.scatter(
             scatter_df, 
             x=axis_options[x_label], 
             y=axis_options[y_label], 
             color=color_by,
-            hover_data=["Subsample", "depth (cm)"],
+            hover_data=["Subsample", "depth (cm)", "Terrain", "Location", "Year"],
             labels={axis_options[x_label]: x_label, axis_options[y_label]: y_label},
             title=f"{y_label} vs {x_label}"
         )
         
-
-        if axis_options[y_label] == "avg_depth":
+        if axis_options[y_label] == "avg_depth (cm)":
             fig.update_yaxes(autorange="reversed")
         
         st.plotly_chart(fig, use_container_width=True)
