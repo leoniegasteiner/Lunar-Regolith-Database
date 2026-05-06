@@ -1391,6 +1391,16 @@ if db_choice == "Lunar Regolith Database":
    
     # --- Display plot ---
     config = {"displayModeBar": False, "scrollZoom": True}
+    # Watermark
+    fig.add_annotation(
+        text="2026 Lunar Regolith Database",
+        xref="paper", yref="paper",
+        x=1.0, y=1.02,          
+        xanchor="right", yanchor="bottom",
+        showarrow=False,
+        font=dict(size=12, color="gray"),
+        opacity=0.4             
+    )
     st.plotly_chart(fig, width='stretch', config=config)
 
 
@@ -2101,6 +2111,16 @@ elif db_choice == "Lunar Regolith Simulants Database":
         )
      # --- Display plot ---
     config = {"displayModeBar": False, "scrollZoom": True}
+        # Watermark
+    fig.add_annotation(
+        text="2026 Lunar Regolith Database",
+        xref="paper", yref="paper",
+        x=1.0, y=1.02,          
+        xanchor="right", yanchor="bottom",
+        showarrow=False,
+        font=dict(size=12, color="gray"),
+        opacity=0.4             
+    )
     st.plotly_chart(fig, width='stretch', config=config)
 
 
@@ -2304,6 +2324,16 @@ elif db_choice == "Lunar Samples Database":
                 )
 
                 fig.update_xaxes(autorange="reversed")
+                    # Watermark
+                fig.add_annotation(
+                    text="2026 Lunar Regolith Database",
+                    xref="paper", yref="paper",
+                    x=1.0, y=1.02,          
+                    xanchor="right", yanchor="bottom",
+                    showarrow=False,
+                    font=dict(size=12, color="gray"),
+                    opacity=0.4             
+                )
                 st.plotly_chart(fig, use_container_width=True)
 
                 with st.expander("🔍 View Calculation Details"):
@@ -2384,6 +2414,16 @@ elif db_choice == "Lunar Samples Database":
         if axis_options[y_label] == "avg_depth (cm)":
             fig.update_yaxes(autorange="reversed")
         
+            # Watermark
+        fig.add_annotation(
+            text="2026 Lunar Regolith Database",
+            xref="paper", yref="paper",
+            x=1.0, y=1.02,          
+            xanchor="right", yanchor="bottom",
+            showarrow=False,
+            font=dict(size=12, color="gray"),
+            opacity=0.4             
+        )
         st.plotly_chart(fig, use_container_width=True)
 
 
@@ -3146,6 +3186,8 @@ def get_last_commit_date(repo="leoniegasteiner/Lunar-Regolith-Database", branch=
         return "Unknown"
 
 last_updated = get_last_commit_date()
+
+st.markdown("To suggest additional data implementation, contact us at gasteinerleonie@gmail.com!")
 
 st.markdown(
     f"<hr><p style='font-size:11px; color:gray; text-align:center;'>© 2026 Lunar Regolith Database <br> Contact us at gasteinerleonie@gmail.com <br> Last updated: {last_updated}</p>",
