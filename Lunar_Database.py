@@ -3164,7 +3164,24 @@ elif db_choice == "Combined Data":
 import requests
 import datetime
 
-
+with st.sidebar:
+    st.divider()
+    st.write("### Documentation")
+    
+    # Read the PDF file into memory
+    try:
+        with open("User Manual.pdf", "rb") as f:
+            pdf_data = f.read()
+        
+        st.download_button(
+            label="Download User Manual",
+            data=pdf_data,
+            file_name="User Manual.pdf",
+            mime="application/pdf",
+            use_container_width=True
+        )
+    except FileNotFoundError:
+        st.error("Manual not found. Please check the repository.")
 
 def get_last_commit_date(repo="leoniegasteiner/Lunar-Regolith-Database", branch="main"):
     try:
