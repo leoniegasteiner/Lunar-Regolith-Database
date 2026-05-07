@@ -10,3 +10,7 @@ pinned: false
 
 # Lunar Regolith Database
 This is the open-source repository for the Lunar Regolith and Simulants Database.
+
+## Documentation
+   
+For detailed instructions on how to set up and use the database, please refer to our [User Manual]("User Manual.pdf").
