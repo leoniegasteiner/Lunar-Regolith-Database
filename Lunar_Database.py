@@ -1587,7 +1587,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
         st.session_state["cohesion_range"] = (round(coh_min, 1), round(coh_max, 1))
         st.session_state["angle_range"] = (round(ang_min, 1), round(ang_max, 1))
         st.session_state["selected_columns"] = [
-            col for col in default_columns if col in lunar_db_df.columns
+            col for col in default_columns if col in simulant_db_df.columns
         ]
 
 
