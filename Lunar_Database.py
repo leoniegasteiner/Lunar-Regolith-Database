@@ -13,11 +13,6 @@
 # - Combined Data Section: 2365-2965
 # - Footer: 2965-3000
 
-
-
-
-
-
 #Necessary imports
 from email.quoprimime import quote
 from altair import value
@@ -36,6 +31,7 @@ import os
 import io
 import importlib.util
 from pathlib import Path
+
 # ---- Make the database pretty ---------
 
 #span accross the window
@@ -66,28 +62,127 @@ def pretty_mission_name(raw_name: str) -> str:
             fixed_words.append(w.capitalize())   
     return " ".join(fixed_words)
 
+#------------------Functions -------------------
 
+def categorize_mission(mission_name):
+    if pd.isna(mission_name):
+        return "Other"
+    name = mission_name.lower()
+    if "apollo" in name:
+        return "Apollo"
+    elif "orbiter" in name:
+        return "LRO"
+    elif "luna" in name:
+        return "Luna"
+    elif "surveyor" in name:
+        return "Surveyor"
+    elif "chang'e" in name:
+        return "Chang'e"
+    elif "chandrayaan" in name: 
+        return "Chandrayaan"
+    else:
+        return "Other"
+    
+def extract_range(value):
+    if pd.isna(value):
+        return (np.nan, np.nan)
+    
+    if isinstance(value, (int, float)):
+        return (float(value), float(value))
+    match = re.findall(r"[-+]?\d*\.?\d+", str(value))
+    if len(match) == 0:
+        return (np.nan, np.nan)
+    try:
+        numbers = [float(n) for n in match]
+    except ValueError:
+        return (np.nan, np.nan)
+    if len(numbers) == 1:
+        val = numbers[0]
+        return (val, val)
+    else:
+        return (min(numbers), max(numbers))
+    
+def filter_numeric_range(df, col_min, col_max, min_val, max_val):
+    return df[
+        ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
+        ((df[col_min].le(max_val)) | (df[col_min].isna()))
+    ]
+
+def parse_location(loc_str):
+        if pd.isna(loc_str):
+            return None, None
+        # Match something like: 3.01239S 23.42157W
+        match = re.match(r"([0-9.+-]+)([NS])\s+([0-9.+-]+)([EW])", loc_str.strip())
+        if not match:
+            return None, None
+        lat_val, lat_dir, lon_val, lon_dir = match.groups()
+        lat = float(lat_val) * (1 if lat_dir.upper() == "N" else -1)
+        lon = float(lon_val) * (1 if lon_dir.upper() == "E" else -1)
+        return lat, lon
+
+def categorize_soil(soil_name):
+    if pd.isna(soil_name):
+        return "Other"
+    name = soil_name.lower()
+    if "mare" in name:
+        return "Mare"
+    elif "highland" in name:
+        return "Highland"
+    else:
+        return "Other"
+
+def filter_numeric_range(df, col_min, col_max, min_val, max_val):
+    """Filter keeping NaNs visible."""
+    return df[
+        ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
+        ((df[col_min].le(max_val)) | (df[col_min].isna()))
+    ]
+
+def add_watermark(fig):
+    fig.add_annotation(
+        text="2026 Lunar Regolith Database",
+        xref="paper", yref="paper",
+        x=1.0, y=1.02,          
+        xanchor="right", yanchor="bottom",
+        showarrow=False,
+        font=dict(size=12, color="gray"),
+        opacity=0.4             
+    )
+    return fig
 
 # --------------- DATA LOADING SECTION ---------------
-st.cache_data.clear()
 
 #Lunar Data Loading 
 @st.cache_data
 def load_database_data():
     df = pd.read_csv(
-    "Dataset_Regolith.csv",
-    sep=";",
-    dtype=str,
-    header=0,
-    skip_blank_lines=False,
-    )
-    df.columns =  ["Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Testing environment", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Cone penetration resistance (kPa)", "Force applied (N)", "Sample ID", "Contact area (cm^2)", "Source","Year of publication", "DOI / URL","Comments"]
+        "Dataset_Regolith.csv", 
+        sep=";", 
+        dtype=str, 
+        header=0,
+        skip_blank_lines=False,)
+    df.columns = ["Mission", "Location", "Terrain", "Year", "Type of mission", "Test", "Test location", "Testing environment", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Cone penetration resistance (kPa)", "Force applied (N)", "Sample ID", "Contact area (cm^2)", "Source", "Year of publication", "DOI / URL", "Comments"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+    
+    range_columns = [
+        "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)",
+        "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", 
+        "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", 
+        "Depth (cm)", "Specific gravity", "Porosity (%)", "Cone penetration resistance (kPa)", 
+        "Force applied (N)", "Contact area (cm^2)", "Sample ID"
+    ]
+    
+    for col in range_columns:
+        if col in df.columns:
+            extracted = df[col].apply(lambda x: pd.Series(extract_range(x)))
+            df[f"min_{col}"] = pd.to_numeric(extracted[0], errors="coerce")
+            df[f"max_{col}"] = pd.to_numeric(extracted[1], errors="coerce")
+            df[f"avg_{col}"] = df[[f"min_{col}", f"max_{col}"]].mean(axis=1)
+            
+    df["Mission Group"] = df["Mission"].apply(categorize_mission)
+            
     return df
-
 lunar_db_df = load_database_data()
-
-
 
 
 #Simulants Data Loading
@@ -155,23 +250,7 @@ def load_samples_PSD_data():
 
 samples_PSD_db_df = load_samples_PSD_data()
 
-#General data loading
-@st.cache_data
-def load_general_data():
-    df = pd.read_csv(
-        "Dataset_General.csv",
-    sep=",",
-    dtype=str,
-    header=0,
-    skip_blank_lines=False,
-    )
-    df.columns = ["Environment", "Depth range (cm)", "Average Bulk Density (g/cm^3)", "Average Angle of Internal Friction (degree)", "Average Cohesion (kPa)", "Average porosity (%)", "Average void ratio", "Relative density (%)", "Source", "Year of publication", "DOI / URL", "comments"]
-    df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
-    return df
 
-general_db_df = load_general_data() 
-
-# Sidebar to choose database (Lunar mission or Simulants)
 db_choice = st.sidebar.radio(
     "Select Database:",
     ["Lunar Regolith Database", "Lunar Regolith Simulants Database", "Lunar Samples Database", "Detailed Mission Pages", "Combined Data"]
@@ -187,90 +266,14 @@ hide_st_style = """
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-#------------------Functions -------------------
 
-def categorize_mission(mission_name):
-    if pd.isna(mission_name):
-        return "Other"
-    name = mission_name.lower()
-    if "apollo" in name:
-        return "Apollo"
-    elif "orbiter" in name:
-        return "LRO"
-    elif "luna" in name:
-        return "Luna"
-    elif "surveyor" in name:
-        return "Surveyor"
-    elif "chang'e" in name:
-        return "Chang'e"
-    elif "chandrayaan" in name: 
-        return "Chandrayaan"
-    else:
-        return "Other"
-    
-def extract_range(value):
-    if pd.isna(value):
-        return (np.nan, np.nan)
-    
-    if isinstance(value, (int, float)):
-        return (float(value), float(value))
-    match = re.findall(r"[-+]?\d*\.?\d+", str(value))
-    if len(match) == 0:
-        return (np.nan, np.nan)
-    try:
-        numbers = [float(n) for n in match]
-    except ValueError:
-        return (np.nan, np.nan)
-    if len(numbers) == 1:
-        val = numbers[0]
-        return (val, val)
-    else:
-        return (min(numbers), max(numbers))
-    
-def filter_numeric_range(df, col_min, col_max, min_val, max_val):
-    return df[
-        ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
-        ((df[col_min].le(max_val)) | (df[col_min].isna()))
-    ]
 
 # --------------------------- Lunar Mission Database Section ---------------------------
 if db_choice == "Lunar Regolith Database":
 
     st.title("Lunar Regolith Database")
 
-    # --- Columns that contain ranges ---
-    range_columns = [
-        "Bulk density (g/cm^3)",
-        "Angle of internal friction (degree)",
-        "Cohesion (kPa)",
-        "Bearing capacity (kPa)", 
-        "Static bearing pressure (kPa)",
-        "Normal stress range (kPa)", 
-        "Void ratio", 
-        "Density of grains (g/cm^3)", 
-        "Compressibility Coefficient", 
-        "Depth (cm)", 
-        "Specific gravity",
-        "Porosity (%)", 
-        "Cone penetration resistance (kPa)", 
-        "Force applied (N)", 
-        "Contact area (cm^2)",
-        "Sample ID"
-    ]
-
-    # --- Numeric columns ---
-    for col in range_columns:
-        if col in lunar_db_df.columns:
-            lunar_db_df[[f"min_{col}", f"max_{col}"]] = lunar_db_df[col].apply(
-                lambda x: pd.Series(extract_range(x))
-            )
-            lunar_db_df[f"avg_{col}"] = lunar_db_df[
-                [f"min_{col}", f"max_{col}"]
-            ].mean(axis=1)
-
-    lunar_db_df["Mission Group"] = lunar_db_df["Mission"].apply(categorize_mission)
-
-    # Sidebar Filters
+   # Sidebar Filters
     def clear_all_filters():
         st.session_state["soil_group_filter"] = []
         st.session_state["test_filter"] = []
@@ -297,8 +300,6 @@ if db_choice == "Lunar Regolith Database":
         st.session_state["selected_columns"] = [
             col for col in default_columns if col in lunar_db_df.columns
         ]
-
-
 
     with st.sidebar:
         st.header("Filter Regolith Data")
@@ -635,12 +636,14 @@ if db_choice == "Lunar Regolith Database":
             st.header("Display Options")
             all_columns = lunar_db_df.columns.tolist()
             default_columns = [
-        "Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", 
+        "Mission", "Location", "Terrain","Year","Type of mission","Test", "Test location", "Testing environment",
         "Bulk density (g/cm^3)",
         "Angle of internal friction (degree)", 
         "Cohesion (kPa)", 
         "Bearing capacity (kPa)", "Depth (cm)", "Sample ID",
+        "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Specific gravity", "Porosity (%)", "Cone penetration resistance (kPa)", "Force applied (N)", "Contact area (cm^2)", 
         "Source","Year of publication", "DOI / URL", "Comments"]        
+
 
             def select_all_columns():
                 st.session_state["selected_columns"] = all_columns
@@ -672,8 +675,6 @@ if db_choice == "Lunar Regolith Database":
             )
 
         st.button("Clear all filters", use_container_width=True, on_click=clear_all_filters)
-         # --- Clear Filters Button ---
-        #st.button("Clear all filters", use_container_width=True, on_click=clear_all_filters)
 
 
 
@@ -736,8 +737,6 @@ if db_choice == "Lunar Regolith Database":
 
 
     # --- Numeric filters ---
-
-
     if density_range and (density_range != (round(dens_min, 2), round(dens_max, 2))):
         filtered_db_df = filter_numeric_range(
             filtered_db_df,
@@ -845,10 +844,8 @@ if db_choice == "Lunar Regolith Database":
         )
     
 
-    # --- Prepare display dataframe with ranges as original strings ---
     display_df = filtered_db_df.copy()
 
-    # List of numeric columns where you want to display original ranges
     numeric_range_cols = [
         "Bulk density (g/cm^3)",
         "Angle of internal friction (degree)",
@@ -868,7 +865,7 @@ if db_choice == "Lunar Regolith Database":
     ]
 
     for col in numeric_range_cols:
-        # Keep _min, _max, _avg numeric, only replace the original column for display
+        # Keep _min, _max, _avg numeric
         if col in display_df.columns:
             display_df[col] = lunar_db_df.loc[display_df.index, col]
 
@@ -884,7 +881,7 @@ if db_choice == "Lunar Regolith Database":
         unsafe_allow_html=True
     )
 
-    st.info("Select table columns to display additional parameters")
+    st.info("Select ""table columns"" to tailor parameter display")
 
 
     # --- Plotting Section & Display ---
@@ -918,7 +915,6 @@ if db_choice == "Lunar Regolith Database":
     lunar_db_df["Mission Group"] = lunar_db_df["Mission"].apply(categorize_mission)
     
 
-    # --- Precompute numeric columns for range values ---
     range_columns = [
         "Bulk density (g/cm^3)",
         "Angle of internal friction (degree)",
@@ -936,7 +932,6 @@ if db_choice == "Lunar Regolith Database":
         "Contatct area (cm^2)"
     ]            
 
-    # Apply to lunar dataset once
     for col in range_columns:
         if col in lunar_db_df.columns:
             lunar_db_df[[f"min_{col}", f"max_{col}"]] = lunar_db_df[col].apply(
@@ -1121,10 +1116,8 @@ if db_choice == "Lunar Regolith Database":
     }
     y_col_name = y_col_map[plot_mode]
 
-    # Check if x-axis is numeric (one of the measurement columns)
     x_axis_is_numeric = x_axis in range_columns
 
-    # Remove rows with missing Y data
     if plot_mode == "Range":
         filtered_plot_df = filtered_plot_df.dropna(subset=[y_min_col, y_max_col])
         if x_axis_is_numeric:
@@ -1143,7 +1136,6 @@ if db_choice == "Lunar Regolith Database":
     if required_x_col in simulant_db_df.columns and required_y_col in simulant_db_df.columns:
         compare_simulants = st.checkbox("Compare with lunar regolith simulants")
     else:
-        # Set a default value to False if the checkbox doesn't appear
         compare_simulants = False
 
 
@@ -1392,40 +1384,30 @@ if db_choice == "Lunar Regolith Database":
     # --- Display plot ---
     config = {"displayModeBar": False, "scrollZoom": True}
     # Watermark
-    fig.add_annotation(
-        text="2026 Lunar Regolith Database",
-        xref="paper", yref="paper",
-        x=1.0, y=1.02,          
-        xanchor="right", yanchor="bottom",
-        showarrow=False,
-        font=dict(size=12, color="gray"),
-        opacity=0.4             
-    )
+    add_watermark(fig)
     st.plotly_chart(fig, width='stretch', config=config)
 
 
 # ------------------ Moon Map --------------
 
     st.subheader("Mission Location Representation on the Moon")
-    def parse_location(loc_str):
-        if pd.isna(loc_str):
-            return None, None
-        # Match something like: 3.01239S 23.42157W
-        match = re.match(r"([0-9.+-]+)([NS])\s+([0-9.+-]+)([EW])", loc_str.strip())
-        if not match:
-            return None, None
-        lat_val, lat_dir, lon_val, lon_dir = match.groups()
-        lat = float(lat_val) * (1 if lat_dir.upper() == "N" else -1)
-        lon = float(lon_val) * (1 if lon_dir.upper() == "E" else -1)
-        return lat, lon
 
-    if "Latitude" not in lunar_db_df.columns:
-        lunar_db_df["Latitude"], lunar_db_df["Longitude"] = zip(*lunar_db_df["Location"].apply(parse_location))
+    if "Latitude" not in lunar_db_df.columns or "Longitude" not in lunar_db_df.columns:
+        if not lunar_db_df.empty:
+            lunar_db_df["Latitude"], lunar_db_df["Longitude"] = zip(*lunar_db_df["Location"].apply(parse_location))
+        else:
+            lunar_db_df["Latitude"] = pd.Series(dtype=float)
+            lunar_db_df["Longitude"] = pd.Series(dtype=float)
     
     map_df = filtered_db_df.copy()
     
+
     if "Latitude" not in map_df.columns or "Longitude" not in map_df.columns:
-        map_df["Latitude"], map_df["Longitude"] = zip(*map_df["Location"].apply(parse_location))
+        if not map_df.empty:
+            map_df["Latitude"], map_df["Longitude"] = zip(*map_df["Location"].apply(parse_location))
+        else:
+            map_df["Latitude"] = pd.Series(dtype=float)
+            map_df["Longitude"] = pd.Series(dtype=float)
 
     map_df = map_df.dropna(subset=["Latitude", "Longitude"])
     
@@ -1434,7 +1416,6 @@ if db_choice == "Lunar Regolith Database":
     try:
         color_map, marker_shapes = get_plot_maps(map_legend_column)
     except NameError:
-        # Fallback to hardcoded mission group maps if get_plot_maps isn't available in scope
         map_legend_column = "Mission Group"
         color_map = {
              "Apollo": "#0b96d6", "Luna": "#d45087", "Surveyor": "#ffa600", 
@@ -1472,8 +1453,7 @@ if db_choice == "Lunar Regolith Database":
 
     for group in map_df[map_legend_column].unique():
         df_group = map_df[map_df[map_legend_column] == group]
-        
-        # Determine color and symbol dynamically
+
         color = color_map.get(group, "black")
         symbol = marker_shapes.get(group, "circle") 
 
@@ -1519,14 +1499,6 @@ if db_choice == "Lunar Regolith Database":
     )
 
     fig.update_layout(
-        #title=dict(
-        #    text=f"Mission Location Representation on the Moon (Filtered by {map_legend_column})", 
-        #    x=0,
-        #    xanchor='left',
-        #    y=0.9,
-        #    yanchor='top',
-        #    font=dict(size=20)
-        #),
         xaxis=dict(
             title="Longitude (°)",
             range=[-180, 180],
@@ -1577,7 +1549,7 @@ if db_choice == "Lunar Regolith Database":
 
 
 ## --------------------------- Lunar Simulants Database Section ---------------------------
-#
+
 elif db_choice == "Lunar Regolith Simulants Database":
 
     st.title("Lunar Regolith Simulants Database")
@@ -1587,62 +1559,22 @@ elif db_choice == "Lunar Regolith Simulants Database":
         if col in simulant_db_df.columns:
             simulant_db_df[col] = pd.to_numeric(simulant_db_df[col], errors="coerce")
 
-    # Soil categorization function
-    def categorize_soil(soil_name):
-        if pd.isna(soil_name):
-            return "Other"
-        name = soil_name.lower()
-        if "mare" in name:
-            return "Mare"
-        elif "highland" in name:
-            return "Highland"
-        else:
-            return "Other"
-        
-    def extract_range(value):
-        if pd.isna(value):
-            return (np.nan, np.nan)
-        
-        if isinstance(value, (int, float)):
-            return (float(value), float(value))
-
-        match = re.findall(r"[-+]?\d*\.?\d+", str(value))
-
-        if len(match) == 0:
-            return (np.nan, np.nan)
-
-        try:
-            numbers = [float(n) for n in match]
-        except ValueError:
-            return (np.nan, np.nan)
-
-        if len(numbers) == 1:
-            val = numbers[0]
-            return (val, val)
-        else:
-            return (min(numbers), max(numbers))
-        
-
-    # --- Columns that may contain ranges ---
     range_columns = [
         "Bulk density (g/cm^3)",
         "Angle of internal friction (degree)",
         "Cohesion (kPa)",
     ]
 
-    # --- Apply extraction and create numeric columns ---
+    simulant_db_df["Soil Group"] = simulant_db_df["Type of simulant"].apply(categorize_soil)
+
     for col in range_columns:
         if col in simulant_db_df.columns:
             simulant_db_df[[f"min_{col}", f"max_{col}"]] = simulant_db_df[col].apply(
                 lambda x: pd.Series(extract_range(x))
             )
-            simulant_db_df[f"min_{col}"] = pd.to_numeric(simulant_db_df[f"min_{col}"], errors="coerce")
-            simulant_db_df[f"max_{col}"] = pd.to_numeric(simulant_db_df[f"max_{col}"], errors="coerce")
             simulant_db_df[f"avg_{col}"] = simulant_db_df[
                 [f"min_{col}", f"max_{col}"]
             ].mean(axis=1)
-
-    simulant_db_df["Soil Group"] = simulant_db_df["Type of simulant"].apply(categorize_soil)
 
         # Sidebar Filters
     def clear_all_filters():
@@ -1674,10 +1606,6 @@ elif db_choice == "Lunar Regolith Simulants Database":
                     "Select Developer(s):",
                     options=sorted(simulant_db_df["Developer"].dropna().unique()), key="developer_filter")
 
-                #country_filter = st.multiselect(
-                #    "Select Country:",
-                #    options=sorted(simulant_db_df["Moon Location/Country"].dropna().unique())
-                #)         )
 
             # --- Numeric Range Filters ---
             with st.expander("Numeric Range Filters", expanded=False):
@@ -1779,8 +1707,10 @@ elif db_choice == "Lunar Regolith Simulants Database":
                 selected_columns = st.multiselect(
                     "Select columns to display:",
                     options=all_columns,
-                    default=[col for col in default_columns if col in all_columns]
+                    default=[col for col in default_columns if col in all_columns],
+                    key = "selected_columns"
                 )
+                
             
             st.button("Clear all filters", use_container_width=True, on_click=clear_all_filters)
 
@@ -1800,14 +1730,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
         ]
 
 
-        # --- Numeric filters (keep NaN rows visible) ---
-    def filter_numeric_range(df, col_min, col_max, min_val, max_val):
-        """Filter keeping NaNs visible."""
-        return df[
-            ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
-            ((df[col_min].le(max_val)) | (df[col_min].isna()))
-        ]
-    
+        # --- Numeric filters  ---
     if density_range:
         filtered_db_df = filter_numeric_range(
             filtered_db_df,
@@ -1899,12 +1822,6 @@ elif db_choice == "Lunar Regolith Simulants Database":
         filtered_plot_df = filtered_plot_df[filtered_plot_df["Developer"].isin(developer_filter)]
 
 
-    # --- Numeric filters (keep NaN rows visible) ---
-    def filter_numeric_range(df, col_min, col_max, min_val, max_val):
-        return df[
-            ((df[col_max].ge(min_val)) | (df[col_max].isna())) &
-            ((df[col_min].le(max_val)) | (df[col_min].isna()))
-        ]
     
     if year_range and isinstance(year_range, tuple) and (year_range != (year_min, year_max)):
         filtered_plot_df = filtered_plot_df[
@@ -2112,15 +2029,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
      # --- Display plot ---
     config = {"displayModeBar": False, "scrollZoom": True}
         # Watermark
-    fig.add_annotation(
-        text="2026 Lunar Regolith Database",
-        xref="paper", yref="paper",
-        x=1.0, y=1.02,          
-        xanchor="right", yanchor="bottom",
-        showarrow=False,
-        font=dict(size=12, color="gray"),
-        opacity=0.4             
-    )
+    add_watermark(fig)
     st.plotly_chart(fig, width='stretch', config=config)
 
 
@@ -2232,6 +2141,7 @@ elif db_choice == "Lunar Samples Database":
             if "Sample" in filtered_samples_df.columns:
                 filtered_samples_df = filtered_samples_df[filtered_samples_df["Sample"].isin(remaining_samples)]
 
+
     st.subheader("Lunar Samples")
     st.dataframe(filtered_samples_df)
 
@@ -2325,15 +2235,7 @@ elif db_choice == "Lunar Samples Database":
 
                 fig.update_xaxes(autorange="reversed")
                     # Watermark
-                fig.add_annotation(
-                    text="2026 Lunar Regolith Database",
-                    xref="paper", yref="paper",
-                    x=1.0, y=1.02,          
-                    xanchor="right", yanchor="bottom",
-                    showarrow=False,
-                    font=dict(size=12, color="gray"),
-                    opacity=0.4             
-                )
+                add_watermark(fig)
                 st.plotly_chart(fig, use_container_width=True)
 
                 with st.expander("🔍 View Calculation Details"):
@@ -2415,61 +2317,8 @@ elif db_choice == "Lunar Samples Database":
             fig.update_yaxes(autorange="reversed")
         
             # Watermark
-        fig.add_annotation(
-            text="2026 Lunar Regolith Database",
-            xref="paper", yref="paper",
-            x=1.0, y=1.02,          
-            xanchor="right", yanchor="bottom",
-            showarrow=False,
-            font=dict(size=12, color="gray"),
-            opacity=0.4             
-        )
+        add_watermark(fig)
         st.plotly_chart(fig, use_container_width=True)
-
-
-#---------- General Interpretation Section -------------
-#elif db_choice == "Lunar Regolith General Interpretations":
-#    st.title("Lunar Regolith General Interpretations")
-#    st.markdown("""Work in progress""")
-#    def extract_range(value):
-#        if pd.isna(value):
-#            return (np.nan, np.nan)
-#        
-#        if isinstance(value, (int, float)):
-#            return (float(value), float(value))
-#
-#        match = re.findall(r"[-+]?\d*\.?\d+", str(value))
-#
-#        if len(match) == 0:
-#            return (np.nan, np.nan)
-#
-#        try:
-#            numbers = [float(n) for n in match]
-#        except ValueError:
-#            return (np.nan, np.nan)
-#
-#        if len(numbers) == 1:
-#            val = numbers[0]
-#            return (val, val)
-#        else:
-#            return (min(numbers), max(numbers))
-#
-#    # --- Columns that may contain ranges ---
-#    range_columns = [
-#        "Bulk density (g/cm^3)",
-#        "Angle of internal friction (degree)",
-#        "Cohesion (kPa)",
-#        "Bearing capacity (kPa)", 
-#        "Normal stress range (kPa)", 
-#        "Void ratio", 
-#        "Density of grains (g/cm^3)", 
-#        "Compressibility Coefficient", 
-#        "Depth (cm)", 
-#        "Porosity (%)", 
-#        "Force applied (N)"
-#    ]
-#
-
 
 
 #------------------ Detailed Mission Pages Section ---------------------------
@@ -3164,8 +3013,26 @@ elif db_choice == "Combined Data":
 import requests
 import datetime
 
+with st.sidebar:
+    st.divider()
+    st.write("### Documentation")
+    
+    # Read the PDF file into memory
+    try:
+        with open("User Manual.pdf", "rb") as f:
+            pdf_data = f.read()
+        
+        st.download_button(
+            label="Download User Manual",
+            data=pdf_data,
+            file_name="User Manual.pdf",
+            mime="application/pdf",
+            use_container_width=True
+        )
+    except FileNotFoundError:
+        st.error("Manual not found. Please check the repository.")
 
-
+@st.cache_data(ttl=3600)
 def get_last_commit_date(repo="leoniegasteiner/Lunar-Regolith-Database", branch="main"):
     try:
         token = st.secrets.get("GITHUB_TOKEN", None)
