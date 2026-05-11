@@ -1586,7 +1586,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
         st.session_state["density_range"] = (round(dens_min, 2), round(dens_max, 2))
         st.session_state["cohesion_range"] = (round(coh_min, 1), round(coh_max, 1))
         st.session_state["angle_range"] = (round(ang_min, 1), round(ang_max, 1))
-        st.session_state["selected_columns"] = [
+        st.session_state["simulant_selected_columns"] = [
             col for col in default_columns if col in simulant_db_df.columns
         ]
 
@@ -1682,25 +1682,25 @@ elif db_choice == "Lunar Regolith Simulants Database":
                 st.header("Display Options")
                 all_columns = simulant_db_df.columns.tolist()
                 default_columns = ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Year of publication","DOI / URL"]
-                def select_all_columns():
-                    st.session_state["selected_columns"] = all_columns
+                def select_all_simulant_columns():
+                    st.session_state["simulant_selected_columns"] = all_columns
 
-                def clear_columns():
-                    st.session_state["selected_columns"] = default_columns
+                def clear_simulant_columns():
+                    st.session_state["simulant_selected_columns"] = default_columns
 
                 col_select_all, col_clear_selection = st.columns([1, 1])
 
                 with col_select_all:
                     st.button(
                         "Select All Parameters", 
-                        on_click=select_all_columns, 
+                        on_click=select_all_simulant_columns, 
                         use_container_width=True
                     )
 
                 with col_clear_selection:
                      st.button(
                         "Clear Selection", 
-                        on_click=clear_columns, 
+                        on_click=clear_simulant_columns, 
                         use_container_width=True
                 )
 
@@ -1708,7 +1708,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
                     "Select columns to display:",
                     options=all_columns,
                     default=[col for col in default_columns if col in all_columns],
-                    key = "selected_columns"
+                    key = "simulant_selected_columns"
                 )
                 
             
