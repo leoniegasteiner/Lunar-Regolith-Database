@@ -2081,80 +2081,166 @@ elif db_choice == "Lunar Samples Database":
 
 
 # ------- Filters ----------------------
-    st.sidebar.header("Filter Samples Data")
-    
-    # Mission Filter
-    missions = samples_PSD_db_df["Mission"].dropna().unique().tolist()
-    selected_missions = st.sidebar.multiselect("Select Mission(s):", options=missions)
+    with st.sidebar:
+        st.sidebar.header("Filter Samples Data")
 
-    if selected_missions:
-        filtered_psd_df = samples_PSD_db_df[samples_PSD_db_df["Mission"].isin(selected_missions)]
-        filtered_samples_df = samples_db_df[samples_db_df["Mission"].isin(selected_missions)]
-    else:
-        filtered_psd_df = samples_PSD_db_df.copy()
-        filtered_samples_df = samples_db_df.copy()
+        # Mission Filter
+        missions = samples_PSD_db_df["Mission"].dropna().unique().tolist()
+        selected_missions = st.sidebar.multiselect("Select Mission(s):", options=missions)
 
-    # Sample Filter 
-    samples = filtered_psd_df["Sample"].dropna().unique().tolist()
-    selected_samples = st.sidebar.multiselect("Select Sample(s):", options=samples)
+        if selected_missions:
+            filtered_psd_df = samples_PSD_db_df[samples_PSD_db_df["Mission"].isin(selected_missions)]
+            filtered_samples_df = samples_db_df[samples_db_df["Mission"].isin(selected_missions)]
+        else:
+            filtered_psd_df = samples_PSD_db_df.copy()
+            filtered_samples_df = samples_db_df.copy()
 
-    if selected_samples:
-        filtered_psd_df = filtered_psd_df[filtered_psd_df["Sample"].isin(selected_samples)]
-        filtered_samples_df = filtered_samples_df[filtered_samples_df["Sample"].isin(selected_samples)]
+        # Sample Filter 
+        samples = filtered_psd_df["Sample"].dropna().unique().tolist()
+        selected_samples = st.sidebar.multiselect("Select Sample(s):", options=samples)
 
-    if "Subsample" in filtered_psd_df.columns:
-        subsamples = filtered_psd_df["Subsample"].dropna().unique().tolist()
-        selected_subsamples = st.sidebar.multiselect("Select Subsample(s):", options=subsamples)
-        if selected_subsamples:
-            filtered_psd_df = filtered_psd_df[filtered_psd_df["Subsample"].isin(selected_subsamples)]
+        if selected_samples:
+            filtered_psd_df = filtered_psd_df[filtered_psd_df["Sample"].isin(selected_samples)]
+            filtered_samples_df = filtered_samples_df[filtered_samples_df["Sample"].isin(selected_samples)]
 
-    # Terrain Filter
-    if "Terrain" in filtered_psd_df.columns:
-        terrains = filtered_psd_df["Terrain"].dropna().unique().tolist()
-        selected_terrains = st.sidebar.multiselect("Select Terrain(s):", options=terrains)
+        if "Subsample" in filtered_psd_df.columns:
+            subsamples = filtered_psd_df["Subsample"].dropna().unique().tolist()
+            selected_subsamples = st.sidebar.multiselect("Select Subsample(s):", options=subsamples)
+            if selected_subsamples:
+                filtered_psd_df = filtered_psd_df[filtered_psd_df["Subsample"].isin(selected_subsamples)]
 
-        if selected_terrains:
-            filtered_psd_df = filtered_psd_df[filtered_psd_df["Terrain"].isin(selected_terrains)]
-            if "Terrain" in filtered_samples_df.columns:
-                filtered_samples_df = filtered_samples_df[filtered_samples_df["Terrain"].isin(selected_terrains)]
+        # Terrain Filter
+        if "Terrain" in filtered_psd_df.columns:
+            terrains = filtered_psd_df["Terrain"].dropna().unique().tolist()
+            selected_terrains = st.sidebar.multiselect("Select Terrain(s):", options=terrains)
 
-    # Depth Slider 
-    if "min_depth (cm)" in filtered_psd_df.columns and not filtered_psd_df["min_depth (cm)"].dropna().empty:
-        min_limit = float(filtered_psd_df["min_depth (cm)"].min())
-        max_limit = float(filtered_psd_df["max_depth (cm)"].max())
+            if selected_terrains:
+                filtered_psd_df = filtered_psd_df[filtered_psd_df["Terrain"].isin(selected_terrains)]
+                if "Terrain" in filtered_samples_df.columns:
+                    filtered_samples_df = filtered_samples_df[filtered_samples_df["Terrain"].isin(selected_terrains)]
 
-        st.sidebar.markdown("---")
-        depth_range = st.sidebar.slider(
-            "Select Depth Range (cm):",
-            min_value=min_limit,
-            max_value=max_limit,
-            value=(min_limit, max_limit)
-        )
+        # Depth Slider 
+        if "min_depth (cm)" in filtered_psd_df.columns and not filtered_psd_df["min_depth (cm)"].dropna().empty:
+            min_limit = float(filtered_psd_df["min_depth (cm)"].min())
+            max_limit = float(filtered_psd_df["max_depth (cm)"].max())
 
-        if depth_range[0] > min_limit or depth_range[1] < max_limit:
-            filtered_psd_df = filtered_psd_df[
-                (filtered_psd_df["min_depth (cm)"] >= depth_range[0]) & 
-                (filtered_psd_df["max_depth (cm)"] <= depth_range[1])
-            ]
+            st.sidebar.markdown("---")
+            depth_range = st.sidebar.slider(
+                "Select Depth Range (cm):",
+                min_value=min_limit,
+                max_value=max_limit,
+                value=(min_limit, max_limit)
+            )
 
-            remaining_samples = filtered_psd_df["Sample"].unique()
-            if "Sample" in filtered_samples_df.columns:
-                filtered_samples_df = filtered_samples_df[filtered_samples_df["Sample"].isin(remaining_samples)]
+            if depth_range[0] > min_limit or depth_range[1] < max_limit:
+                filtered_psd_df = filtered_psd_df[
+                    (filtered_psd_df["min_depth (cm)"] >= depth_range[0]) & 
+                    (filtered_psd_df["max_depth (cm)"] <= depth_range[1])
+                ]
 
+                remaining_samples = filtered_psd_df["Sample"].unique()
+                if "Sample" in filtered_samples_df.columns:
+                    filtered_samples_df = filtered_samples_df[filtered_samples_df["Sample"].isin(remaining_samples)]
+
+        with st.expander("Select Table Columns", expanded=False):
+            # --- Column Selection ---
+            st.divider()
+            st.header("Display Options")
+            all_columns = samples_PSD_db_df.columns.tolist()
+            default_columns = ["Mission", "Sample", "Subsample", "depth (cm)", "Sieve size (µm)", "weight %", "D50 (µm)", "Source"]
+            def select_all_psd_columns():
+                st.session_state["psd_selected_columns"] = all_columns   
+            def clear_psd_columns():
+                st.session_state["psd_selected_columns"] = default_columns   
+            col_select_all, col_clear_selection = st.columns([1, 1])  
+            with col_select_all:
+                st.button(
+                    "Select All Parameters", 
+                    on_click=select_all_psd_columns, 
+                    use_container_width=True)
+
+            with col_clear_selection:
+                 st.button(
+                    "Clear Selection", 
+                    on_click=clear_psd_columns, 
+                    use_container_width=True)
+
+            selected_columns = st.multiselect(
+                "Select columns to display:",
+                options=all_columns,
+                default=[col for col in default_columns if col in all_columns],
+                key = "psd_selected_columns"
+            )
 
     st.subheader("Lunar Samples")
     st.dataframe(filtered_samples_df)
 
     st.subheader("Particle Size Distribution Data")
 
-    summary_cols = ["Mission", "Sample", "Subsample", "depth (cm)", "D50 (µm)","Source"]
+    # 1. Depth Display Toggle for the Summary Table
+    depth_display_mode = st.radio(
+        "Select Depth format for Summary Table:", 
+        ["Average Depth", "Minimum Depth", "Maximum Depth", "Original Range"], 
+        horizontal=True
+    )
     
+    depth_col_map = {
+        "Average Depth": "avg_depth (cm)",
+        "Minimum Depth": "min_depth (cm)",
+        "Maximum Depth": "max_depth (cm)",
+        "Original Range": "depth (cm)"
+    }
+    selected_depth_col = depth_col_map[depth_display_mode]
+
+    # Create and display the Summary Table
+    summary_cols = ["Mission", "Sample", "Subsample", selected_depth_col, "D50 (µm)","Source"]
     existing_summary_cols = [c for c in summary_cols if c in filtered_psd_df.columns]
     
     psd_summary_df = filtered_psd_df[existing_summary_cols].drop_duplicates(subset=["Subsample"])
     
-    st.dataframe(psd_summary_df)
-    st.info("Select subsamples in the plotting section to view particle size distribution details and plots.")
+    st.markdown("**Subsample Summary Table**")
+    st.dataframe(psd_summary_df, use_container_width=True)
+    st.info("Select subsamples in the plotting section below to view particle size distribution details and plots.")
+
+    # 2. Sieve Fraction Details Toggle
+    show_sieve_details = st.checkbox("🔍 Show Full Sieve Fraction Details (Displays all individual sieve sizes)")
+
+    if show_sieve_details:
+        with st.expander("Select Detailed Table Columns", expanded=False):
+            st.divider()
+            st.header("Display Options")
+            all_columns = samples_PSD_db_df.columns.tolist()
+            default_columns = ["Mission", "Sample", "Subsample", "depth (cm)", "Sieve size (µm)", "weight %", "D50 (µm)", "Source"]
+            
+            def select_all_psd_columns():
+                st.session_state["psd_selected_columns"] = all_columns   
+            def clear_psd_columns():
+                st.session_state["psd_selected_columns"] = default_columns   
+            
+            col_select_all, col_clear_selection = st.columns([1, 1])  
+            with col_select_all:
+                st.button("Select All Parameters", on_click=select_all_psd_columns, use_container_width=True, key="psd_select_all")
+            with col_clear_selection:
+                 st.button("Clear Selection", on_click=clear_psd_columns, use_container_width=True, key="psd_clear_all")
+
+            selected_columns = st.multiselect(
+                "Select columns to display:",
+                options=all_columns,
+                default=[col for col in default_columns if col in all_columns],
+                key = "psd_selected_columns"
+            )
+
+        # Prepare and display the detailed dataframe
+        display_psd_df = filtered_psd_df.copy()
+        for col in range_columns:
+            if col in display_psd_df.columns:
+                display_psd_df[col] = samples_PSD_db_df.loc[display_psd_df.index, col]
+
+        st.markdown("**Detailed Sieve Fractions Table**")
+        if selected_columns:
+            st.dataframe(display_psd_df[selected_columns], use_container_width=True)
+        else:
+            st.info("No columns selected. Please select at least one column to display.")
 
  #- ---- PSD plotting ------------
 
