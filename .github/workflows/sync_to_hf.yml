@@ -1,4 +1,5 @@
 name: Sync to Hugging Face hub
+
 on:
   push:
     branches: [main]
@@ -9,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GitHub Repository
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
       - name: Deploy to Hugging Face (Bypassing PDF)
         env:
