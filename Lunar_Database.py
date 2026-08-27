@@ -295,7 +295,7 @@ if db_choice == "Lunar Regolith Database":
         st.session_state["specific_gravity_range"] = (round(sg_min, 2), round(sg_max, 2))
         st.session_state["por_range"] = (round(por_min, 1), round(por_max, 1))
         st.session_state["fa_range"] = (round(fa_min, 1), round(fa_max, 1))
-        st.session_state["Contact area"] = (round(ca_min, 1), round(ca_max, 1))
+        st.session_state["ca_range"] = (round(ca_min, 1), round(ca_max, 1))
         st.session_state["Sample ID"] = (round(sample_min, 1), round(sample_max, 1))
         st.session_state["selected_columns"] = [
             col for col in default_columns if col in lunar_db_df.columns
@@ -373,7 +373,6 @@ if db_choice == "Lunar Regolith Database":
                     "Select Density Range",
                     min_value=round(dens_min, 2),
                     max_value=round(dens_max, 2),
-                    value=(round(dens_min, 2), round(dens_max, 2)),
                     key="density_range"
                 )
             else:
@@ -391,7 +390,6 @@ if db_choice == "Lunar Regolith Database":
                     "Select Cohesion Range",
                     min_value=round(coh_min, 1),
                     max_value=round(coh_max, 1),
-                    value=(round(coh_min, 1), round(coh_max, 1)),
                     key="cohesion_range"
                 )
             else:
@@ -409,7 +407,6 @@ if db_choice == "Lunar Regolith Database":
                     "Select Angle Range",
                     min_value=round(ang_min, 1),
                     max_value=round(ang_max, 1),
-                    value=(round(ang_min, 1), round(ang_max, 1)),
                     key="angle_range"
                 )
             else:
@@ -427,7 +424,6 @@ if db_choice == "Lunar Regolith Database":
                    "Select Bearing Capacity Range",
                    min_value=round(sbc_min, 1),
                    max_value=round(sbc_max, 1),
-                   value=(round(sbc_min, 1), round(sbc_max, 1)),
                    key="sbc_range"
                )
             else:
@@ -445,7 +441,6 @@ if db_choice == "Lunar Regolith Database":
                     "Select Static Bearing Pressure Range",
                     min_value=round(staticbc_min, 1),
                     max_value=round(staticbc_max, 1),
-                    value=(round(staticbc_min, 1), round(staticbc_max, 1)),
                     key="static_bearing_range"
                 )
             else:
@@ -463,7 +458,6 @@ if db_choice == "Lunar Regolith Database":
                    "Select Normal Stress Range",
                    min_value=round(nf_min, 1),
                    max_value=round(nf_max, 1),
-                   value=(round(nf_min, 1), round(nf_max, 1)),
                    key="ns_range"
                )
             else:
@@ -481,7 +475,6 @@ if db_choice == "Lunar Regolith Database":
                    "Select Void Ratio Range",
                    min_value=round(vr_min, 2),
                    max_value=round(vr_max, 2),
-                   value=(round(vr_min, 2), round(vr_max, 2)),
                    key="vr_range"
                )
             else:
@@ -499,7 +492,6 @@ if db_choice == "Lunar Regolith Database":
                    "Select Density of Grains Range",
                    min_value=round(dg_min, 2),
                    max_value=round(dg_max, 2),
-                   value=(round(dg_min, 2), round(dg_max, 2)),
                    key="dg_range"
                )
             else:
@@ -517,7 +509,6 @@ if db_choice == "Lunar Regolith Database":
                    "Select Compressibility Coefficient Range",
                    min_value=round(cc_min, 4),
                    max_value=round(cc_max, 4),
-                   value=(round(cc_min, 4), round(cc_max, 4)),
                    key="cc_range"
                )
             else:
@@ -535,7 +526,6 @@ if db_choice == "Lunar Regolith Database":
                    "Select Depth Range",
                    min_value=round(depth_min, 1),
                    max_value=round(depth_max, 1),
-                   value=(round(depth_min, 1), round(depth_max, 1)),
                    key="depth_range"
                )
             else:
@@ -554,7 +544,6 @@ if db_choice == "Lunar Regolith Database":
                    "Select Specific Gravity Range",
                    min_value=round(sg_min, 2),
                    max_value=round(sg_max, 2),
-                   value=(round(sg_min, 2), round(sg_max, 2)),
                    key="specific_gravity_range"
                )
 
@@ -570,7 +559,6 @@ if db_choice == "Lunar Regolith Database":
                    "Select Porosity Range",
                    min_value=round(por_min, 1),
                    max_value=round(por_max, 1),
-                   value=(round(por_min, 1), round(por_max, 1)),
                    key="por_range"
                )
             else:
@@ -588,7 +576,6 @@ if db_choice == "Lunar Regolith Database":
                    "Select Force applied Range",
                    min_value=round(fa_min, 1),
                    max_value=round(fa_max, 1),
-                   value=(round(fa_min, 1), round(fa_max, 1)),
                    key="fa_range"
                )
             else:
@@ -599,14 +586,13 @@ if db_choice == "Lunar Regolith Database":
                 ca_min = float(lunar_db_df["min_Contact area (cm^2)"].min(skipna=True))
                 ca_max = float(lunar_db_df["max_Contact area (cm^2)"].max(skipna=True))
 
-                if "fa_range" not in st.session_state:
+                if "ca_range" not in st.session_state:
                     st.session_state["ca_range"] = (round(ca_min, 1), round(ca_max, 1))
 
                 ca_range = st.slider(
                    "Select Contact area Range",
                    min_value=round(ca_min, 1),
                    max_value=round(ca_max, 1),
-                   value=(round(ca_min, 1), round(ca_max, 1)),
                    key="ca_range"
                )
             else:
@@ -617,15 +603,14 @@ if db_choice == "Lunar Regolith Database":
                 sample_min = float(lunar_db_df["min_Sample ID"].min(skipna=True))
                 sample_max = float(lunar_db_df["max_Sample ID"].max(skipna=True))
 
-                if "fa_range" not in st.session_state:
-                    st.session_state["sample_range"] = (round(sample_min, 1), round(sample_max, 1))
+                if "Sample ID" not in st.session_state:
+                    st.session_state["Sample ID"] = (round(sample_min, 1), round(sample_max, 1))
 
                 sample_range = st.slider(
                    "Select Sample ID Range",
                    min_value=round(sample_min, 1),
                    max_value=round(sample_max, 1),
-                   value=(round(sample_min, 1), round(sample_max, 1)),
-                   key="sample_range"
+                   key="Sample ID"
                )
             else:
                 sample_range = None
@@ -667,10 +652,12 @@ if db_choice == "Lunar Regolith Database":
                     use_container_width=True
                 )
 
+            if "selected_columns" not in st.session_state:
+                st.session_state["selected_columns"] = [col for col in default_columns if col in all_columns]
+            
             selected_columns = st.multiselect(
                 "Select columns to display:",
                 options=all_columns,
-                default=[col for col in default_columns if col in all_columns],
                 key="selected_columns"
             )
 
@@ -1637,7 +1624,6 @@ elif db_choice == "Lunar Regolith Simulants Database":
                         "Select Density Range",
                         min_value=round(dens_min, 2),
                         max_value=round(dens_max, 2),
-                        value=st.session_state["density_range"],
                         key="density_range")
                 else:
                     density_range = None
@@ -1653,7 +1639,6 @@ elif db_choice == "Lunar Regolith Simulants Database":
                         "Select Cohesion Range",
                         min_value=round(coh_min, 1),
                         max_value=round(coh_max, 1),
-                        value=st.session_state["cohesion_range"],
                         key="cohesion_range"
                     )
                 else:
@@ -1670,7 +1655,6 @@ elif db_choice == "Lunar Regolith Simulants Database":
                         "Select Angle Range",
                         min_value=round(ang_min, 1),
                         max_value=round(ang_max, 1),
-                        value=st.session_state["angle_range"],
                         key="angle_range"
                         )
                 else:
@@ -1704,10 +1688,12 @@ elif db_choice == "Lunar Regolith Simulants Database":
                         use_container_width=True
                 )
 
+                if "selected_columns" not in st.session_state:
+                    st.session_state["selected_columns"] = [col for col in default_columns if col in all_columns]
+
                 selected_columns = st.multiselect(
                     "Select columns to display:",
                     options=all_columns,
-                    default=[col for col in default_columns if col in all_columns],
                     key = "simulant_selected_columns"
                 )
                 
@@ -2124,6 +2110,10 @@ elif db_choice == "Lunar Samples Database":
             min_limit = float(filtered_psd_df["min_depth (cm)"].min())
             max_limit = float(filtered_psd_df["max_depth (cm)"].max())
 
+            if min_limit >= max_limit:
+                min_limit = max(0.0, min_limit - 1.0)
+                max_limit = max_limit + 1.0
+
             st.sidebar.markdown("---")
             depth_range = st.sidebar.slider(
                 "Select Depth Range (cm):",
@@ -2148,28 +2138,33 @@ elif db_choice == "Lunar Samples Database":
             st.header("Display Options")
             all_columns = samples_PSD_db_df.columns.tolist()
             default_columns = ["Mission", "Sample", "Subsample", "depth (cm)", "Sieve size (µm)", "weight %", "D50 (µm)", "Source"]
-            def select_all_psd_columns():
-                st.session_state["psd_selected_columns"] = all_columns   
-            def clear_psd_columns():
-                st.session_state["psd_selected_columns"] = default_columns   
+            def select_all_psd_summary_columns():
+                st.session_state["psd_summary_selected_columns"] = all_columns   
+            def clear_psd_summary_columns():
+                st.session_state["psd_summary_selected_columns"] = default_columns  
+
             col_select_all, col_clear_selection = st.columns([1, 1])  
             with col_select_all:
                 st.button(
                     "Select All Parameters", 
-                    on_click=select_all_psd_columns, 
-                    use_container_width=True)
+                    on_click=select_all_psd_summary_columns, 
+                    use_container_width=True, 
+                    key="btn_psd_sum_all")
 
             with col_clear_selection:
                  st.button(
                     "Clear Selection", 
-                    on_click=clear_psd_columns, 
-                    use_container_width=True)
+                    on_click=clear_psd_summary_columns, 
+                    use_container_width=True, 
+                    key="btn_psd_sum_clear")
+
+            if "selected_columns" not in st.session_state:
+                st.session_state["selected_columns"] = [col for col in default_columns if col in all_columns]
 
             selected_columns = st.multiselect(
                 "Select columns to display:",
                 options=all_columns,
-                default=[col for col in default_columns if col in all_columns],
-                key = "psd_selected_columns"
+                key = "psd_summary_selected_columns"
             )
 
     st.subheader("Lunar Samples")
@@ -2212,22 +2207,24 @@ elif db_choice == "Lunar Samples Database":
             all_columns = samples_PSD_db_df.columns.tolist()
             default_columns = ["Mission", "Sample", "Subsample", "depth (cm)", "Sieve size (µm)", "weight %", "D50 (µm)", "Source"]
             
-            def select_all_psd_columns():
-                st.session_state["psd_selected_columns"] = all_columns   
-            def clear_psd_columns():
-                st.session_state["psd_selected_columns"] = default_columns   
+            def select_all_psd_detailed_columns():
+                st.session_state["psd_detailed_selected_columns"] = all_columns   
+            def clear_psd_detailed_columns():
+                st.session_state["psd_detailed_selected_columns"] = default_columns   
             
             col_select_all, col_clear_selection = st.columns([1, 1])  
             with col_select_all:
-                st.button("Select All Parameters", on_click=select_all_psd_columns, use_container_width=True, key="psd_select_all")
+                st.button("Select All Parameters", on_click=select_all_psd_detailed_columns, use_container_width=True, key="btn_psd_det_all")
             with col_clear_selection:
-                 st.button("Clear Selection", on_click=clear_psd_columns, use_container_width=True, key="psd_clear_all")
+                 st.button("Clear Selection", on_click=clear_psd_detailed_columns, use_container_width=True, key="btn_psd_det_clear")
+
+            if "selected_columns" not in st.session_state:
+                st.session_state["selected_columns"] = [col for col in default_columns if col in all_columns]
 
             selected_columns = st.multiselect(
                 "Select columns to display:",
                 options=all_columns,
-                default=[col for col in default_columns if col in all_columns],
-                key = "psd_selected_columns"
+                key = "psd_detailed_selected_columns"
             )
 
         # Prepare and display the detailed dataframe
@@ -2322,7 +2319,7 @@ elif db_choice == "Lunar Samples Database":
                 fig.update_xaxes(autorange="reversed")
                     # Watermark
                 add_watermark(fig)
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch")
 
                 with st.expander("🔍 View Calculation Details"):
                     st.write("Below is the cumulative breakdown for the selected samples:")
@@ -2404,7 +2401,7 @@ elif db_choice == "Lunar Samples Database":
         
             # Watermark
         add_watermark(fig)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
 
 #------------------ Detailed Mission Pages Section ---------------------------
@@ -2680,7 +2677,6 @@ elif db_choice == "Combined Data":
                     "Select Density Range",
                     min_value=round(dens_min, 2),
                     max_value=round(dens_max, 2),
-                    value=(round(dens_min, 2), round(dens_max, 2)),
                     key="density_range"
                 )
             else:
@@ -2698,7 +2694,6 @@ elif db_choice == "Combined Data":
                     "Select Cohesion Range",
                     min_value=round(coh_min, 1),
                     max_value=round(coh_max, 1),
-                    value=(round(coh_min, 1), round(coh_max, 1)),
                     key="cohesion_range"
                 )
             else:
@@ -2716,7 +2711,6 @@ elif db_choice == "Combined Data":
                     "Select Angle Range",
                     min_value=round(ang_min, 1),
                     max_value=round(ang_max, 1),
-                    value=(round(ang_min, 1), round(ang_max, 1)),
                     key="angle_range"
                 )
             else:
@@ -2734,7 +2728,6 @@ elif db_choice == "Combined Data":
                    "Select Bearing Capacity Range",
                    min_value=round(sbc_min, 1),
                    max_value=round(sbc_max, 1),
-                   value=(round(sbc_min, 1), round(sbc_max, 1)),
                    key="sbc_range"
                )
             else:
@@ -2752,7 +2745,6 @@ elif db_choice == "Combined Data":
                    "Select Normal Stress Range",
                    min_value=round(nf_min, 1),
                    max_value=round(nf_max, 1),
-                   value=(round(nf_min, 1), round(nf_max, 1)),
                    key="ns_range"
                )
             else:
@@ -2770,7 +2762,6 @@ elif db_choice == "Combined Data":
                    "Select Void Ratio Range",
                    min_value=round(vr_min, 2),
                    max_value=round(vr_max, 2),
-                   value=(round(vr_min, 2), round(vr_max, 2)),
                    key="vr_range"
                )
             else:
@@ -2788,7 +2779,6 @@ elif db_choice == "Combined Data":
                    "Select Density of Grains Range",
                    min_value=round(dg_min, 2),
                    max_value=round(dg_max, 2),
-                   value=(round(dg_min, 2), round(dg_max, 2)),
                    key="dg_range"
                )
             else:
@@ -2806,7 +2796,6 @@ elif db_choice == "Combined Data":
                    "Select Compressibility Coefficient Range",
                    min_value=round(cc_min, 4),
                    max_value=round(cc_max, 4),
-                   value=(round(cc_min, 4), round(cc_max, 4)),
                    key="cc_range"
                )
             else:
@@ -2824,7 +2813,6 @@ elif db_choice == "Combined Data":
                    "Select Depth Range",
                    min_value=round(depth_min, 1),
                    max_value=round(depth_max, 1),
-                   value=(round(depth_min, 1), round(depth_max, 1)),
                    key="depth_range"
                )
             else:
@@ -2842,7 +2830,6 @@ elif db_choice == "Combined Data":
                    "Select Porosity Range",
                    min_value=round(por_min, 1),
                    max_value=round(por_max, 1),
-                   value=(round(por_min, 1), round(por_max, 1)),
                    key="por_range"
                )
             else:
@@ -2860,7 +2847,6 @@ elif db_choice == "Combined Data":
                    "Select Force applied Range",
                    min_value=round(fa_min, 1),
                    max_value=round(fa_max, 1),
-                   value=(round(fa_min, 1), round(fa_max, 1)),
                    key="fa_range"
                )
             else:
@@ -2900,10 +2886,12 @@ elif db_choice == "Combined Data":
                     use_container_width=True
                 )
 
+            if "selected_columns" not in st.session_state:
+                st.session_state["selected_columns"] = [col for col in default_columns if col in all_columns]
+
             selected_columns = st.multiselect(
                 "Select columns to display:",
                 options=all_columns,
-                default=[col for col in default_columns if col in all_columns],
                 key="selected_columns"
             )
 
