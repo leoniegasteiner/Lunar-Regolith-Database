@@ -1678,18 +1678,20 @@ elif db_choice == "Lunar Regolith Simulants Database":
                     st.button(
                         "Select All Parameters", 
                         on_click=select_all_simulant_columns, 
-                        use_container_width=True
+                        use_container_width=True, 
+                        key="btn_select_all_simulants"
                     )
 
                 with col_clear_selection:
                      st.button(
                         "Clear Selection", 
                         on_click=clear_simulant_columns, 
-                        use_container_width=True
+                        use_container_width=True, 
+                        key="btn_clear_all_simulants"
                 )
 
-                if "selected_columns" not in st.session_state:
-                    st.session_state["selected_columns"] = [col for col in default_columns if col in all_columns]
+                if "simulant_selected_columns" not in st.session_state:
+                    st.session_state["simulant_selected_columns"] = [col for col in default_columns if col in all_columns]
 
                 selected_columns = st.multiselect(
                     "Select columns to display:",

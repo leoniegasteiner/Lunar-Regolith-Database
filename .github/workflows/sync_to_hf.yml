@@ -1,4 +1,5 @@
 name: Sync to Hugging Face hub
+
 on:
   push:
     branches: [main]
@@ -8,11 +9,21 @@ jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          lfs: true
-      - name: Push to hub
+      - name: Checkout GitHub Repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to Hugging Face (Bypassing PDF)
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push --force https://leoniegasteiner:$HF_TOKEN@huggingface.co/spaces/leoniegasteiner/Lunar-Regolith-Database main
+        run: |
+          rm -f "User Manual.pdf"
+          rm -rf .git
+
+          git init
+          git checkout -b main
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git add .
+          git commit -m "Deploy to Hugging Face (PDF Excluded)"
+
+          git push --force https://leoniegasteiner:${HF_TOKEN}@huggingface.co/spaces/leoniegasteiner/Lunar-Regolith-Database main
