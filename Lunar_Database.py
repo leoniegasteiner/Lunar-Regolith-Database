@@ -182,6 +182,7 @@ def load_database_data():
     df["Mission Group"] = df["Mission"].apply(categorize_mission)
             
     return df
+
 lunar_db_df = load_database_data()
 
 
@@ -197,6 +198,31 @@ def load_Simulants_data():
     )
     df.columns =  ["Simulant", "Developer", "Type of simulant", "Year", "Test", "Testing environment", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Cone penetration resistance gradient (kN/m^2/m)", "Force applied (N)", "Sample ID", "Contact area (cm^2)", "Source","Year of publication","DOI / URL", "comments"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+    range_columns = [
+        "Bulk density (g/cm^3)", 
+        "Angle of internal friction (degree)",
+        "Cohesion (kPa)",
+        "Bearing capacity (kPa)",
+        "Static bearing pressure (kPa)",
+        "Normal stress range (kPa)",
+        "Void ratio",
+        "Density of grains (g/cm^3)",
+        "Compressibility Coefficient",
+        "Depth (cm)",
+        "Specific gravity",
+        "Porosity (%)",
+        "Cone penetration resistance gradient (kN/m^2/m)",
+        "Force applied (N)",
+        "Contact area (cm^2)",
+        ]
+    
+    for col in range_columns:
+        if col in df.columns:
+            extracted = df[col].apply(lambda x: pd.Series(extract_range(x)))
+            df[f"min_{col}"] = pd.to_numeric(extracted[0], errors="coerce")
+            df[f"max_{col}"] = pd.to_numeric(extracted[1], errors="coerce")
+            df[f"avg_{col}"] = df[[f"min_{col}", f"max_{col}"]].mean(axis=1)
+
     return df
 
 simulant_db_df = load_Simulants_data()
@@ -1543,34 +1569,9 @@ elif db_choice == "Lunar Regolith Simulants Database":
         if col in simulant_db_df.columns:
             simulant_db_df[col] = pd.to_numeric(simulant_db_df[col], errors="coerce")
 
-    range_columns = [
-        "Bulk density (g/cm^3)", 
-        "Angle of internal friction (degree)",
-        "Cohesion (kPa)",
-        "Bearing capacity (kPa)",
-        "Static bearing pressure (kPa)",
-        "Normal stress range (kPa)",
-        "Void ratio",
-        "Density of grains (g/cm^3)",
-        "Compressibility Coefficient",
-        "Depth (cm)",
-        "Specific gravity",
-        "Porosity (%)",
-        "Cone penetration resistance gradient (kN/m^2/m)",
-        "Force applied (N)",
-        "Contact area (cm^2)",
-        ]
 
     simulant_db_df["Soil Group"] = simulant_db_df["Type of simulant"].apply(categorize_soil)
 
-    for col in range_columns:
-        if col in simulant_db_df.columns:
-            simulant_db_df[[f"min_{col}", f"max_{col}"]] = simulant_db_df[col].apply(
-                lambda x: pd.Series(extract_range(x))
-            )
-            simulant_db_df[f"avg_{col}"] = simulant_db_df[
-                [f"min_{col}", f"max_{col}"]
-            ].mean(axis=1)
 
         # Sidebar Filters
     def clear_all_filters():
@@ -2065,7 +2066,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
         "Contact area (cm^2)", 
     ]
 
-    for col in range_columns:
+    for col in numeric_range_cols:
         if col in display_df.columns:
             display_df[col] = simulant_db_df.loc[display_df.index, col]
 
@@ -2096,11 +2097,10 @@ elif db_choice == "Lunar Regolith Simulants Database":
     legend_column = st.selectbox("Select Legend", options=[ 
     "Type of simulant", 
     "Test", 
-    "Testing environment"
     ], index=0)
        
 
-    for col in range_columns:
+    for col in numeric_range_cols:
         if col in simulant_db_df.columns:
             simulant_db_df[[f"min_{col}", f"max_{col}"]] = simulant_db_df[col].apply(
             lambda x: pd.Series(extract_range(x))
@@ -2109,7 +2109,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
                 [f"min_{col}", f"max_{col}"]
             ].mean(axis=1)
 
-    for col in range_columns:
+    for col in numeric_range_cols:
         if f"min_{col}" in simulant_db_df.columns:
             simulant_db_df[f"min_{col}"] = pd.to_numeric(simulant_db_df[f"min_{col}"], errors="coerce")
             simulant_db_df[f"max_{col}"] = pd.to_numeric(simulant_db_df[f"max_{col}"], errors="coerce")
@@ -2255,7 +2255,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
     }
     y_col_name = y_col_map[plot_mode]
 
-    x_axis_is_numeric = x_axis in range_columns
+    x_axis_is_numeric = x_axis in numeric_range_cols
 
     # Remove rows with missing Y data
     if plot_mode == "Range":
@@ -2376,21 +2376,36 @@ elif db_choice == "Lunar Regolith Simulants Database":
 
     # --- SCATTER PLOT MODES (Average, Min, Max) ---
     else:
+        if x_axis in numeric_range_cols:
+            x_col_map = {
+                "Average": f"avg_{x_axis}",
+                "Minimum": f"min_{x_axis}",
+                "Maximum": f"max_{x_axis}",
+            }
+            x_col_name = x_col_map.get(plot_mode, x_axis) 
+        else:
+            x_col_name = x_axis
+
         fig = px.scatter(
             filtered_plot_df,
-            x=x_axis,
+            x=x_col_name,
             y=y_col_name,
             color=legend_column,
             symbol=legend_column,
             color_discrete_map=color_map,
             symbol_map=marker_shapes,
-            hover_data={"Simulant": True, x_axis: True, y_col_name: ":.2f", legend_column: True},
-            title=f"{plot_mode} {y_axis} vs {x_axis}",
+            hover_data={"Simulant": True, x_col_name: ":.2f", y_col_name: ":.2f", legend_column: True},
+            title=f"{plot_mode} {y_axis} vs {plot_mode} {x_axis}" if x_axis in numeric_range_cols else f"{plot_mode} {y_axis} vs {x_axis}",
         )
+        
         fig.update_traces(marker=dict(size=10, opacity=0.7))
+        
+        if x_axis in numeric_range_cols or x_axis == "Year of publication":
+            fig.update_xaxes(type='linear', tickformat=".2f")
+
         fig.update_layout(
-            xaxis_title=x_axis,
-            yaxis_title=f"{y_axis} ({plot_mode})",
+            xaxis_title=f"{plot_mode} {x_axis}" if x_axis in numeric_range_cols else x_axis,
+            yaxis_title=f"{plot_mode} {y_axis}",
             hoverlabel=dict(bgcolor="white", font_size=12, font_color="black"),
             title=dict(x=0, xanchor='left', font=dict(size=20)),
             legend_title_text=legend_column,
