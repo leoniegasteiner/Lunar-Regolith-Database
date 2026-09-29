@@ -190,11 +190,12 @@ lunar_db_df = load_database_data()
 def load_Simulants_data():
     df = pd.read_csv(
     "Dataset_Simulants.csv",
+    sep=';',
     dtype=str,
     header=0,
     skip_blank_lines=False,
     )
-    df.columns =  ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Year of publication","DOI / URL"]
+    df.columns =  ["Simulant", "Developer", "Type of simulant", "Year", "Test", "Testing environment", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Cone penetration resistance gradient (kN/m^2/m)", "Force applied (N)", "Sample ID", "Contact area (cm^2)", "Source","Year of publication","DOI / URL", "comments"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
     return df
 
@@ -211,7 +212,7 @@ def load_all_data():
     header=0,
     skip_blank_lines=False,
     )
-    df.columns =  ["Mission / Simulant", "Developer", "Agency", "Moon Location", "Terrain", "Year", "Type of mission", "Test", "Test location", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)",  "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Porosity (%)", "Force applied (N)", "Source","Year of publication", "DOI / URL", "Comments"]
+    df.columns =  ["Mission / Simulant", "Developer", "Moon Location", "Terrain", "Year", "Type of mission", "Test", "Test location", "Testing environment", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Bearing capacity (kPa)", "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Depth (cm)", "Specific gravity", "Porosity (%)", "Cone penetration resistance (kPa)", "Force applied (N)", "Sample ID", "Contact area (cm^2)", "Source","Year of publication", "DOI / URL", "Comments"]
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
     return df
 
@@ -1054,10 +1055,8 @@ if db_choice == "Lunar Regolith Database":
         )
 
 
-    # Define colors and markers
-
     def get_plot_maps(column):
-    # Base colors/shapes for mission group
+    
         mission_color_map = {
             "Apollo": "#0b96d6", "Luna": "#d45087", "Surveyor": "#ffa600", 
             "Chang'e": "#72CF6D", "Chandrayaan": "#8d3ab0", "Other": "gray"
@@ -1148,9 +1147,7 @@ if db_choice == "Lunar Regolith Database":
             group = row[legend_column]
             color = color_map.get(group, "gray")
 
-            # --- Handle X-axis positioning ---
             if x_axis_is_numeric:
-                # X-axis is numeric: use actual range values
                 x_min_col = f"min_{x_axis}"
                 x_max_col = f"max_{x_axis}"
                 x_min = row[x_min_col]
@@ -1161,7 +1158,6 @@ if db_choice == "Lunar Regolith Database":
                 
                 x_display = f"{x_min:.2f}–{x_max:.2f}"
             else:
-                # X-axis is categorical: use position with small width
                 x_val = row[x_axis]
                 if pd.isna(x_val) or x_val not in x_positions:
                     continue
@@ -1534,8 +1530,9 @@ if db_choice == "Lunar Regolith Database":
     st.plotly_chart(fig, width='stretch', height=800, config=config_map)
 
 
-
+#------------------------------------------------------------------------------------------
 ## --------------------------- Lunar Simulants Database Section ---------------------------
+#------------------------------------------------------------------------------------------
 
 elif db_choice == "Lunar Regolith Simulants Database":
 
@@ -1547,10 +1544,22 @@ elif db_choice == "Lunar Regolith Simulants Database":
             simulant_db_df[col] = pd.to_numeric(simulant_db_df[col], errors="coerce")
 
     range_columns = [
-        "Bulk density (g/cm^3)",
+        "Bulk density (g/cm^3)", 
         "Angle of internal friction (degree)",
         "Cohesion (kPa)",
-    ]
+        "Bearing capacity (kPa)",
+        "Static bearing pressure (kPa)",
+        "Normal stress range (kPa)",
+        "Void ratio",
+        "Density of grains (g/cm^3)",
+        "Compressibility Coefficient",
+        "Depth (cm)",
+        "Specific gravity",
+        "Porosity (%)",
+        "Cone penetration resistance gradient (kN/m^2/m)",
+        "Force applied (N)",
+        "Contact area (cm^2)",
+        ]
 
     simulant_db_df["Soil Group"] = simulant_db_df["Type of simulant"].apply(categorize_soil)
 
@@ -1569,10 +1578,23 @@ elif db_choice == "Lunar Regolith Simulants Database":
         st.session_state["test_filter"] = []
         st.session_state["agency_filter"] = []
         st.session_state["developer_filter"] = []
-        st.session_state["year_range"] = (year_min, year_max)
+        st.session_state["testing_environment_filter"] = []
+        st.session_state["year_range"]=(year_min, year_max)
         st.session_state["density_range"] = (round(dens_min, 2), round(dens_max, 2))
-        st.session_state["cohesion_range"] = (round(coh_min, 1), round(coh_max, 1))
-        st.session_state["angle_range"] = (round(ang_min, 1), round(ang_max, 1))
+        st.session_state["cohesion_range"]=(round(coh_min, 2), round(coh_max, 2))
+        st.session_state["angle_range"]=(round(ang_min, 2), round(ang_max, 2))
+        #st.session_state["static_bearing_range"]= ( round(staticbc_min, 2), round(staticbc_max, 2))
+        #st.session_state["sbc_range"] = (round(sbc_min, 1), round(sbc_max, 1))
+        st.session_state["ns_range"] = (round(nf_min, 1), round(nf_max, 1))
+        st.session_state["vr_range"] = (round(vr_min, 2), round(vr_max, 2))
+        st.session_state["dg_range"] = (round(dg_min, 2), round(dg_max, 2))
+        st.session_state["cc_range"] = (round(cc_min, 4), round(cc_max, 4))
+        #st.session_state["depth_range"] = (round(depth_min, 1), round(depth_max, 1))
+        st.session_state["specific_gravity_range"] = (round(sg_min, 2), round(sg_max, 2))
+        st.session_state["por_range"] = (round(por_min, 1), round(por_max, 1))
+        #st.session_state["fa_range"] = (round(fa_min, 1), round(fa_max, 1))
+        #st.session_state["ca_range"] = (round(ca_min, 1), round(ca_max, 1))
+        #st.session_state["Sample ID"] = (round(sample_min, 1), round(sample_max, 1))
         st.session_state["simulant_selected_columns"] = [
             col for col in default_columns if col in simulant_db_df.columns
         ]
@@ -1586,13 +1608,12 @@ elif db_choice == "Lunar Regolith Simulants Database":
                 soil_group_filter = st.multiselect("Select Type of Simulant", ["Mare", "Highland", "Other"], key="soil_group_filter")
                 st.markdown("### Test Type")
                 test_filter = st.multiselect("Select Test Type", simulant_db_df["Test"].dropna().unique(), key="test_filter")
-                st.markdown("### Agency")
-                agency_filter = st.multiselect("Select Agency", ["NASA", "ESA", "JAXA", "KASA", "ISRO", "CNSA", "GISTDA"], key="agency_filter")
                 st.markdown("### Developer")
                 developer_filter = st.multiselect(
                     "Select Developer(s):",
                     options=sorted(simulant_db_df["Developer"].dropna().unique()), key="developer_filter")
-
+                st.markdown("### Testing environment")
+                testing_environment_filter = st.multiselect("Select testing environment", options=["Vacuum", "Air", "Nitrogen"],key = "testing_environment_filter")
 
             # --- Numeric Range Filters ---
             with st.expander("Numeric Range Filters", expanded=False):
@@ -1660,12 +1681,199 @@ elif db_choice == "Lunar Regolith Simulants Database":
                 else:
                     angle_range = None
 
+                #st.markdown("### Bearing Capacity (kPa)")
+                #if "min_Bearing capacity (kPa)" in simulant_db_df.columns:
+                #    sbc_min = float(simulant_db_df["min_Bearing capacity (kPa)"].min(skipna=True))
+                #    sbc_max = float(simulant_db_df["max_Bearing capacity (kPa)"].max(skipna=True))
+    #
+                #    if "sbc_range" not in st.session_state:
+                #        st.session_state["sbc_range"] = (round(sbc_min, 1), round(sbc_max, 1))
+    #
+                #    sbc_range = st.slider(
+                #       "Select Bearing Capacity Range",
+                #       min_value=round(sbc_min, 1),
+                #       max_value=round(sbc_max, 1),
+                #       key="sbc_range"
+                #   )
+                #else:
+                #    sbc_range = None
+    #
+                #st.markdown("### Static Bearing Pressure (kPa)")
+                #if "min_Static bearing pressure (kPa)" in simulant_db_df.columns:
+                #    staticbc_min = float(simulant_db_df["min_Static bearing pressure (kPa)"].min(skipna=True))
+                #    staticbc_max = float(simulant_db_df["max_Static bearing pressure (kPa)"].max(skipna=True))
+    #
+                #    if "static_bearing_range" not in st.session_state:
+                #        st.session_state["static_bearing_range"] = (round(staticbc_min, 1), round(staticbc_max, 1))
+    #
+                #    static_bearing_range = st.slider(
+                #        "Select Static Bearing Pressure Range",
+                #        min_value=round(staticbc_min, 1),
+                #        max_value=round(staticbc_max, 1),
+                #        key="static_bearing_range"
+                #    )
+                #else:
+                #    static_bearing_range = None
+    
+                st.markdown("### Normal Stress (kPa)")
+                if "min_Normal stress range (kPa)" in simulant_db_df.columns:
+                    nf_min = float(simulant_db_df["min_Normal stress range (kPa)"].min(skipna=True))
+                    nf_max = float(simulant_db_df["max_Normal stress range (kPa)"].max(skipna=True))
+    
+                    if "ns_range" not in st.session_state:
+                        st.session_state["ns_range"] = (round(nf_min, 1), round(nf_max, 1))
+    
+                    nf_range = st.slider(
+                       "Select Normal Stress Range",
+                       min_value=round(nf_min, 1),
+                       max_value=round(nf_max, 1),
+                       key="ns_range"
+                   )
+                else:
+                    nf_range = None
+    
+                st.markdown("### Void Ratio")
+                if "min_Void ratio" in simulant_db_df.columns:
+                    vr_min = float(simulant_db_df["min_Void ratio"].min(skipna=True))
+                    vr_max = float(simulant_db_df["max_Void ratio"].max(skipna=True))
+    
+                    if "vr_range" not in st.session_state:
+                        st.session_state["vr_range"] = (round(vr_min, 2), round(vr_max, 2))
+    
+                    vr_range = st.slider(
+                       "Select Void Ratio Range",
+                       min_value=round(vr_min, 2),
+                       max_value=round(vr_max, 2),
+                       key="vr_range"
+                   )
+                else:
+                    vr_range = None
+    
+                st.markdown("### Density of Grains (g/cm³)")
+                if "min_Density of grains (g/cm^3)" in simulant_db_df.columns:
+                    dg_min = float(simulant_db_df["min_Density of grains (g/cm^3)"].min(skipna=True))
+                    dg_max = float(simulant_db_df["max_Density of grains (g/cm^3)"].max(skipna=True))
+    
+                    if "dg_range" not in st.session_state:
+                        st.session_state["dg_range"] = (round(dg_min, 2), round(dg_max, 2))
+    
+                    dg_range = st.slider(
+                       "Select Density of Grains Range",
+                       min_value=round(dg_min, 2),
+                       max_value=round(dg_max, 2),
+                       key="dg_range"
+                   )
+                else:
+                    dg_range = None
+    
+                st.markdown("### Compressibility Coefficient")
+                if "min_Compressibility Coefficient" in simulant_db_df.columns:
+                    cc_min = float(simulant_db_df["min_Compressibility Coefficient"].min(skipna=True))
+                    cc_max = float(simulant_db_df["max_Compressibility Coefficient"].max(skipna=True))
+    
+                    if "cc_range" not in st.session_state:
+                        st.session_state["cc_range"] = (round(cc_min, 4), round(cc_max, 4))
+    
+                    cc_range = st.slider(
+                       "Select Compressibility Coefficient Range",
+                       min_value=round(cc_min, 4),
+                       max_value=round(cc_max, 4),
+                       key="cc_range"
+                   )
+                else:
+                    cc_range = None
+    
+                #st.markdown("### Depth (cm)")
+                #if "min_Depth (cm)" in simulant_db_df.columns:
+                #    depth_min = float(simulant_db_df["min_Depth (cm)"].min(skipna=True))
+                #    depth_max = float(simulant_db_df["max_Depth (cm)"].max(skipna=True))
+    #
+                #    if "depth_range" not in st.session_state:
+                #        st.session_state["depth_range"] = (round(depth_min, 1), round(depth_max, 1))
+    #
+                #    depth_range = st.slider(
+                #       "Select Depth Range",
+                #       min_value=round(depth_min, 1),
+                #       max_value=round(depth_max, 1),
+                #       key="depth_range"
+                #   )
+                #else:
+                #    depth_range = None  
+    
+    
+                st.markdown("### Specific Gravity")
+                if "min_Specific gravity" in simulant_db_df.columns:
+                    sg_min = float(simulant_db_df["min_Specific gravity"].min(skipna=True))
+                    sg_max = float(simulant_db_df["max_Specific gravity"].max(skipna=True))
+    
+                    if "specific_gravity_range" not in st.session_state:
+                        st.session_state["specific_gravity_range"] = (round(sg_min, 2), round(sg_max, 2))
+    
+                    specific_gravity_range = st.slider(
+                       "Select Specific Gravity Range",
+                       min_value=round(sg_min, 2),
+                       max_value=round(sg_max, 2),
+                       key="specific_gravity_range"
+                   )
+    
+                st.markdown("### Porosity (%)")
+                if "min_Porosity (%)" in simulant_db_df.columns:
+                    por_min = float(simulant_db_df["min_Porosity (%)"].min(skipna=True))
+                    por_max = float(simulant_db_df["max_Porosity (%)"].max(skipna=True))
+    
+                    if "por_range" not in st.session_state:
+                        st.session_state["por_range"] = (round(por_min, 1), round(por_max, 1))
+    
+                    por_range = st.slider(
+                       "Select Porosity Range",
+                       min_value=round(por_min, 1),
+                       max_value=round(por_max, 1),
+                       key="por_range"
+                   )
+                else:
+                    por_range = None
+    
+                #st.markdown("### Force applied (N)")
+                #if "min_Force applied (N)" in simulant_db_df.columns:
+                #    fa_min = float(simulant_db_df["min_Force applied (N)"].min(skipna=True))
+                #    fa_max = float(simulant_db_df["max_Force applied (N)"].max(skipna=True))
+    #
+                #    if "fa_range" not in st.session_state:
+                #        st.session_state["fa_range"] = (round(fa_min, 1), round(fa_max, 1))
+    #
+                #    fa_range = st.slider(
+                #       "Select Force applied Range",
+                #       min_value=round(fa_min, 1),
+                #       max_value=round(fa_max, 1),
+                #       key="fa_range"
+                #   )
+                #else:
+                #    fa_range = None
+    #
+                #st.markdown("### Contact area")
+                #if "min_Contact area (cm^2)" in simulant_db_df.columns:
+                #    ca_min = float(simulant_db_df["min_Contact area (cm^2)"].min(skipna=True))
+                #    ca_max = float(simulant_db_df["max_Contact area (cm^2)"].max(skipna=True))
+    #
+                #    if "ca_range" not in st.session_state:
+                #        st.session_state["ca_range"] = (round(ca_min, 1), round(ca_max, 1))
+    #
+                #    ca_range = st.slider(
+                #       "Select Contact area Range",
+                #       min_value=round(ca_min, 1),
+                #       max_value=round(ca_max, 1),
+                #       key="ca_range"
+                #   )
+                #else:
+                #    ca_range = None
+    
+
             with st.expander("Select Table Columns", expanded=False):
                 # --- Column Selection ---
                 st.divider()
                 st.header("Display Options")
                 all_columns = simulant_db_df.columns.tolist()
-                default_columns = ["Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Source","Year of publication","DOI / URL"]
+                default_columns = ["Developer", "Simulant", "Year", "Test", "Type of simulant", "Testing environment", "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Normal stress range (kPa)", "Void ratio",  "Compressibility Coefficient", "Specific gravity", "Porosity (%)", "Source","Year of publication","DOI / URL"]
                 def select_all_simulant_columns():
                     st.session_state["simulant_selected_columns"] = all_columns
 
@@ -1679,7 +1887,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
                         "Select All Parameters", 
                         on_click=select_all_simulant_columns, 
                         use_container_width=True, 
-                        key="btn_select_all_simulants"
+                        #key="btn_select_all_simulants"
                     )
 
                 with col_clear_selection:
@@ -1687,7 +1895,7 @@ elif db_choice == "Lunar Regolith Simulants Database":
                         "Clear Selection", 
                         on_click=clear_simulant_columns, 
                         use_container_width=True, 
-                        key="btn_clear_all_simulants"
+                        #key="btn_clear_all_simulants"
                 )
 
                 if "simulant_selected_columns" not in st.session_state:
@@ -1703,14 +1911,35 @@ elif db_choice == "Lunar Regolith Simulants Database":
             st.button("Clear all filters", use_container_width=True, on_click=clear_all_filters)
 
     filtered_db_df = simulant_db_df.copy()
+    numeric_cols = [
+    "Year of publication",
+    "Bulk density (g/cm^3)",
+    "Angle of internal friction (degree)",
+    "Cohesion (kPa)",
+    "Bearing capacity (kPa)",
+    "Static bearing pressure (kPa)",
+    "Normal stress range (kPa)",
+    "Void ratio",
+    "Density of grains (g/cm^3)",
+    "Compressibility Coefficient",
+    "Depth (cm)",
+    "Specific gravity",
+    "Porosity (%)",
+    "Force applied (N)",
+    "Contact area (cm^2)", 
+    "Year"
+    ]
+
+
     if soil_group_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Soil Group"].isin(soil_group_filter)]
     if test_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Test"].isin(test_filter)]
-    if agency_filter:
-        filtered_db_df = filtered_db_df[filtered_db_df["Agency"].isin(agency_filter)]
     if developer_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Developer"].isin(developer_filter)]
+    if testing_environment_filter: 
+        filtered_db_df = filtered_db_df[filtered_db_df["Testing environment"].isin(testing_environment_filter)]
+
     if year_range and isinstance(year_range, tuple) and (year_range != (year_min, year_max)):
         filtered_db_df = filtered_db_df[
             (filtered_db_df["Year of publication"] >= year_range[0]) &
@@ -1739,18 +1968,104 @@ elif db_choice == "Lunar Regolith Simulants Database":
             "min_Angle of internal friction (degree)", "max_Angle of internal friction (degree)",
             angle_range[0], angle_range[1]
         )
+
+    #if sbc_range and (sbc_range != (round(sbc_min, 2), round(sbc_max, 2))):
+    #        filtered_db_df = filter_numeric_range(
+    #            filtered_db_df,
+    #            "min_Bearing capacity (kPa)", "max_Bearing capacity (kPa)",
+    #            sbc_range[0], sbc_range[1]
+    #        )
+    #
+    #if static_bearing_range and (static_bearing_range != (round(staticbc_min, 2), round(staticbc_max, 2))):
+    #    filtered_db_df = filter_numeric_range(
+    #        filtered_db_df,
+    #        "min_Static bearing pressure (kPa)", "max_Static bearing pressure (kPa)",
+    #        static_bearing_range[0], static_bearing_range[1]
+    #    )
+
+    if nf_range and (nf_range != (round(nf_min, 2), round(nf_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Normal stress range (kPa)", "max_Normal stress range (kPa)",
+            nf_range[0], nf_range[1]
+        )
+
+    if vr_range and (vr_range != (round(vr_min, 2), round(vr_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Void ratio", "max_Void ratio",
+            vr_range[0], vr_range[1]
+        )
     
-    # --- Prepare display dataframe with ranges as original strings ---
+    if dg_range and (dg_range != (round(dg_min, 2), round(dg_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Density of grains (g/cm^3)", "max_Density of grains (g/cm^3)",
+            dg_range[0], dg_range[1]
+        )
+
+    if cc_range and (cc_range != (round(cc_min, 4), round(cc_max, 4))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Compressibility Coefficient", "max_Compressibility Coefficient",
+            cc_range[0], cc_range[1]
+        )
+    
+    #if depth_range and (depth_range != (round(depth_min, 2), round(depth_max, 2))):
+    #    filtered_db_df = filter_numeric_range(
+    #        filtered_db_df,
+    #        "min_Depth (cm)", "max_Depth (cm)",
+    #        depth_range[0], depth_range[1]
+    #    )
+
+    if specific_gravity_range and (specific_gravity_range != (round(sg_min, 2), round(sg_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Specific gravity", "max_Specific gravity",
+            specific_gravity_range[0], specific_gravity_range[1]
+        )
+
+    if por_range and (por_range != (round(por_min, 2), round(por_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Porosity (%)", "max_Porosity (%)",
+            por_range[0], por_range[1]
+        )
+
+    #if fa_range and (fa_range != (round(fa_min, 2), round(fa_max, 2))):
+    #    filtered_db_df = filter_numeric_range(
+    #        filtered_db_df,
+    #        "min_Force applied (N)", "max_Force applied (N)",
+    #        fa_range[0], fa_range[1]
+    #    )
+#
+    #if ca_range and (ca_range != (round(ca_min, 2), round(ca_max, 2))):
+    #    filtered_db_df = filter_numeric_range(
+    #        filtered_db_df,
+    #        "min_Contact area (cm^2)", "max_Contact area (cm^2)",
+    #        ca_range[0], ca_range[1]
+    #    )
+
     display_df = filtered_db_df.copy()
 
     numeric_range_cols = [
-    "Bulk density (g/cm^3)",
-    "Angle of internal friction (degree)",
-    "Cohesion (kPa)",
+        "Bulk density (g/cm^3)",
+        "Angle of internal friction (degree)",
+        "Cohesion (kPa)",
+        "Bearing capacity (kPa)",
+        "Static bearing pressure (kPa)",
+        "Normal stress range (kPa)",
+        "Void ratio",
+        "Density of grains (g/cm^3)",
+        "Compressibility Coefficient",
+        "Depth (cm)",
+        "Specific gravity",
+        "Porosity (%)",
+        "Force applied (N)", 
+        "Contact area (cm^2)", 
     ]
 
     for col in range_columns:
-        # Keep _min, _max, _avg numeric, only replace the original column for display
         if col in display_df.columns:
             display_df[col] = simulant_db_df.loc[display_df.index, col]
 
@@ -1765,23 +2080,26 @@ elif db_choice == "Lunar Regolith Simulants Database":
     # Plotting Section & Display
     st.subheader("Plot Numerical Data")
     x_axis = st.selectbox("X-axis (categorical & numeric)", [
-        "Developer", "Agency", "Simulant", "Year", "Test", "Type of simulant",  
-        "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)"
+        "Developer", "Simulant", "Year", "Test", "Type of simulant",  
+        "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)",
+        "Normal stress range (kPa)", 
+        "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Specific gravity", "Porosity (%)", 
+        "Year of publication"
     ])
     y_axis = st.selectbox("Y-axis (numeric)", [
-        "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)"
+        "Bulk density (g/cm^3)", "Angle of internal friction (degree)", "Cohesion (kPa)", "Normal stress range (kPa)", 
+        "Void ratio", "Density of grains (g/cm^3)", "Compressibility Coefficient", "Specific gravity", "Porosity (%)"
     ])
 
     plot_mode = st.radio("Select value type to plot", ["Range", "Average", "Minimum", "Maximum"], horizontal=True)
 
-    legend_column = st.selectbox("Select Legend", options=[
-    "Agency", 
+    legend_column = st.selectbox("Select Legend", options=[ 
     "Type of simulant", 
     "Test", 
+    "Testing environment"
     ], index=0)
        
 
-    # Apply to lunar dataset once
     for col in range_columns:
         if col in simulant_db_df.columns:
             simulant_db_df[[f"min_{col}", f"max_{col}"]] = simulant_db_df[col].apply(
@@ -1804,11 +2122,11 @@ elif db_choice == "Lunar Regolith Simulants Database":
         filtered_plot_df = filtered_plot_df[filtered_plot_df["Test"].isin(test_filter)]
     if soil_group_filter:
         filtered_plot_df = filtered_plot_df[filtered_plot_df["Type of simulant"].isin(soil_group_filter)]
-    if agency_filter:
-        filtered_plot_df = filtered_plot_df[filtered_plot_df["Agency"].isin(agency_filter)]
     if developer_filter:
         filtered_plot_df = filtered_plot_df[filtered_plot_df["Developer"].isin(developer_filter)]
-
+    if testing_environment_filter: 
+            filtered_plot_df = filtered_plot_df[filtered_plot_df["Testing environment"].isin(testing_environment_filter)]
+    
 
     
     if year_range and isinstance(year_range, tuple) and (year_range != (year_min, year_max)):
@@ -1839,22 +2157,91 @@ elif db_choice == "Lunar Regolith Simulants Database":
             angle_range[0], angle_range[1]
         )
 
+    #if sbc_range and (sbc_range != (round(sbc_min, 2), round(sbc_max, 2))):
+    #    filtered_plot_df = filter_numeric_range(
+    #        filtered_plot_df,
+    #        "min_Bearing capacity (kPa)", "max_Bearing capacity (kPa)",
+    #        sbc_range[0], sbc_range[1]
+    #    )
+#
+    #if static_bearing_range and (static_bearing_range != (round(staticbc_min, 2), round(staticbc_max, 2))):
+    #    filtered_plot_df = filter_numeric_range(
+    #        filtered_plot_df,
+    #        "min_Static bearing pressure (kPa)", "max_Static bearing pressure (kPa)",
+    #        static_bearing_range[0], static_bearing_range[1]
+    #    )
 
-    # Define colors and markers
+    if nf_range and (nf_range != (round(nf_min, 2), round(nf_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Normal stress range (kPa)", "max_Normal stress range (kPa)",
+            nf_range[0], nf_range[1]
+        )
+
+    if vr_range and (vr_range != (round(vr_min, 2), round(vr_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Void ratio", "max_Void ratio",
+            vr_range[0], vr_range[1]
+        )   
+
+    if dg_range and (dg_range != (round(dg_min, 2), round(dg_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Density of grains (g/cm^3)", "max_Density of grains (g/cm^3)",
+            dg_range[0], dg_range[1]
+        )
+
+    if cc_range and (cc_range != (round(cc_min, 4), round(cc_max, 4))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Compressibility Coefficient", "max_Compressibility Coefficient",
+            cc_range[0], cc_range[1]
+        )
+
+    #if depth_range and (depth_range != (round(depth_min, 2), round(depth_max, 2))):
+    #    filtered_plot_df = filter_numeric_range(
+    #        filtered_plot_df,
+    #        "min_Depth (cm)", "max_Depth (cm)",
+    #        depth_range[0], depth_range[1]
+    #    )
+
+    if specific_gravity_range and (specific_gravity_range != (round(sg_min, 2), round(sg_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Specific gravity", "max_Specific gravity",
+            specific_gravity_range[0], specific_gravity_range[1]
+        )
+
+    if por_range and (por_range != (round(por_min, 2), round(por_max, 2))):
+        filtered_plot_df = filter_numeric_range(
+            filtered_plot_df,
+            "min_Porosity (%)", "max_Porosity (%)",
+            por_range[0], por_range[1]
+        )
+
+    #if fa_range and (fa_range != (round(fa_min, 2), round(fa_max, 2))):
+    #    filtered_plot_df = filter_numeric_range(
+    #        filtered_plot_df,
+    #        "min_Force applied (N)", "max_Force applied (N)",
+    #        fa_range[0], fa_range[1]
+    #    )
+#
+    #if ca_range and (ca_range != (round(ca_min, 2), round(ca_max, 2))):
+    #    filtered_plot_df = filter_numeric_range(
+    #        filtered_plot_df,
+    #        "min_Contact area (cm^2)", "max_Contact area (cm^2)",
+    #        ca_range[0], ca_range[1]
+    #    )
+
+    
 
     def get_plot_maps(column):
-    # Base colors/shapes for mission group
-
         if column == "Type of simulant":
             return {"Mare": "#1f77b4", "Highland": "#ff7f0e", "Pyroclastic deposit": "#2ca02c", "Other": "gray"}, {"Mare": "circle", "Highland": "square", "Pyroclastic deposit": "diamond", "Other": "cross"}
-
-        if column == "Agency":
-            return {"ESA": "#1f77b4", "NASA": "#ff7f0e", "CNSA": "#2ca02c", "KASA": "#9467bd", "ISRO": "#8c564b", "JAXA": "#d62728", "GISTDA": "#e377c2", "Other": "gray" }, {"ESA": "circle", "NASA": "square", "CNSA": "diamond", "KASA": "triangle-up", "ISRO": "triangle-down", "JAXA": "star", "GISTDA": "hexagon", "Other": "x"}
         if column == "Test":
             return {"Direct Shear": "#1f77b4", "Triaxial compression": "#ff7f0e", "Other": "#2ca02c"}, {"Direct Shear": "circle", "Triaxial compression": "square", "Other": "diamond"}
         
-        return {"Mare": "#1f77b4", "Highland": "#ff7f0e", "Pyroclastic deposit": "#2ca02c", "Other": "gray"}, {"Mare": "circle", "Highland": "square", "Pyroclastic deposit": "diamond", "Other": "cross"}
-
     color_map, marker_shapes = get_plot_maps(legend_column)
 
     # --- Determine Y columns ---
@@ -1868,7 +2255,6 @@ elif db_choice == "Lunar Regolith Simulants Database":
     }
     y_col_name = y_col_map[plot_mode]
 
-    # Check if x-axis is numeric (one of the measurement columns)
     x_axis_is_numeric = x_axis in range_columns
 
     # Remove rows with missing Y data
@@ -1887,7 +2273,6 @@ elif db_choice == "Lunar Regolith Simulants Database":
     if plot_mode == "Range":
         fig = go.Figure()
 
-        # For categorical x-axis, create position mapping
         if not x_axis_is_numeric:
             x_categories = filtered_plot_df[x_axis].dropna().unique()
             x_positions = {val: idx for idx, val in enumerate(x_categories)}
@@ -1907,7 +2292,6 @@ elif db_choice == "Lunar Regolith Simulants Database":
 
             # --- Handle X-axis positioning ---
             if x_axis_is_numeric:
-                # X-axis is numeric: use actual range values
                 x_min_col = f"min_{x_axis}"
                 x_max_col = f"max_{x_axis}"
                 x_min = row[x_min_col]
@@ -1918,7 +2302,6 @@ elif db_choice == "Lunar Regolith Simulants Database":
                 
                 x_display = f"{x_min:.2f}–{x_max:.2f}"
             else:
-                # X-axis is categorical: use position with small width
                 x_val = row[x_axis]
                 if pd.isna(x_val) or x_val not in x_positions:
                     continue
@@ -2045,8 +2428,6 @@ elif db_choice == "Lunar Samples Database":
     # --- Columns that contain ranges ---
     range_columns = [ "depth (cm)" ]
 
-    samples_PSD_db_df.columns = samples_PSD_db_df.columns.str.strip()
-
     # --- Numeric columns ---
     for col in range_columns:
         if col in samples_PSD_db_df.columns:
@@ -2134,47 +2515,46 @@ elif db_choice == "Lunar Samples Database":
                 if "Sample" in filtered_samples_df.columns:
                     filtered_samples_df = filtered_samples_df[filtered_samples_df["Sample"].isin(remaining_samples)]
 
-        with st.expander("Select Table Columns", expanded=False):
-            # --- Column Selection ---
-            st.divider()
-            st.header("Display Options")
-            all_columns = samples_PSD_db_df.columns.tolist()
-            default_columns = ["Mission", "Sample", "Subsample", "depth (cm)", "Sieve size (µm)", "weight %", "D50 (µm)", "Source"]
-            def select_all_psd_summary_columns():
-                st.session_state["psd_summary_selected_columns"] = all_columns   
-            def clear_psd_summary_columns():
-                st.session_state["psd_summary_selected_columns"] = default_columns  
-
-            col_select_all, col_clear_selection = st.columns([1, 1])  
-            with col_select_all:
-                st.button(
-                    "Select All Parameters", 
-                    on_click=select_all_psd_summary_columns, 
-                    use_container_width=True, 
-                    key="btn_psd_sum_all")
-
-            with col_clear_selection:
-                 st.button(
-                    "Clear Selection", 
-                    on_click=clear_psd_summary_columns, 
-                    use_container_width=True, 
-                    key="btn_psd_sum_clear")
-
-            if "selected_columns" not in st.session_state:
-                st.session_state["selected_columns"] = [col for col in default_columns if col in all_columns]
-
-            selected_columns = st.multiselect(
-                "Select columns to display:",
-                options=all_columns,
-                key = "psd_summary_selected_columns"
-            )
+        #with st.expander("Select Table Columns", expanded=False):
+        #    # --- Column Selection ---
+        #    st.divider()
+        #    st.header("Display Options")
+        #    all_columns = samples_PSD_db_df.columns.tolist()
+        #    default_columns = ["Mission", "Sample", "Subsample", "depth (cm)", "Sieve size (µm)", "weight %", "D50 (µm)", "Source"]
+        #    def select_all_psd_summary_columns():
+        #        st.session_state["psd_summary_selected_columns"] = all_columns   
+        #    def clear_psd_summary_columns():
+        #        st.session_state["psd_summary_selected_columns"] = default_columns  
+#
+        #    col_select_all, col_clear_selection = st.columns([1, 1])  
+        #    with col_select_all:
+        #        st.button(
+        #            "Select All Parameters", 
+        #            on_click=select_all_psd_summary_columns, 
+        #            use_container_width=True, 
+        #            key="btn_psd_sum_all")
+#
+        #    with col_clear_selection:
+        #         st.button(
+        #            "Clear Selection", 
+        #            on_click=clear_psd_summary_columns, 
+        #            use_container_width=True, 
+        #            key="btn_psd_sum_clear")
+#
+        #    if "selected_columns" not in st.session_state:
+        #        st.session_state["selected_columns"] = [col for col in default_columns if col in all_columns]
+#
+        #    selected_columns = st.multiselect(
+        #        "Select columns to display:",
+        #        options=all_columns,
+        #        key = "psd_summary_selected_columns"
+        #    )
 
     st.subheader("Lunar Samples")
     st.dataframe(filtered_samples_df)
 
     st.subheader("Particle Size Distribution Data")
 
-    # 1. Depth Display Toggle for the Summary Table
     depth_display_mode = st.radio(
         "Select Depth format for Summary Table:", 
         ["Average Depth", "Minimum Depth", "Maximum Depth", "Original Range"], 
@@ -2216,12 +2596,19 @@ elif db_choice == "Lunar Samples Database":
             
             col_select_all, col_clear_selection = st.columns([1, 1])  
             with col_select_all:
-                st.button("Select All Parameters", on_click=select_all_psd_detailed_columns, use_container_width=True, key="btn_psd_det_all")
-            with col_clear_selection:
-                 st.button("Clear Selection", on_click=clear_psd_detailed_columns, use_container_width=True, key="btn_psd_det_clear")
+                st.button("Select All Parameters", 
+                on_click=select_all_psd_detailed_columns, 
+                use_container_width=True, 
+                )
 
-            if "selected_columns" not in st.session_state:
-                st.session_state["selected_columns"] = [col for col in default_columns if col in all_columns]
+            with col_clear_selection:
+                 st.button("Clear Selection", 
+                 on_click=clear_psd_detailed_columns, 
+                 use_container_width=True, 
+                 )
+
+            if "psd_detailed_selected_columns" not in st.session_state:
+                st.session_state["psd_detailed_selected_columns"] = [col for col in default_columns if col in all_columns]
 
             selected_columns = st.multiselect(
                 "Select columns to display:",
@@ -2229,8 +2616,9 @@ elif db_choice == "Lunar Samples Database":
                 key = "psd_detailed_selected_columns"
             )
 
-        # Prepare and display the detailed dataframe
+        
         display_psd_df = filtered_psd_df.copy()
+
         for col in range_columns:
             if col in display_psd_df.columns:
                 display_psd_df[col] = samples_PSD_db_df.loc[display_psd_df.index, col]
@@ -2416,7 +2804,7 @@ elif db_choice == "Detailed Mission Pages":
     if not MISSION_DIR.exists():
         st.error(f"Could not find mission directory: {MISSION_DIR}")
     else:
-        # 1. Categorize missions into groups
+
         mission_groups = {
             "Apollo": {},
             "Luna": {},
@@ -2430,11 +2818,10 @@ elif db_choice == "Detailed Mission Pages":
             if path.name.startswith("__"): continue
             
             raw_name = path.stem.lower()
-            mission_name = pretty_mission_name(raw_name) # Assuming this helper exists
+            mission_name = pretty_mission_name(raw_name)
             
             if mission_name in ["Mission Page Template", "Mission"]: continue
 
-            # Sort into the correct dictionary key
             if "apollo" in raw_name:
                 mission_groups["Apollo"][mission_name] = path
             elif "luna" in raw_name:
@@ -2448,10 +2835,8 @@ elif db_choice == "Detailed Mission Pages":
             else:
                 mission_groups["Other"][mission_name] = path
 
-        # 2. Main Page Selection UI
         st.write("### Explore Mission Data")
         
-        # Create two columns for a clean look
         col1, col2 = st.columns(2)
         
         with col1:
@@ -2461,7 +2846,7 @@ elif db_choice == "Detailed Mission Pages":
             )
 
         with col2:
-            # Filter specific missions based on the group choice
+           
             specific_missions = mission_groups[group_choice]
             mission_choice = st.selectbox(
                 "Select a Specific Mission:",
@@ -2469,7 +2854,7 @@ elif db_choice == "Detailed Mission Pages":
                 format_func=lambda x: f"Select {group_choice} mission..." if x == "" else x
             )
 
-        # 3. Load and display selected mission page
+
         if mission_choice:
             st.divider()
             mission_file = specific_missions[mission_choice]
@@ -2558,17 +2943,20 @@ elif db_choice == "Combined Data":
 
     # --- Columns that may contain ranges ---
     range_columns = [
-        "Bulk density (g/cm^3)",
-        "Angle of internal friction (degree)",
-        "Cohesion (kPa)",
-        "Bearing capacity (kPa)", 
-        "Normal stress range (kPa)", 
-        "Void ratio", 
-        "Density of grains (g/cm^3)", 
-        "Compressibility Coefficient", 
-        "Depth (cm)", 
-        "Porosity (%)", 
-        "Force applied (N)"
+    "Bulk density (g/cm^3)",
+    "Angle of internal friction (degree)",
+    "Cohesion (kPa)",
+    "Bearing capacity (kPa)",
+    "Static bearing pressure (kPa)",
+    "Normal stress range (kPa)",
+    "Void ratio",
+    "Density of grains (g/cm^3)",
+    "Compressibility Coefficient",
+    "Depth (cm)",
+    "Specific gravity",
+    "Porosity (%)",
+    "Force applied (N)",
+    "Contact area (cm^2)", 
     ]
 
     # --- Numeric columns ---
@@ -2591,7 +2979,7 @@ elif db_choice == "Combined Data":
         st.session_state["mission_type_filter"] = []
         st.session_state["mission_group_filter"] = []
         st.session_state["test_location_filter"] = []
-        st.session_state["agency_filter"] = []
+        st.session_state["testing_environment_filter"] = []
         st.session_state["developer_filter"] = []
         st.session_state["year_range"] = (year_min, year_max)
         st.session_state["density_range"] = (round(dens_min, 2), round(dens_max, 2))
@@ -2603,8 +2991,11 @@ elif db_choice == "Combined Data":
         st.session_state["dg_range"] = (round(dg_min, 2), round(dg_max, 2))
         st.session_state["cc_range"] = (round(cc_min, 4), round(cc_max, 4))
         st.session_state["depth_range"] = (round(depth_min, 1), round(depth_max, 1))
+        st.session_state["specific_gravity_range"] = (round(sg_min, 2), round(sg_max, 2))
         st.session_state["por_range"] = (round(por_min, 1), round(por_max, 1))
         st.session_state["fa_range"] = (round(fa_min, 1), round(fa_max, 1))
+        st.session_state["ca_range"] = (round(ca_min, 1), round(ca_max, 1))
+        st.session_state["Sample ID"] = (round(sample_min, 1), round(sample_max, 1))
         st.session_state["selected_columns"] = [
             col for col in default_columns if col in lunar_db_df.columns
         ]
@@ -2618,8 +3009,6 @@ elif db_choice == "Combined Data":
             #soil_group_filter = st.multiselect("Select Terrain type", options=sorted(all_db_df["Soil Group"].dropna().unique()), key="soil_group_filter")
             st.markdown("### Test Type")
             test_filter = st.multiselect("Select Test Type", options=sorted(all_db_df["Test"].dropna().unique()), key="test_filter")
-            st.markdown("### Agency")
-            agency_filter = st.multiselect("Select Agency", ["NASA", "ESA", "JAXA", "KASA", "ISRO", "CNSA", "GISTDA"], key="agency_filter")
             st.markdown("### Developer")
             developer_filter = st.multiselect("Select Developer(s):", options=sorted(all_db_df["Developer"].dropna().unique()), key="developer_filter")
             st.markdown("### Type of Mission")
@@ -2641,6 +3030,13 @@ elif db_choice == "Combined Data":
                 "Select Test Location", 
                 options=["In-Situ", "On Earth", "Remote", "Other"],
                 key="test_location_filter"
+            )
+
+            st.markdown("### Testing environment")
+            testing_environment_filter = st.multiselect(
+                "Select testing environment", 
+                options=["Vacuum", "Air", "Nitrogen"],
+                key = "testing_environment_filter"
             )
 
             # --- Numeric Range Filters ---
@@ -2735,6 +3131,23 @@ elif db_choice == "Combined Data":
             else:
                 sbc_range = None
 
+            st.markdown("### Static Bearing Pressure (kPa)")
+            if "min_Static bearing pressure (kPa)" in all_db_df.columns:
+                staticbc_min = float(all_db_df["min_Static bearing pressure (kPa)"].min(skipna=True))
+                staticbc_max = float(all_db_df["max_Static bearing pressure (kPa)"].max(skipna=True))
+
+                if "static_bearing_range" not in st.session_state:
+                    st.session_state["static_bearing_range"] = (round(staticbc_min, 1), round(staticbc_max, 1))
+
+                static_bearing_range = st.slider(
+                    "Select Static Bearing Pressure Range",
+                    min_value=round(staticbc_min, 1),
+                    max_value=round(staticbc_max, 1),
+                    key="static_bearing_range"
+                )
+            else:
+                static_bearing_range = None
+
             st.markdown("### Normal Stress (kPa)")
             if "min_Normal stress range (kPa)" in all_db_df.columns:
                 nf_min = float(all_db_df["min_Normal stress range (kPa)"].min(skipna=True))
@@ -2820,6 +3233,21 @@ elif db_choice == "Combined Data":
             else:
                 depth_range = None  
 
+            st.markdown("### Specific Gravity")
+            if "min_Specific gravity" in all_db_df.columns:
+                sg_min = float(all_db_df["min_Specific gravity"].min(skipna=True))
+                sg_max = float(all_db_df["max_Specific gravity"].max(skipna=True))
+
+                if "specific_gravity_range" not in st.session_state:
+                    st.session_state["specific_gravity_range"] = (round(sg_min, 2), round(sg_max, 2))
+
+                specific_gravity_range = st.slider(
+                   "Select Specific Gravity Range",
+                   min_value=round(sg_min, 2),
+                   max_value=round(sg_max, 2),
+                   key="specific_gravity_range"
+               )
+
             st.markdown("### Porosity (%)")
             if "min_Porosity (%)" in all_db_df.columns:
                 por_min = float(all_db_df["min_Porosity (%)"].min(skipna=True))
@@ -2853,24 +3281,61 @@ elif db_choice == "Combined Data":
                )
             else:
                 fa_range = None
+
+
+            st.markdown("### Contact area")
+            if "min_Contact area (cm^2)" in all_db_df.columns:
+                ca_min = float(all_db_df["min_Contact area (cm^2)"].min(skipna=True))
+                ca_max = float(all_db_df["max_Contact area (cm^2)"].max(skipna=True))
+
+                if "ca_range" not in st.session_state:
+                    st.session_state["ca_range"] = (round(ca_min, 1), round(ca_max, 1))
+
+                ca_range = st.slider(
+                   "Select Contact area Range",
+                   min_value=round(ca_min, 1),
+                   max_value=round(ca_max, 1),
+                   key="ca_range"
+               )
+            else:
+                ca_range = None
+
+            st.markdown("### Sample ID")
+            if "min_Sample ID" in all_db_df.columns:
+                sample_min = float(all_db_df["min_Sample ID"].min(skipna=True))
+                sample_max = float(all_db_df["max_Sample ID"].max(skipna=True))
+
+                if "Sample ID" not in st.session_state:
+                    st.session_state["Sample ID"] = (round(sample_min, 1), round(sample_max, 1))
+
+                sample_range = st.slider(
+                   "Select Sample ID Range",
+                   min_value=round(sample_min, 1),
+                   max_value=round(sample_max, 1),
+                   key="Sample ID"
+               )
+            else:
+                sample_range = None
         
         with st.expander("Select Table Columns", expanded=False):
             st.divider()
             st.header("Display Options")
             all_columns = all_db_df.columns.tolist()
             default_columns = [
-        "Mission / Simulant", "Developer", "Agency", "Moon Location", "Terrain", "Year","Type of mission","Test", "Test location", 
+        "Mission / Simulant", "Developer", "Moon Location", "Terrain", "Year","Type of mission","Test", "Test location", "Testing environment",
         "Bulk density (g/cm^3)", 
         "Angle of internal friction (degree)", 
         "Cohesion (kPa)", 
-        "Bearing capacity (kPa)", "Depth (cm)", 
+        "Bearing capacity (kPa)", "Depth (cm)", "Sample ID",
+        "Static bearing pressure (kPa)", "Normal stress range (kPa)", "Void ratio", "Density of grains (g/cm^3)", 
+        "Compressibility Coefficient", "Specific gravity", "Porosity (%)", "Cone penetration resistance (kPa)", "Force applied (N)", "Contact area (cm^2)",
         "Source","Year of publication", "DOI / URL", "Comments"]         
 
             def select_all_columns():
-                st.session_state["selected_columns"] = all_columns
+                st.session_state["combined_selected_columns"] = all_columns
 
             def clear_columns():
-                st.session_state["selected_columns"] = default_columns
+                st.session_state["combined_selected_columns"] = default_columns
 
             col_select_all, col_clear_selection = st.columns([1, 1])
 
@@ -2888,20 +3353,16 @@ elif db_choice == "Combined Data":
                     use_container_width=True
                 )
 
-            if "selected_columns" not in st.session_state:
-                st.session_state["selected_columns"] = [col for col in default_columns if col in all_columns]
+            if "combined_selected_columns" not in st.session_state:
+                st.session_state["combined_selected_columns"] = [col for col in default_columns if col in all_columns]
 
             selected_columns = st.multiselect(
                 "Select columns to display:",
                 options=all_columns,
-                key="selected_columns"
+                key="combined_selected_columns"
             )
 
         st.button("Clear all filters", use_container_width=True, on_click=clear_all_filters)
-
-
-
-
 
     # --- Apply Filters ---
     filtered_db_df = all_db_df.copy()
@@ -2911,13 +3372,17 @@ elif db_choice == "Combined Data":
     "Angle of internal friction (degree)",
     "Cohesion (kPa)",
     "Bearing capacity (kPa)",
+    "Static bearing pressure (kPa)",
     "Normal stress range (kPa)",
     "Void ratio",
     "Density of grains (g/cm^3)",
     "Compressibility Coefficient",
     "Depth (cm)",
+    "Specific gravity",
     "Porosity (%)",
     "Force applied (N)",
+    "Contact area (cm^2)",
+    "Sample ID", 
     "Year"
     ]
 
@@ -2931,9 +3396,6 @@ elif db_choice == "Combined Data":
 
     if soil_group_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Terrain"].isin(soil_group_filter)]
-
-    if agency_filter:
-        filtered_db_df = filtered_db_df[filtered_db_df["Agency"].isin(agency_filter)]
 
     if developer_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Developer"].isin(developer_filter)]
@@ -2954,7 +3416,10 @@ elif db_choice == "Combined Data":
     if test_location_filter:
         filtered_db_df = filtered_db_df[filtered_db_df["Test location"].isin(test_location_filter)]
 
-    # Year of publication filter (only if slider active)
+    if testing_environment_filter: 
+        filtered_db_df = filtered_db_df[filtered_db_df["Testing environment"].isin(testing_environment_filter)]
+
+    # Year of publication filter
     if year_range and isinstance(year_range, tuple) and (year_range != (year_min, year_max)):
         filtered_db_df = filtered_db_df[
             (filtered_db_df["Year of publication"] >= year_range[0]) &
@@ -2998,6 +3463,13 @@ elif db_choice == "Combined Data":
             sbc_range[0], sbc_range[1]
         )
 
+    if static_bearing_range and (static_bearing_range != (round(staticbc_min, 2), round(staticbc_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Static bearing pressure (kPa)", "max_Static bearing pressure (kPa)",
+            static_bearing_range[0], static_bearing_range[1]
+        )
+
     if nf_range and (nf_range != (round(nf_min, 2), round(nf_max, 2))):
         filtered_db_df = filter_numeric_range(
             filtered_db_df,
@@ -3033,6 +3505,13 @@ elif db_choice == "Combined Data":
             depth_range[0], depth_range[1]
         )
 
+    if specific_gravity_range and (specific_gravity_range != (round(sg_min, 2), round(sg_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Specific gravity", "max_Specific gravity",
+            specific_gravity_range[0], specific_gravity_range[1]
+        )
+
     if por_range and (por_range != (round(por_min, 2), round(por_max, 2))):
         filtered_db_df = filter_numeric_range(
             filtered_db_df,
@@ -3046,6 +3525,20 @@ elif db_choice == "Combined Data":
             "min_Force applied (N)", "max_Force applied (N)",
             fa_range[0], fa_range[1]
         )
+
+    if ca_range and (ca_range != (round(ca_min, 2), round(ca_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Contact area (cm^2)", "max_Contact area (cm^2)",
+            ca_range[0], ca_range[1]
+        )
+
+    if sample_range and (sample_range != (round(sample_min, 2), round(sample_max, 2))):
+        filtered_db_df = filter_numeric_range(
+            filtered_db_df,
+            "min_Sample ID", "max_Sample ID",
+            sample_range[0], sample_range[1]
+        )
     
     # --- Prepare display dataframe with ranges as original strings ---
     display_df = filtered_db_df.copy()
@@ -3056,17 +3549,20 @@ elif db_choice == "Combined Data":
         "Angle of internal friction (degree)",
         "Cohesion (kPa)",
         "Bearing capacity (kPa)",
+        "Static bearing pressure (kPa)",
         "Normal stress range (kPa)",
         "Void ratio",
         "Density of grains (g/cm^3)",
         "Compressibility Coefficient",
         "Depth (cm)",
+        "Specific gravity",
         "Porosity (%)",
-        "Force applied (N)"
+        "Force applied (N)", 
+        "Contact area (cm^2)", 
+        "Sample ID"
     ]
 
     for col in numeric_range_cols:
-        # Keep _min, _max, _avg numeric, only replace the original column for display
         if col in display_df.columns:
             display_df[col] = all_db_df.loc[display_df.index, col]
 
@@ -3075,10 +3571,10 @@ elif db_choice == "Combined Data":
     if selected_columns:
         st.dataframe(display_df[selected_columns])
     else:
-        st.info("No columns selected. Please select at least one column to display.")
+        st.info("No columns selected here. Please select at least one column to display.")
 
     st.markdown(
-        "<p style='font-size:12px; color:gray;'>* Indicates values estimated for the measurements.</p>",
+        "<p style='font-size:12px; color:gray;'>Note: * Indicates values estimated for the measurements, ** indicates values derived from estimations. </p>",
         unsafe_allow_html=True
     )
 
@@ -3092,6 +3588,12 @@ import datetime
 with st.sidebar:
     st.divider()
     st.write("### Documentation")
+
+    st.link_button(
+        label="View Related Publication", 
+        url="https://doi.org/10.1002/nag.70432", 
+        use_container_width=True
+    )
     
     # Read the PDF file into memory
     try:
@@ -3107,6 +3609,7 @@ with st.sidebar:
         )
     except FileNotFoundError:
         st.error("Manual not found. Please check the repository.")
+
 
 @st.cache_data(ttl=3600)
 def get_last_commit_date(repo="leoniegasteiner/Lunar-Regolith-Database", branch="main"):
@@ -3130,7 +3633,7 @@ def get_last_commit_date(repo="leoniegasteiner/Lunar-Regolith-Database", branch=
 
 last_updated = get_last_commit_date()
 
-st.markdown("To suggest additional data implementation, contact us at gasteinerleonie@gmail.com!")
+st.markdown("To suggest additional data implementation or signal errors and bugs, contact us at gasteinerleonie@gmail.com")
 
 st.markdown(
     f"<hr><p style='font-size:11px; color:gray; text-align:center;'>© 2026 Lunar Regolith Database <br> Contact us at gasteinerleonie@gmail.com <br> Last updated: {last_updated}</p>",
